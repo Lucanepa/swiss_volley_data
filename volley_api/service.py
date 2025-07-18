@@ -1,8 +1,12 @@
 from flask import Flask, request, jsonify, make_response
 from google.cloud import bigquery
+import logging
 
 app = Flask(__name__)
 client = bigquery.Client()
+
+# configure root logger
+logging.basicConfig(level=logging.INFO)
 
 def cors(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
@@ -14,7 +18,6 @@ def get_rankings():
     if not team_id:
         return cors(make_response("team_id is required", 400))
 
-    # Query the rankings_complete view
     SQL = f"""
     SELECT
       leagueId           AS league_id,
@@ -40,17 +43,21 @@ def get_rankings():
     WHERE wiedikon_team_id = @team_id
     ORDER BY ranking.rank
     """
-    job = client.query(
-        SQL,
-        job_config=bigquery.QueryJobConfig(
-            query_parameters=[
-                bigquery.ScalarQueryParameter("team_id", "INT64", team_id)
-            ]
+    try:
+        job = client.query(
+            SQL,
+            job_config=bigquery.QueryJobConfig(
+                query_parameters=[
+                    bigquery.ScalarQueryParameter("team_id", "INT64", team_id)
+                ]
+            )
         )
-    )
-    rows = job.result()
-    data = [dict(r) for r in rows]
-    return cors(jsonify(data))
+        rows = job.result()  # may raise
+        data = [dict(r) for r in rows]
+        return cors(jsonify(data))
+    except Exception as e:
+        logging.exception("Error running rankings query")
+        return cors(make_response(f"Ranking query failed: {e}", 500))
 
 @app.route("/results")
 def get_results():
@@ -58,7 +65,6 @@ def get_results():
     if not team_id:
         return cors(make_response("team_id is required", 400))
 
-    # Query the games_complete view
     SQL = f"""
     SELECT
       gameId             AS game_id,
@@ -87,16 +93,20 @@ def get_results():
     WHERE home_team_id = @team_id OR away_team_id = @team_id
     ORDER BY playDate
     """
-    job = client.query(
-        SQL,
-        job_config=bigquery.QueryJobConfig(
-            query_parameters=[
-                bigquery.ScalarQueryParameter("team_id", "INT64", team_id)
-            ]
+    try:
+        job = client.query(
+            SQL,
+            job_config=bigquery.QueryJobConfig(
+                query_parameters=[
+                    bigquery.ScalarQueryParameter("team_id", "INT64", team_id)
+                ]
+            )
         )
-    )
-    data = [dict(r) for r in job.result()]
-    return cors(jsonify(data))
+        data = [dict(r) for r in job.result()]
+        return cors(jsonify(data))
+    except Exception as e:
+        logging.exception("Error running results query")
+        return cors(make_response(f"Results query failed: {e}", 500))
 
 @app.route("/")
 def root():
