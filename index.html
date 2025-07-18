@@ -1,41 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <title>KSC Wiedikon H3 Ranking and Results</title>
 
   <!-- DataTables CSS -->
-  <link rel="stylesheet"
-        href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
 
+  <!-- Font fallback (Aptos-like) -->
   <style>
-    body { font-family: sans-serif; margin: 20px; }
-    h2 { margin-top: 40px; }
-    .table-wrapper {
-      max-width: 1200px;
-      margin: 0 auto;
-      overflow-x: hidden;  /* no horizontal scroll */
-    }
-    table.dataTable {
-      table-layout: fixed;  /* fixed columns */
-      width: 100% !important;
-    }
-    /* column widths example for Rankings */
-    #rankings th:nth-child(1), #rankings td:nth-child(1) { width: 200px; }
-    #rankings th:nth-child(2), #rankings td:nth-child(2) { width:  80px; }
-    /* column widths example for Results */
-    #results th:nth-child(1), #results td:nth-child(1) { width: 150px; }
+    @import url('https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap');
 
-    /* no wrap and ellipsis */
-    table.dataTable td {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    body {
+      font-family: 'Segoe UI', Aptos, sans-serif;
+      margin: 20px;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      margin-top: 40px;
+      font-size: 1.5em;
+      color: #444;
+    }
+
+    .table-wrapper {
+      max-width: 100%;
+      margin: 0 auto;
+      overflow-x: auto;
+    }
+
+    table.dataTable {
+      width: 100% !important;
+      font-size: 11px;
+      table-layout: auto;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 6px 8px;
+      text-align: left;
+      word-break: break-word;
+    }
+
+    #rankings td:first-child {
+      font-weight: bold;
+      white-space: normal;
+    }
+
+    #rankings tbody tr:first-child {
+      background-color: #c8e6c9 !important; /* green */
+    }
+
+    #rankings tbody tr:nth-child(2) {
+      background-color: #bbdefb !important; /* blue */
+    }
+
+    #rankings tbody tr:last-child {
+      background-color: #f8d7da !important; /* soft red */
+    }
+
+    /* prevent horizontal scroll on desktop */
+    html, body {
+      overflow-x: hidden;
+    }
+
+    /* Mobile only: allow horizontal scroll */
+    @media screen and (max-width: 768px) {
+      html, body {
+        overflow-x: auto;
+      }
     }
   </style>
 </head>
 <body>
-  <h1 style="text-align:center">KSC Wiedikon H3 Ranking and Results</h1>
+  <h1>KSC Wiedikon H3 Ranking and Results</h1>
 
   <h2>Rankings</h2>
   <div class="table-wrapper">
@@ -49,20 +93,26 @@
 
   <!-- jQuery & DataTables JS -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script
-    src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script>
-    $(async function() {
-      // ────────────────────────────────────────────────────────────────
-      // 1) Point to your two Cloud Run services:
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      const pad = (n) => n.toString().padStart(2, "0");
+
+      const day = pad(date.getDate());
+      const month = pad(date.getMonth() + 1);
+      const year = date.getFullYear();
+      const hours = pad(date.getHours());
+      const minutes = pad(date.getMinutes());
+
+      return `${day}/${month}/${year}<br>${hours}:${minutes}`;
+    }
+
+    $(async function () {
       const RANKINGS_API = "https://volley-rankings-849246684371.europe-west6.run.app";
-      const RESULTS_API  = "https://volley-results-849246684371.europe-west6.run.app";
+      const RESULTS_API = "https://volley-results-849246684371.europe-west6.run.app";
+      const TEAM_ID = 12747;
 
-      // 2) Your team’s ID:
-      const TEAM_ID = 12747;  // ← replace if different
-
-      // ────────────────────────────────────────────────────────────────
-      // 3) Fetch & render Rankings
       let r = await fetch(`${RANKINGS_API}/rankings?team_id=${TEAM_ID}`);
       let rankingData = await r.json();
 
@@ -79,37 +129,45 @@
           { data: "balls_won",    title: "Balls won"    },
           { data: "balls_lost",   title: "Balls lost"   }
         ],
-        paging:   false,
+        paging: false,
         ordering: false,
-        info:     false,
-        searching:false,
-        scrollY:  "400px",
-        scrollX:  false
+        info: false,
+        searching: false,
+        scrollY: "400px",
+        scrollX: false
       });
 
-      // ────────────────────────────────────────────────────────────────
-      // 4) Fetch & render Results
       let q = await fetch(`${RESULTS_API}/results?team_id=${TEAM_ID}`);
       let resultsData = await q.json();
 
       $("#results").DataTable({
         data: resultsData,
         columns: [
-          { data: "play_date", title: "Date"       },
-          { data: "home",      title: "Home"       },
-          { data: "away",      title: "Away"       },
-          { data: "halle",     title: "Halle"      },
-          { data: "city",      title: "City"       },
-          { data: "plus_code", title: "Plus Code"  },
+          {
+            data: "play_date",
+            title: "Date",
+            render: function (data) {
+              return formatDate(data);
+            }
+          },
+          {
+            title: "Match",
+            render: function (data, type, row) {
+              return `${row.home} - ${row.away}`;
+            }
+          },
+          { data: "halle",     title: "Halle"     },
+          { data: "city",      title: "City"      },
+          { data: "plus_code", title: "Plus Code" },
           { data: "referees",  title: "Referee(s)" },
-          { data: "result",    title: "Result"     }
+          { data: "result",    title: "Result" }
         ],
-        paging:   false,
+        paging: false,
         ordering: false,
-        info:     false,
-        searching:false,
-        scrollY:  "400px",
-        scrollX:  false
+        info: false,
+        searching: false,
+        scrollY: "400px",
+        scrollX: false
       });
     });
   </script>
