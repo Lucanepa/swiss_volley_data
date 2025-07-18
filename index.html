@@ -143,42 +143,40 @@
       const resultsTable = $("#results").DataTable({
         data: resultsData,
         columns: [
-          {
-            data: "play_date",
-            title: "Date",
-            render: data => formatDate(data)
-          },
-          {
-            title: "Match",
-            render: (data, type, row) => {
-              const result = row.result || "";
-              const [homeSets, awaySets] = result.split(":").map(n => parseInt(n));
-              const homeName = row.home || "";
-              const awayName = row.away || "";
+  {
+    data: "play_date",
+    title: "Date",
+    render: data => formatDate(data)
+  },
+  {
+    title: "Match",
+    data: function(row) {
+      const result = row.result || "";
+      const [homeSets, awaySets] = result.split(":").map(n => parseInt(n));
+      let home = row.home || "";
+      let away = row.away || "";
 
-              let home = homeName;
-              let away = awayName;
+      if (!isNaN(homeSets) && !isNaN(awaySets)) {
+        if (homeSets > awaySets) home += " 🏆";
+        else if (awaySets > homeSets) away += " 🏆";
+      }
 
-              if (!isNaN(homeSets) && !isNaN(awaySets)) {
-                if (homeSets > awaySets) home += " 🏆";
-                else if (awaySets > homeSets) away += " 🏆";
-              }
+      return `${home} - ${away}`;
+    }
+  },
+  {
+    title: "Home/Away",
+    data: function(row) {
+      return row.home.includes("Wiedikon") ? "Home" : "Away";
+    }
+  },
+  { data: "halle",     title: "Halle"     },
+  { data: "city",      title: "City"      },
+  { data: "plus_code", title: "Plus Code" },
+  { data: "referees",  title: "Referee(s)" },
+  { data: "result",    title: "Result" }
+],
 
-              return `${home} - ${away}`;
-            }
-          },
-          {
-            title: "Home/Away",
-            render: (data, type, row) => {
-              return row.home.includes("Wiedikon") ? "Home" : "Away";
-            }
-          },
-          { data: "halle",     title: "Halle"     },
-          { data: "city",      title: "City"      },
-          { data: "plus_code", title: "Plus Code" },
-          { data: "referees",  title: "Referee(s)" },
-          { data: "result",    title: "Result" }
-        ],
         createdRow: function (row, data) {
           const result = data.result || "";
           const [homeScore, awayScore] = result.split(":").map(n => parseInt(n));
