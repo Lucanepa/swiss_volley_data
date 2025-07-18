@@ -2,29 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>Swiss Volley Dashboard</title>
+  <title>KSC Wiedikon H3 Ranking and Results</title>
   <style>
+    /* Wrapper to center & control scrolling */
     .iframe-wrapper {
       position: relative;
       width: 100%;
-      max-width: 1200px;      /* cap your width */
-      margin: 0 auto;         /* center it */
-      overflow-x: hidden;     /* hide horizontal scroll */
-      overflow-y: auto;       /* show vertical scroll when needed */
-      height: 800px;          /* same as iframe height or whatever you like */
+      max-width: 1200px;      /* adjust as needed */
+      margin: 0 auto;         /* center horizontally */
+      height: 800px;          /* visible window height */
+      overflow-x: hidden;     /* no horizontal scroll */
+      overflow-y: auto;       /* vertical scroll if content taller */
       box-sizing: border-box;
     }
 
+    /* The embedded report */
     .dashboard-iframe {
       width: 100%;
-      height: 100%;           /* fill the wrapper’s height */
+      height: 1000px;         /* must exceed wrapper if you want scroll */
       border: none;
+      pointer-events: none;   /* disable all clicks/hover inside iframe */
       display: block;
     }
   </style>
 </head>
 <body>
-  <h1>Swiss Volley Dashboard</h1>
+  <h1>KSC Wiedikon H3 Ranking and Results</h1>
+
   <div class="iframe-wrapper">
     <iframe
       class="dashboard-iframe"
