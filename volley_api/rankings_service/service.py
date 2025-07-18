@@ -36,7 +36,7 @@ def get_rankings():
       r.updated_at
     FROM `{client.project}.api_data.rankings` AS r,
          UNNEST(r.ranking) AS rm
-    WHERE rm.wiedikon_team_id = @team_id
+    WHERE r.wiedikon_team_id = @team_id
     ORDER BY rm.rank
     """
     job = client.query(
