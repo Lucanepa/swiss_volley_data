@@ -3,14 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <title>Swiss Volley Dashboard</title>
+  <style>
+    /* Optional: put this in your CSS file instead of inline */
+    .dashboard-iframe {
+      width: 100%;            /* let it scale down to the container width */
+      max-width: 1200px;      /* but never exceed 1200px */
+      height: 100vh;          /* fill the viewport height */
+      max-height: 800px;      /* but never exceed 800px */
+      border: none;
+    }
+  </style>
 </head>
 <body>
   <h1>Swiss Volley Dashboard</h1>
 
-  <!-- Paste your Looker Studio iframe below -->
   <iframe
-    width="600"
-    height="450"
+    class="dashboard-iframe"
     src="https://lookerstudio.google.com/embed/reporting/2cc5524b-c007-4466-8f60-0959fd8d2787/page/UGtRF?embedded=true"
     frameborder="0"
     style="border:0"
