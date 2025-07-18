@@ -6,11 +6,14 @@ app = Flask(__name__)
 client = bigquery.Client()
 
 # configure root logger
-logging.basicConfig(level=logging.INFO)
+target_level = logging.INFO
+logging.basicConfig(level=target_level)
+
 
 def cors(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
+
 
 @app.route("/rankings")
 def get_rankings():
@@ -20,28 +23,27 @@ def get_rankings():
 
     SQL = f"""
     SELECT
-      leagueId           AS league_id,
-      phaseId            AS phase_id,
-      groupId            AS group_id,
-      ranking.ballsLost  AS balls_lost,
-      ranking.ballsWon   AS balls_won,
-      ranking.defeats    AS defeats,
-      ranking.defeatsClear   AS defeats_clear,
-      ranking.defeatsNarrow AS defeats_narrow,
-      ranking.games     AS games_played,
-      ranking.points    AS points,
-      ranking.rank      AS rank,
-      ranking.setsLost  AS sets_lost,
-      ranking.setsWon   AS sets_won,
-      ranking.wins      AS wins,
-      ranking.winsClear   AS wins_clear,
-      ranking.winsNarrow AS wins_narrow,
-      teamCaption       AS team_caption,
-      teamId            AS team_id,
-      updated_at        AS updated_at
-    FROM `{client.project}.api_data.rankings_complete`
+      league_id,
+      phase_id,
+      group_id,
+      balls_lost,
+      balls_won,
+      defeats,
+      defeats_clear,
+      defeats_narrow,
+      games,
+      points,
+      rank,
+      sets_lost,
+      sets_won,
+      wins,
+      wins_clear,
+      wins_narrow,
+      teamCaption     AS team_caption,
+      updated_at
+    FROM `{client.project}.api_data.rankings`
     WHERE wiedikon_team_id = @team_id
-    ORDER BY ranking.rank
+    ORDER BY rank
     """
     try:
         job = client.query(
@@ -52,12 +54,13 @@ def get_rankings():
                 ]
             )
         )
-        rows = job.result()  # may raise
+        rows = job.result()
         data = [dict(r) for r in rows]
         return cors(jsonify(data))
     except Exception as e:
         logging.exception("Error running rankings query")
         return cors(make_response(f"Ranking query failed: {e}", 500))
+
 
 @app.route("/results")
 def get_results():
@@ -67,12 +70,12 @@ def get_results():
 
     SQL = f"""
     SELECT
-      gameId             AS game_id,
-      playDate           AS play_date,
+      gameId          AS game_id,
+      playDate        AS play_date,
       gender,
       referees,
-      setResults         AS set_results,
-      resultSummary      AS result_summary,
+      setResults      AS set_results,
+      resultSummary   AS result_summary,
       teams_home_caption AS home_team_caption,
       teams_away_caption AS away_team_caption,
       league_season,
@@ -86,12 +89,11 @@ def get_results():
       hall_city,
       hall_latitude,
       hall_longitude,
-      hall_plusCode      AS hall_plus_code,
-      updated_at         AS updated_at,
-      team_name
+      hall_plusCode   AS hall_plus_code,
+      updated_at
     FROM `{client.project}.api_data.games_complete`
-    WHERE home_team_id = @team_id OR away_team_id = @team_id
-    ORDER BY playDate
+    WHERE wiedikon_team_id = @team_id
+    ORDER BY play_date
     """
     try:
         job = client.query(
@@ -102,11 +104,13 @@ def get_results():
                 ]
             )
         )
-        data = [dict(r) for r in job.result()]
+        rows = job.result()
+        data = [dict(r) for r in rows]
         return cors(jsonify(data))
     except Exception as e:
         logging.exception("Error running results query")
         return cors(make_response(f"Results query failed: {e}", 500))
+
 
 @app.route("/")
 def root():
