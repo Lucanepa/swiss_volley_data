@@ -1,30 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>KSC Wiedikon H3 - Ranking and results</title>
+  <meta charset="UTF-8"/>
+  <title>KSC Wiedikon H3 Ranking & Results</title>
   <style>
-    /* Optional: put this in your CSS file instead of inline */
+    .iframe-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;     /* center the wrapper */
+      overflow: hidden;    /* hide overflow if any */
+    }
     .dashboard-iframe {
-      width: 100%;            /* let it scale down to the container width */
-      max-width: 1200px;      /* but never exceed 1200px */
-      height: 100vh;          /* fill the viewport height */
-      max-height: 800px;      /* but never exceed 800px */
+      width: 100%;
+      height: 800px;
       border: none;
+      display: block;
+    }
+    .iframe-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 10;
+      /* catches every click/hover/scroll so nothing reaches the iframe */
+      background: transparent;
+      cursor: default; 
     }
   </style>
 </head>
 <body>
-  <h1>KSC Wiedikon H3 - Ranking and results</h1>
+  <h1>KSC Wiedikon H3 Ranking & Results</h1>
 
-  <iframe
-    class="dashboard-iframe"
-    src="https://lookerstudio.google.com/embed/reporting/2cc5524b-c007-4466-8f60-0959fd8d2787/page/UGtRF?embedded=true&rm=all"
-    frameborder="0"
-    style="border:0"
-    allowfullscreen
-    sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-  ></iframe>
-
+  <div class="iframe-wrapper">
+    <iframe
+      class="dashboard-iframe"
+      src="https://lookerstudio.google.com/embed/reporting/2cc5524b-c007-4466-8f60-0959fd8d2787/page/UGtRF?embedded=true&rm=all"
+      allowfullscreen
+      sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
+    </iframe>
+    <div class="iframe-overlay"></div>
+  </div>
 </body>
 </html>
