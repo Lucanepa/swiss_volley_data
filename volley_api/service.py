@@ -14,29 +14,45 @@ def get_rankings():
     if not team_id:
         return cors(make_response("team_id is required", 400))
 
-    # Query rankings directly by the wistikon_team_id column
+    # Query the rankings_complete view by wiedikon_team_id
     SQL = f"""
     SELECT
-      teamCaption AS Team,
-      points      AS Pts,
-      games       AS `# Matches`,
-      wins        AS `Matches won`,
-      defeats     AS `Matches lost`,
-      setsWon     AS `Sets won`,
-      setsLost    AS `Sets lost`,
-      ballsWon    AS `Balls won`,
-      ballsLost   AS `Balls lost`
+      groupId,
+      ranking.ballsLost    AS balls_lost,
+      ranking.ballsWon     AS balls_won,
+      ranking.defeats      AS defeats,
+      ranking.defeatsClear AS defeats_clear,
+      ranking.defeatsNarrow AS defeats_narrow,
+      ranking.games        AS games,
+      ranking.points       AS points,
+      ranking.rank         AS rank,
+      ranking.setsLost     AS sets_lost,
+      ranking.setsWon      AS sets_won,
+      ranking.wins         AS wins,
+      ranking.winsClear    AS wins_clear,
+      ranking.winsNarrow   AS wins_narrow,
+      teamCaption          AS team_caption,
+      teamId               AS team_id,
+      updated_at           AS updated_at,
+      wiedikon_team_id     AS wiedikon_team_id,
+      team_name            AS team_name,
+      group_caption,
+      league_caption,
+      league_season,
+      phase_caption
     FROM
-      `{client.project}.api_data.rankings`
+      `{client.project}.api_data.rankings_complete`
     WHERE
       wiedikon_team_id = @team_id
     ORDER BY
-      rank
+      ranking.rank
     """
     job = client.query(
         SQL,
         job_config=bigquery.QueryJobConfig(
-            query_parameters=[bigquery.ScalarQueryParameter("team_id", "INT64", team_id)]
+            query_parameters=[
+                bigquery.ScalarQueryParameter("team_id", "INT64", team_id)
+            ]
         )
     )
     data = [dict(row) for row in job.result()]
@@ -48,22 +64,33 @@ def get_results():
     if not team_id:
         return cors(make_response("team_id is required", 400))
 
-    # Query games by team_id
+    # Query games_complete view for Wiedikon games with metadata
     SQL = f"""
     SELECT
-      FORMAT_TIMESTAMP('%d/%m/%Y, %H:%M', playDate, 'Europe/Zurich') AS Date,
-      teams_home_caption  AS Home,
-      teams_away_caption  AS Away,
-      hall_caption        AS Halle,
-      hall_city           AS City,
-      hall_plusCode       AS PlusCode,
-      referees            AS `Referee(s)`,
-      CONCAT(
-        CAST(set_1_home AS STRING), '-', CAST(set_1_away AS STRING), ' | ',
-        CAST(set_2_home AS STRING), '-', CAST(set_2_away AS STRING)
-      ) AS Result
+      gameId               AS game_id,
+      playDate             AS play_date,
+      gender,
+      referees,
+      setResults           AS set_results,
+      resultSummary        AS result_summary,
+      teams_home_caption   AS home_caption,
+      teams_away_caption   AS away_caption,
+      league_season,
+      league_caption,
+      phase_caption,
+      group_caption,
+      hall_caption,
+      hall_street,
+      hall_number,
+      hall_zip,
+      hall_city,
+      hall_latitude,
+      hall_longitude,
+      hall_plusCode        AS hall_plus_code,
+      updated_at           AS updated_at,
+      team_name            AS team_name
     FROM
-      `{client.project}.api_data.games`
+      `{client.project}.api_data.games_complete`
     WHERE
       home_team_id = @team_id OR away_team_id = @team_id
     ORDER BY
@@ -72,7 +99,9 @@ def get_results():
     job = client.query(
         SQL,
         job_config=bigquery.QueryJobConfig(
-            query_parameters=[bigquery.ScalarQueryParameter("team_id", "INT64", team_id)]
+            query_parameters=[
+                bigquery.ScalarQueryParameter("team_id", "INT64", team_id)
+            ]
         )
     )
     data = [dict(row) for row in job.result()]
