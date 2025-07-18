@@ -3,39 +3,115 @@
 <head>
   <meta charset="UTF-8"/>
   <title>KSC Wiedikon H3 Ranking and Results</title>
-  <style>
-    /* Wrapper to center & control scrolling */
-    .iframe-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 1200px;      /* adjust as needed */
-      margin: 0 auto;         /* center horizontally */
-      height: 800px;          /* visible window height */
-      overflow-x: hidden;     /* no horizontal scroll */
-      overflow-y: auto;       /* vertical scroll if content taller */
-      box-sizing: border-box;
-    }
 
-    /* The embedded report */
-    .dashboard-iframe {
-      width: 100%;
-      height: 1000px;         /* must exceed wrapper if you want scroll */
-      border: none;
-      pointer-events: none;   /* disable all clicks/hover inside iframe */
-      display: block;
+  <!-- DataTables CSS -->
+  <link rel="stylesheet"
+        href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
+
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    h2 { margin-top: 40px; }
+    .table-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      overflow-x: hidden;  /* no horizontal scroll */
+    }
+    table.dataTable {
+      table-layout: fixed;  /* fixed columns */
+      width: 100% !important;
+    }
+    /* column widths example for Rankings */
+    #rankings th:nth-child(1), #rankings td:nth-child(1) { width: 200px; }
+    #rankings th:nth-child(2), #rankings td:nth-child(2) { width:  80px; }
+    /* column widths example for Results */
+    #results th:nth-child(1), #results td:nth-child(1) { width: 150px; }
+
+    /* no wrap and ellipsis */
+    table.dataTable td {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   </style>
 </head>
 <body>
-  <h1>KSC Wiedikon H3 Ranking and Results</h1>
+  <h1 style="text-align:center">KSC Wiedikon H3 Ranking and Results</h1>
 
-  <div class="iframe-wrapper">
-    <iframe
-      class="dashboard-iframe"
-      src="https://lookerstudio.google.com/embed/reporting/2cc5524b-c007-4466-8f60-0959fd8d2787/page/UGtRF?embedded=true&rm=all"
-      allowfullscreen
-      sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin"
-    ></iframe>
+  <h2>Rankings</h2>
+  <div class="table-wrapper">
+    <table id="rankings" class="display"></table>
   </div>
+
+  <h2>Results</h2>
+  <div class="table-wrapper">
+    <table id="results" class="display"></table>
+  </div>
+
+  <!-- jQuery & DataTables JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script
+    src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script>
+    $(async function() {
+      // ────────────────────────────────────────────────────────────────
+      // 1) Point to your two Cloud Run services:
+      const RANKINGS_API = "https://volley-rankings-849246684371.europe-west6.run.app";
+      const RESULTS_API  = "https://volley-results-849246684371.europe-west6.run.app";
+
+      // 2) Your team’s ID:
+      const TEAM_ID = 12747;  // ← replace if different
+
+      // ────────────────────────────────────────────────────────────────
+      // 3) Fetch & render Rankings
+      let r = await fetch(`${RANKINGS_API}/rankings?team_id=${TEAM_ID}`);
+      let rankingData = await r.json();
+
+      $("#rankings").DataTable({
+        data: rankingData,
+        columns: [
+          { data: "team_name",    title: "Team"         },
+          { data: "points",       title: "Pts"          },
+          { data: "games_played", title: "# Matches"    },
+          { data: "wins",         title: "Matches won"  },
+          { data: "defeats",      title: "Matches lost" },
+          { data: "sets_won",     title: "Sets won"     },
+          { data: "sets_lost",    title: "Sets lost"    },
+          { data: "balls_won",    title: "Balls won"    },
+          { data: "balls_lost",   title: "Balls lost"   }
+        ],
+        paging:   false,
+        ordering: false,
+        info:     false,
+        searching:false,
+        scrollY:  "400px",
+        scrollX:  false
+      });
+
+      // ────────────────────────────────────────────────────────────────
+      // 4) Fetch & render Results
+      let q = await fetch(`${RESULTS_API}/results?team_id=${TEAM_ID}`);
+      let resultsData = await q.json();
+
+      $("#results").DataTable({
+        data: resultsData,
+        columns: [
+          { data: "play_date", title: "Date"       },
+          { data: "home",      title: "Home"       },
+          { data: "away",      title: "Away"       },
+          { data: "halle",     title: "Halle"      },
+          { data: "city",      title: "City"       },
+          { data: "plus_code", title: "Plus Code"  },
+          { data: "referees",  title: "Referee(s)" },
+          { data: "result",    title: "Result"     }
+        ],
+        paging:   false,
+        ordering: false,
+        info:     false,
+        searching:false,
+        scrollY:  "400px",
+        scrollX:  false
+      });
+    });
+  </script>
 </body>
 </html>
