@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, make_response
 from google.cloud import bigquery
-import logging
 
 app = Flask(__name__)
 client = bigquery.Client()
@@ -11,12 +10,10 @@ def cors(resp):
 
 @app.route("/results")
 def get_results():
-    # 1) require team_id
     team_id = request.args.get("team_id", type=int)
     if not team_id:
         return cors(make_response("team_id is required", 400))
 
-    # 2) query your games_complete view
     SQL = f"""
     SELECT
       gameId             AS game_id,
@@ -42,12 +39,5 @@ def get_results():
             ]
         ),
     )
-    rows = [dict(r) for r in job.result()]  # run & fetch
-
+    rows = [dict(r) for r in job.result()]
     return cors(jsonify(rows))
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    # for local testing
-    app.run(host="0.0.0.0", port=8080)
