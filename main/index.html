@@ -99,8 +99,11 @@
           .then(r => r.ok ? r.json() : [])
           .then(data => {
             const caption = teamNames[id];
+            console.log(`Team ${id} (${caption}):`, data);
             const found = data.find(r=>r.teamCaption===caption);
+            console.log(`Found for ${caption}:`, found);
             if (found && found.group_caption) {
+              console.log(`Adding ${caption} with group: ${found.group_caption}`);
               rows.push({
                 group: found.group_caption,
                 rank:  found.rank,
@@ -110,13 +113,17 @@
                 wins:   found.wins,
                 defeats:found.defeats
               });
+            } else {
+              console.log(`Skipping ${caption}: found=${!!found}, group_caption=${found?.group_caption}`);
             }
           })
-          .catch(()=>{})
+          .catch(err => console.log(`Error for team ${id}:`, err))
       ));
       
+      console.log("All rows before filtering:", rows);
       // filter out cup entries and sort by group then rank
       const filteredRows = rows.filter(row => !row.group.toLowerCase().includes("cup"));
+      console.log("Rows after filtering out cup:", filteredRows);
       filteredRows.sort((a,b) => a.group.localeCompare(b.group) || a.rank - b.rank);
 
       const $cont = $("#overall-rankings-container").empty();
