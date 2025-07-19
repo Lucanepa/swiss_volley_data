@@ -343,16 +343,16 @@
           data: rankingData,
           columns: [
             { data: "rank",         title: "Rank", width: "7%" },
-            { data: "team_name",    title: "Team", width: "auto" },
+            { data: "teamCaption",    title: "Team", width: "auto" },
             { data: "group_caption",        title: "Group", width: "8%", defaultContent: "" },
             { data: "points",       title: "Pts", width: "7%" },
-            { data: "games_played", title: "# Matches", width: "7%" },
+            { data: "games", title: "# Matches", width: "7%" },
             { data: "wins",         title: "Matches won", width: "7%" },
             { data: "defeats",      title: "Matches lost", width: "7%" },
-            { data: "sets_won",     title: "Sets won", width: "7%" },
-            { data: "sets_lost",    title: "Sets lost", width: "7%" },
-            { data: "balls_won",    title: "Balls won", width: "7%" },
-            { data: "balls_lost",   title: "Balls lost", width: "7%" }
+            { data: "setsWon",     title: "Sets won", width: "7%" },
+            { data: "setsLost",    title: "Sets lost", width: "7%" },
+            { data: "ballsWon",    title: "Balls won", width: "7%" },
+            { data: "ballsLost",   title: "Balls lost", width: "7%" }
           ],
           createdRow: function (row, data) {
             if (data.team_name && data.team_name.includes("Wiedikon")) {
@@ -387,7 +387,7 @@
           data: resultsData,
           columns: [
             {
-              data: "play_date",
+              data: "playDate",
               title: "Date",
               width: "auto",
               render: function(data, type, row) {
@@ -398,7 +398,7 @@
               }
             },
             {
-              data: "play_date",
+              data: "playDate",
               title: "Time",
               width: "auto",
               render: function(data, type, row) {
@@ -439,10 +439,10 @@
               }
             },
             { data: "group_caption",     title: "Group", width: "auto", defaultContent: "" },
-            { data: "halle",     title: "Halle", width: "auto" },
-            { data: "city",      title: "City", width: "auto" },
+            { data: "hall_caption",     title: "Halle", width: "auto" },
+            { data: "hall_city",      title: "City", width: "auto" },
             { 
-              data: "plus_code", 
+              data: "hall_plusCode", 
               title: "Plus Code",
               width: "auto",
               render: function(data, type, row) {
