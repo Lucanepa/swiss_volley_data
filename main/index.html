@@ -20,25 +20,23 @@
       padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     h1 { margin: 0; font-size: 2.2rem; font-weight: 600; }
-    .block-selector { text-align: center; margin-bottom: 30px; }
-    .block-selector select {
-      padding: 10px 16px; font-size: 16px; font-weight: 500;
-      border: 2px solid #e2e8f0; border-radius: 8px;
-      background: white; cursor: pointer; min-width: 140px;
-    }
     .content-section {
       background: white; border-radius: 12px;
       padding: 25px; margin-bottom: 25px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    .content-section h2 { margin: 0 0 20px; font-size: 1.6rem; font-weight: 600; }
-    .sub-section h3 { margin: 1.5em 0 0.5em; font-size: 1.25rem; font-weight: 500; }
+    .content-section h2 {
+      margin: 0 0 20px; font-size: 1.6rem; font-weight: 600;
+    }
+    .sub-section h3 {
+      margin: 1.5em 0 0.5em; font-size: 1.25rem; font-weight: 500;
+    }
     .table-wrapper {
       overflow-x: auto; border-radius: 12px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
 
-    /* DataTables spacing & group rows */
+    /* DataTables layout & spacing */
     table.dataTable {
       width: 100% !important; font-size: 12px;
       border-collapse: separate; border-spacing: 0 0.75rem;
@@ -54,13 +52,16 @@
     table.dataTable tbody tr:last-child td { border-bottom: none; }
     table.dataTable tbody tr:nth-child(even) { background: #f8f9fa; }
 
-    table.dataTable tbody tr.group { background: transparent !important; }
+    /* Group‐row divider styling */
+    table.dataTable tbody tr.group {
+      background: transparent !important;
+    }
     table.dataTable tbody tr.group td {
       padding: .5rem 0; font-weight: 600; color: #1e40af;
       border-top: 2px solid #1e40af; border-bottom: none;
     }
 
-    /* Team column no wrap */
+    /* Team column no‑wrap */
     table.dataTable th:nth-child(3),
     table.dataTable td:nth-child(3) {
       white-space: nowrap;
@@ -78,13 +79,12 @@
       75%{transform:translateX(2px) rotate(2deg);}
     }
 
-    /* ── Mobile tweaks ── */
+    /* Mobile adjustments */
     @media (max-width: 768px) {
       body { font-size: 14px; }
       h1 { font-size: 1.8rem; }
       .content-section h2 { font-size: 1.4rem; }
       .sub-section h3 { font-size: 1.1rem; }
-      .block-selector select { padding: 6px 10px; font-size: 14px; }
       table.dataTable { font-size: 10px; }
       table.dataTable thead th { padding: 8px 6px; font-size: 9px; }
       table.dataTable tbody td { padding: 6px 4px; }
@@ -98,14 +98,7 @@
     </div>
 
     <div class="content-section">
-      <h2>Next games</h2>
-      <div class="block-selector">
-        <label for="block-selector" style="margin-right:8px;font-weight:500;">Show next</label>
-        <!-- only one option now -->
-        <select id="block-selector">
-          <option value="10" selected>10 dates</option>
-        </select>
-      </div>
+      <h2>Next games (up to 10 date‐blocks)</h2>
       <div id="results-container"></div>
     </div>
 
@@ -121,8 +114,8 @@
   <script>
     const RANKINGS_API = "https://volley-rankings-n72zsqdqea-oa.a.run.app";
     const RESULTS_API  = "https://volley-results-n72zsqdqea-oa.a.run.app";
-    const TEAM_IDS = [ "1395","1393","4689","1394","2301","14040","2743","541","12747","6023","7563" ];
-    const SPECIAL_DATES = [ "2025-09-27","2025-11-01","2026-01-31","2026-03-07" ];
+    const TEAM_IDS     = ["1395","1393","4689","1394","2301","14040","2743","541","12747","6023","7563"];
+    const SPECIAL_DATES = ["2025-09-27","2025-11-01","2026-01-31","2026-03-07"];
     const teamNames = {
       "12747":"KSC Wiedikon H3","1394":"KSC Wiedikon D4","14040":"KSC Wiedikon DU23-2",
       "7563":"KSC Wiedikon HU23-1","1393":"KSC Wiedikon D2","541":"KSC Wiedikon H2",
@@ -133,14 +126,14 @@
     function formatDate(d) {
       const dt = new Date(d);
       if (isNaN(dt)) return d||"";
-      const pad = n=>n.toString().padStart(2,"0");
-      return `${pad(dt.getDate())}.${pad(dt.getMonth()+1)}.${dt.getFullYear().toString().slice(-2)}`;
+      const p = n=>n.toString().padStart(2,"0");
+      return `${p(dt.getDate())}.${p(dt.getMonth()+1)}.${dt.getFullYear().toString().slice(-2)}`;
     }
     function formatTime(d) {
       const dt = new Date(d);
       if (isNaN(dt)) return d||"";
-      const pad = n=>n.toString().padStart(2,"0");
-      return `${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+      const p = n=>n.toString().padStart(2,"0");
+      return `${p(dt.getHours())}:${p(dt.getMinutes())}`;
     }
     function isSpecialDate(iso) {
       return SPECIAL_DATES.includes(iso);
@@ -150,57 +143,62 @@
       const rows = [];
       await Promise.all(TEAM_IDS.map(id =>
         fetch(`${RANKINGS_API}/rankings?team_id=${id}`)
-          .then(r => r.ok ? r.json() : [])
-          .then(data => {
-            const caption = teamNames[id];
-            const entry = data.find(r =>
-              r.teamCaption===caption &&
-              r.group_caption && !r.group_caption.toLowerCase().includes("cup")
+          .then(r=>r.ok?r.json():[])
+          .then(data=>{
+            const cap = teamNames[id];
+            const e = data.find(r=>
+              r.teamCaption===cap &&
+              r.group_caption &&
+              !r.group_caption.toLowerCase().includes("cup")
             );
-            if (entry) rows.push({
-              group:       entry.group_caption,
-              rank:        entry.rank,
-              teamCaption: entry.teamCaption,
-              points:      entry.points,
-              games:       entry.games,
-              wins:        entry.wins,
-              defeats:     entry.defeats
+            if (e) rows.push({
+              group:       e.group_caption,
+              rank:        e.rank,
+              teamCaption: e.teamCaption,
+              points:      e.points,
+              games:       e.games,
+              wins:        e.wins,
+              defeats:     e.defeats
             });
           }).catch(()=>{})
       ));
-
       rows.sort((a,b)=>a.group.localeCompare(b.group)||a.rank-b.rank);
-      const $c=$("#overall-rankings-container").empty();
-      if(!rows.length) return $c.html(`<div class="error-message">No rankings data available.</div>`);
 
-      const $sec=$(`
+      const $cont = $("#overall-rankings-container").empty();
+      if (!rows.length) {
+        return $cont.html(`<div class="error-message">No rankings data available.</div>`);
+      }
+
+      const $tbl = $(`
         <div class="table-wrapper">
           <table id="overall-rankings" class="display"></table>
         </div>
       `);
-      $c.append($sec);
+      $cont.append($tbl);
 
-      $sec.find("table").DataTable({
+      $tbl.find("table").DataTable({
         data: rows,
         autoWidth: true,
         columns: [
-          {data:"group", visible:false},
-          {data:"rank", title:"Rank"},
-          {data:"teamCaption", title:"Team"},
-          {data:"points", title:"Points"},
-          {data:"games", title:"Matches played"},
-          {data:"wins", title:"Matches won"},
-          {data:"defeats", title:"Matches lost"}
+          { data: "group", visible: false },
+          { data: "rank",        title: "Rank" },
+          { data: "teamCaption", title: "Team" },
+          { data: "points",      title: "Points" },
+          { data: "games",       title: "Matches played" },
+          { data: "wins",        title: "Matches won" },
+          { data: "defeats",     title: "Matches lost" }
         ],
-        columnDefs: [{ width: '16.6667%', targets: [1,3,4,5,6] }],
+        columnDefs: [
+          { width: '16.6667%', targets: [1,3,4,5,6] }
+        ],
         rowGroup: { dataSrc: "group" },
-        paging:false, ordering:false, info:false, searching:false,
-        createdRow:(row)=> {
+        paging: false, ordering: false, info: false, searching: false,
+        createdRow: (row) => {
           $(row).css({
-            border:"2px solid #e2e8f0",
-            "border-radius":"8px",
-            "background-color":"#f8fafc"
-          }).find("td").css({ padding:"16px 12px", border:"none" });
+            border: "2px solid #e2e8f0",
+            "border-radius": "8px",
+            "background-color": "#f8fafc"
+          }).find("td").css({ padding: "16px 12px", border: "none" });
         }
       });
     }
@@ -213,7 +211,7 @@
       const map = new Map();
       all.flat().forEach(r=>{
         const key = `${r.playDate}|${r.teams_home_caption}|${r.teams_away_caption}`;
-        if(!map.has(key)) map.set(key,r);
+        if (!map.has(key)) map.set(key, r);
       });
       const combined = Array.from(map.values());
       const now = new Date();
@@ -221,55 +219,81 @@
         .filter(r=>new Date(r.playDate)>=now)
         .sort((a,b)=>new Date(a.playDate)-new Date(b.playDate));
 
-      const N = 10; // fixed
+      // Always show up to 10 date‑blocks
       const seen = new Set();
-      for(const g of upcoming) {
+      for (const g of upcoming) {
         const iso = new Date(g.playDate).toISOString().slice(0,10);
-        if(seen.size < N) seen.add(iso); else break;
+        if (seen.size < 10) seen.add(iso);
+        else break;
       }
       const filtered = upcoming.filter(g=>
         seen.has(new Date(g.playDate).toISOString().slice(0,10))
       );
 
-      const $c=$("#results-container").empty();
-      if(!filtered.length) return $c.html(`<div class="error-message">No upcoming games found.</div>`);
+      const $cont = $("#results-container").empty();
+      if (!filtered.length) {
+        return $cont.html(`<div class="error-message">No upcoming games found.</div>`);
+      }
 
-      const $sec=$(`
+      const $tbl = $(`
         <div class="sub-section">
+          <h3>Next ${seen.size} date block(s)</h3>
           <div class="table-wrapper">
             <table id="upcoming-games" class="display"></table>
           </div>
         </div>
       `);
-      $c.append($sec);
+      $cont.append($tbl);
 
-      $sec.find("table").DataTable({
+      $tbl.find("table").DataTable({
         data: filtered,
         columns: [
-          { data:"playDate", title:"Date", render:(d,t)=>t==="display"?formatDate(d):d },
-          { data:"playDate", title:"Time", render:(d,t)=>t==="display"?formatTime(d):d },
-          { data:null, title:"Match", render:(_,__,r)=>`${r.teams_home_caption} – ${r.teams_away_caption}` },
-          { data:"hall_caption", title:"Halle" },
-          { data:"hall_city",    title:"City" },
-          { data:"hall_plusCode",title:"Plus Code", render:d=>
-              d?`<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>`:""
+          {
+            data: "playDate", title: "Date",
+            render: (d,t)=> t==="display" ? formatDate(d) : d
           },
-          { data:"referees",     title:"Referee(s)" },
-          { data:null, title:"Event", render:(_,__,r)=>{
+          {
+            data: "playDate", title: "Time",
+            render: (d,t)=> t==="display" ? formatTime(d) : d
+          },
+          {
+            data: null, title: "Match",
+            render: (_,__,r)=>`${r.teams_home_caption} – ${r.teams_away_caption}`
+          },
+          { data: "hall_caption", title: "Halle" },
+          { data: "hall_city",    title: "City" },
+          {
+            data: "hall_plusCode", title: "Plus Code",
+            render: d=>{
+              if (!d) return "";
+              const clean = d.replace(/\s+/g, "");
+              return `<a href="https://maps.google.com/?q=${clean}" target="_blank">${d}</a>`;
+            }
+          },
+          { data: "referees", title: "Referee(s)" },
+          {
+            data: null, title: "Event",
+            render: (_,__,r)=>{
               const iso = new Date(r.playDate).toISOString().slice(0,10);
               const isHome = r.teams_home_caption.includes("Wiedikon");
               const flags = [];
-              if(isHome && isSpecialDate(iso)) flags.push("Spielsamstag");
-              else if(isHome) flags.push(`<span class="cheer">🚩 Come and cheer!</span>`);
+              if (isHome && isSpecialDate(iso)) {
+                flags.push("Spielsamstag");
+              } else if (isHome) {
+                flags.push(`<span class="cheer">🚩 Come and cheer!</span>`);
+              }
               return flags.join(" • ");
-          }}
+            }
+          }
         ],
-        paging:false, ordering:false, info:false, searching:false,
-        createdRow:(row,data)=>{
+        paging: false, ordering: false, info: false, searching: false,
+        createdRow: (row,data)=>{
           const iso = new Date(data.playDate).toISOString().slice(0,10);
-          if(data.teams_home_caption.includes("Wiedikon")){
+          if (data.teams_home_caption.includes("Wiedikon")) {
             $(row).find("td").css("font-weight","600");
-            if(isSpecialDate(iso)) $(row).css("background-color","#FFD700");
+            if (isSpecialDate(iso)) {
+              $(row).css("background-color","#FFD700");
+            }
           }
         }
       });
