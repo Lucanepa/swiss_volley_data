@@ -4,6 +4,8 @@
   <meta charset="UTF-8"/>
   <title>Wiedikon Volleyball – Rankings & Upcoming Games</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
+  <!-- RowGroup extension CSS for grouping rows -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/rowgroup/1.3.1/css/rowGroup.dataTables.min.css"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Aptos:wght@300;400;500;600;700&display=swap');
     * { box-sizing: border-box; }
@@ -17,11 +19,48 @@
     .content-section h2 { margin:0 0 20px; font-size:1.6rem; font-weight:600; }
     .sub-section h3 { margin:1.5em 0 0.5em; font-size:1.25rem; font-weight:500; }
     .table-wrapper { overflow-x:auto; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
-    table.dataTable { width:100% !important; font-size:12px; border-collapse:separate; border-spacing:0; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
-    table.dataTable thead th { background:#1e40af; color:white; font-weight:600; padding:12px 8px; text-align:left; font-size:11px; text-transform:uppercase; }
-    table.dataTable tbody td { padding:10px 8px; border-bottom:1px solid #e2e8f0; transition:background-color .2s; }
-    table.dataTable tbody tr:last-child td { border-bottom:none; }
-    table.dataTable tbody tr:nth-child(even) { background-color: #f8f9fa; }
+
+    /* Add vertical spacing between each data row */
+    table.dataTable {
+      width:100% !important;
+      font-size:12px;
+      border-collapse: separate;
+      border-spacing: 0 0.75rem; /* vertical gap between rows */
+    }
+
+    table.dataTable thead th {
+      background:#1e40af;
+      color:white;
+      font-weight:600;
+      padding:12px 8px;
+      text-align:left;
+      font-size:11px;
+      text-transform:uppercase;
+    }
+    table.dataTable tbody td {
+      padding:10px 8px;
+      border-bottom:1px solid #e2e8f0;
+      transition:background-color .2s;
+    }
+    table.dataTable tbody tr:last-child td {
+      border-bottom:none;
+    }
+    table.dataTable tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+
+    /* Style for the injected group rows (league dividers) */
+    table.dataTable tbody tr.group {
+      background: transparent !important;
+    }
+    table.dataTable tbody tr.group td {
+      padding: 0.5rem 0;
+      font-weight: 600;
+      color: #1e40af;
+      border-top: 2px solid #1e40af;
+      border-bottom: none;
+    }
+
     .error-message { color:#c53030; background:#fed7d7; padding:16px; border-radius:12px; margin:20px 0; border-left:4px solid #e53e3e; }
     .cheer { display:inline-block; margin-left:6px; animation:wave 1s infinite; }
     @keyframes wave {
@@ -58,6 +97,8 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <!-- RowGroup extension JS -->
+  <script src="https://cdn.datatables.net/rowgroup/1.3.1/js/dataTables.rowGroup.min.js"></script>
   <script>
     const RANKINGS_API = "https://volley-rankings-n72zsqdqea-oa.a.run.app";
     const RESULTS_API  = "https://volley-results-n72zsqdqea-oa.a.run.app";
@@ -92,44 +133,31 @@
     }
 
     async function loadOverallRankings() {
-      // fetch each group's full ranking then pick the Wiedikon row
       const rows = [];
       await Promise.all(TEAM_IDS.map(id =>
         fetch(`${RANKINGS_API}/rankings?team_id=${id}`)
           .then(r => r.ok ? r.json() : [])
           .then(data => {
             const caption = teamNames[id];
-            console.log(`Team ${id} (${caption}):`, data);
             const allMatches = data.filter(r=>r.teamCaption===caption);
-            console.log(`All matches for ${caption}:`, allMatches);
-            
-            // Find the non-Cup entry
             const found = allMatches.find(r => r.group_caption && !r.group_caption.toLowerCase().includes("cup"));
-            console.log(`Non-cup entry for ${caption}:`, found);
-            
             if (found) {
-              console.log(`Adding ${caption} with group: ${found.group_caption}`);
               rows.push({
-                group: found.group_caption,
-                rank:  found.rank,
+                group:    found.group_caption,
+                rank:     found.rank,
                 teamCaption: found.teamCaption,
-                points: found.points,
-                games:  found.games,
-                wins:   found.wins,
-                defeats:found.defeats
+                points:   found.points,
+                games:    found.games,
+                wins:     found.wins,
+                defeats:  found.defeats
               });
-            } else {
-              console.log(`Skipping ${caption}: no non-cup entry found`);
             }
           })
-          .catch(err => console.log(`Error for team ${id}:`, err))
+          .catch(()=>{})
       ));
-      
-      console.log("All rows before filtering:", rows);
-      // filter out cup entries and sort by group then rank
-      const filteredRows = rows.filter(row => !row.group.toLowerCase().includes("cup"));
-      console.log("Rows after filtering out cup:", filteredRows);
-      filteredRows.sort((a,b) => a.group.localeCompare(b.group) || a.rank - b.rank);
+
+      const filteredRows = rows.filter(r=>!r.group.toLowerCase().includes("cup"));
+      filteredRows.sort((a,b)=>a.group.localeCompare(b.group) || a.rank - b.rank);
 
       const $cont = $("#overall-rankings-container").empty();
       if (!filteredRows.length) {
@@ -138,48 +166,43 @@
       }
 
       const $sec = $(`
-        <div class="table-wrapper"><table id="overall-rankings" class="display"></table></div>
+        <div class="table-wrapper">
+          <table id="overall-rankings" class="display"></table>
+        </div>
       `);
       $cont.append($sec);
-      
+
       $sec.find("table").DataTable({
         data: filteredRows,
         columns: [
-          { data: "group",        title: "League" },
-          { data: "rank",         title: "Rank" },
-          { data: "teamCaption",  title: "Team" },
-          { data: "points",       title: "Points" },
-          { data: "games",        title: "Matches played" },
-          { data: "wins",         title: "Matches won" },
-          { data: "defeats",      title: "Matches lost" }
+          { data: "group",       title: "League",       visible: false },
+          { data: "rank",        title: "Rank" },
+          { data: "teamCaption", title: "Team" },
+          { data: "points",      title: "Points" },
+          { data: "games",       title: "Matches played" },
+          { data: "wins",        title: "Matches won" },
+          { data: "defeats",     title: "Matches lost" }
         ],
-        paging: false,
-        ordering: false,
-        info: false,
+        rowGroup: { dataSrc: "group" },
+        paging:    false,
+        ordering:  false,
+        info:      false,
         searching: false,
-        createdRow: (row, data, index) => {
-          // Add thick border between different leagues
-          const prevRow = filteredRows[index - 1];
-          if (prevRow && prevRow.group !== data.group) {
-            $(row).css("border-top", "4px solid #1e40af");
-          }
-          
+        createdRow: (row, data) => {
           $(row).css({
-            "border": "2px solid #e2e8f0",
-            "border-radius": "8px",
-            "margin": "8px 0",
+            "border":           "2px solid #e2e8f0",
+            "border-radius":    "8px",
             "background-color": "#f8fafc"
           });
           $(row).find("td").css({
             "padding": "16px 12px",
-            "border": "none"
+            "border":  "none"
           });
         }
       });
     }
 
     async function loadNextGames() {
-      // fetch and merge all teams' fixtures
       const all = await Promise.all(TEAM_IDS.map(id=>
         fetch(`${RESULTS_API}/results?team_id=${id}`)
           .then(r=>r.ok?r.json():[])
@@ -241,9 +264,9 @@
             }
           }
         ],
-        paging: false,
-        ordering: false,
-        info: false,
+        paging:    false,
+        ordering:  false,
+        info:      false,
         searching: false,
         createdRow:(row,data)=>{
           const iso = new Date(data.playDate).toISOString().slice(0,10);
