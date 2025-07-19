@@ -93,8 +93,11 @@
       let resp = await fetch(`${RANKINGS_API}/rankings?team_id=${teamId}`);
       if (!resp.ok) return showError("#rankings-container","Rankings API error");
       const rankingData = await resp.json();
+      console.log("Ranking data:", rankingData);
+      console.log("Group captions:", rankingData.map(r => r.group_caption));
       $("#rankings-container").empty();
       const rankGroups = [...new Set(rankingData.map(r=>r.group_caption||"Cup"))];
+      console.log("Unique groups:", rankGroups);
       rankGroups.forEach(groupName => {
         const rows = rankingData.filter(r=>(r.group_caption||"Cup")===groupName);
         const $sec = $(`
@@ -133,8 +136,11 @@
       resp = await fetch(`${RESULTS_API}/results?team_id=${teamId}`);
       if (!resp.ok) return showError("#results-container","Results API error");
       const resultsData = await resp.json();
+      console.log("Results data:", resultsData);
+      console.log("Results group captions:", resultsData.map(r => r.group_caption));
       $("#results-container").empty();
       const resGroups = [...new Set(resultsData.map(r=>r.group_caption||"Cup"))];
+      console.log("Unique result groups:", resGroups);
       resGroups.forEach(groupName => {
         const rows = resultsData.filter(r=>(r.group_caption||"Cup")===groupName);
         const $sec = $(`
