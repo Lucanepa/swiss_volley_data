@@ -114,8 +114,8 @@
           })
           .catch(()=>{})
       ));
-      // sort by group then rank
-      rows.sort((a,b)=>(a.group>b.group?1:a.group<b.group?-1:a.rank-b.rank));
+      // sort alphabetically by group
+      rows.sort((a,b)=>a.group.localeCompare(b.group));
 
       const $cont = $("#overall-rankings-container").empty();
       if (!rows.length) {
@@ -129,6 +129,7 @@
       $sec.find("table").DataTable({
         data: rows,
         columns: [
+          { data: "group",        title: "League" },
           { data: "rank",         title: "Rank" },
           { data: "teamCaption",  title: "Team" },
           { data: "points",       title: "Points" },
@@ -139,7 +140,19 @@
         paging: false,
         ordering: false,
         info: false,
-        searching: false
+        searching: false,
+        createdRow: (row, data) => {
+          $(row).css({
+            "border": "2px solid #e2e8f0",
+            "border-radius": "8px",
+            "margin": "8px 0",
+            "background-color": "#f8fafc"
+          });
+          $(row).find("td").css({
+            "padding": "16px 12px",
+            "border": "none"
+          });
+        }
       });
     }
 
@@ -212,8 +225,11 @@
         searching: false,
         createdRow:(row,data)=>{
           const iso = new Date(data.playDate).toISOString().slice(0,10);
-          if (data.teams_home_caption.includes("Wiedikon") && isSpecialDate(iso)) {
-            $(row).css("background-color","#FFD700");
+          if (data.teams_home_caption.includes("Wiedikon")) {
+            $(row).find("td").css("font-weight", "600");
+            if (isSpecialDate(iso)) {
+              $(row).css("background-color","#FFD700");
+            }
           }
         }
       });
