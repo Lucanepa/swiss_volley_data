@@ -232,6 +232,7 @@
           <option value="1394">KSC Wiedikon D4</option>
           <option value="2301">KSC Wiedikon DU23-1</option>
           <option value="14040">KSC Wiedikon DU23-2</option>
+          <option value="2743">KSC Wiedikon H1</option>
           <option value="541">KSC Wiedikon H2</option>
           <option value="12747">KSC Wiedikon H3</option>
           <option value="7563">KSC Wiedikon HU23-1</option>
@@ -343,7 +344,7 @@
           columns: [
             { data: "rank",         title: "Rank", width: "7%" },
             { data: "team_name",    title: "Team", width: "auto" },
-            { data: "group_caption",        title: "Group", width: "8%" },
+            { data: "group_caption",        title: "Group", width: "8%", defaultContent: "" },
             { data: "points",       title: "Pts", width: "7%" },
             { data: "games_played", title: "# Matches", width: "7%" },
             { data: "wins",         title: "Matches won", width: "7%" },
@@ -437,7 +438,7 @@
                 return (row.home && row.home.includes("Wiedikon")) ? "Home" : "Away";
               }
             },
-            { data: "group_caption",     title: "Group", width: "auto" },
+            { data: "group_caption",     title: "Group", width: "auto", defaultContent: "" },
             { data: "halle",     title: "Halle", width: "auto" },
             { data: "city",      title: "City", width: "auto" },
             { 
@@ -482,8 +483,8 @@
     }
 
     $(async function () {
-      // Load initial data for H3 team
-      await loadData("12747");
+      // Load initial data for the selected team (D1)
+      await loadData("1395");
 
       // Set up team selector change handler
       $("#team-selector").on("change", function() {
