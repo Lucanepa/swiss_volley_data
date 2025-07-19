@@ -148,15 +148,16 @@
         $("#rankings").DataTable({
           data: rankingData,
           columns: [
-            { data: "team_name",    title: "Team"         },
-            { data: "points",       title: "Pts"          },
-            { data: "games_played", title: "# Matches"    },
-            { data: "wins",         title: "Matches won"  },
-            { data: "defeats",      title: "Matches lost" },
-            { data: "sets_won",     title: "Sets won"     },
-            { data: "sets_lost",    title: "Sets lost"    },
-            { data: "balls_won",    title: "Balls won"    },
-            { data: "balls_lost",   title: "Balls lost"   }
+            { data: "rank",         title: "Rank", width: "60px" },
+            { data: "team_name",    title: "Team", width: "auto" },
+            { data: "points",       title: "Pts", width: "60px" },
+            { data: "games_played", title: "# Matches", width: "60px" },
+            { data: "wins",         title: "Matches won", width: "60px" },
+            { data: "defeats",      title: "Matches lost", width: "60px" },
+            { data: "sets_won",     title: "Sets won", width: "60px" },
+            { data: "sets_lost",    title: "Sets lost", width: "60px" },
+            { data: "balls_won",    title: "Balls won", width: "60px" },
+            { data: "balls_lost",   title: "Balls lost", width: "60px" }
           ],
           paging: false,
           ordering: false,
@@ -196,13 +197,17 @@
               data: null,
               render: function(data, type, row) {
                 const result = row.result || "";
-                const [homeSets, awaySets] = result.split(":").map(n => parseInt(n));
                 let home = row.home || "";
                 let away = row.away || "";
-
-                if (!isNaN(homeSets) && !isNaN(awaySets)) {
-                  if (homeSets > awaySets) home += " 🏆";
-                  else if (awaySets > homeSets) away += " 🏆";
+                
+                // Only try to split if result is a string
+                if (typeof result === 'string' && result.includes(":")) {
+                  const [homeSets, awaySets] = result.split(":").map(n => parseInt(n));
+                  
+                  if (!isNaN(homeSets) && !isNaN(awaySets)) {
+                    if (homeSets > awaySets) home += " 🏆";
+                    else if (awaySets > homeSets) away += " 🏆";
+                  }
                 }
 
                 return `${home} - ${away}`;
@@ -223,7 +228,16 @@
           ],
           createdRow: function (row, data) {
             const result = data.result || "";
-            const [homeScore, awayScore] = result.split(":").map(n => parseInt(n));
+            let homeScore = 0, awayScore = 0;
+            
+            // Only try to split if result is a string
+            if (typeof result === 'string' && result.includes(":")) {
+              const scores = result.split(":").map(n => parseInt(n));
+              if (scores.length >= 2) {
+                homeScore = scores[0];
+                awayScore = scores[1];
+              }
+            }
 
             const isHome = data.home && data.home.includes("Wiedikon");
             const wiedikonInvolved = (data.home && data.home.includes("Wiedikon")) || 
