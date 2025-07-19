@@ -2,11 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>KSC Wiedikon Rankings and Results</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Aptos:wght@300;400;500;600;700&display=swap');
     * { box-sizing: border-box; }
+    html {
+      -webkit-text-size-adjust: 100%; /* iOS Safari */
+      -ms-text-size-adjust: 100%;     /* IE Mobile */
+    }
     body { font-family: 'Aptos', sans-serif; margin:0; padding:0; background:#f0f4f8; color:#2d3748; line-height:1.6; }
     .container { max-width:1400px; margin:0 auto; padding:20px; }
     .header { text-align:center; margin-bottom:40px; background:white; border-radius:12px; padding:30px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
@@ -17,7 +22,7 @@
     .content-section h2 { margin:0 0 20px; font-size:1.6rem; font-weight:600; }
     .sub-section h3 { margin:1.5em 0 0.5em; font-size:1.25rem; font-weight:500; }
     .table-wrapper { overflow-x:auto; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
-    table.dataTable { width:100% !important; font-size:12px; border-collapse:separate; border-spacing:0; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
+    table.dataTable { width:100% !important; font-size:14px; border-collapse:separate; border-spacing:0; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
     table.dataTable thead th { background:#1e40af; color:white; font-weight:600; padding:12px 8px; text-align:left; font-size:11px; text-transform:uppercase; }
     table.dataTable tbody td { padding:10px 8px; border-bottom:1px solid #e2e8f0; transition:background-color .2s; }
     table.dataTable tbody tr:last-child td { border-bottom:none; }
@@ -93,11 +98,8 @@
       let resp = await fetch(`${RANKINGS_API}/rankings?team_id=${teamId}`);
       if (!resp.ok) return showError("#rankings-container","Rankings API error");
       const rankingData = await resp.json();
-      console.log("Ranking data:", rankingData);
-      console.log("Group captions:", rankingData.map(r => r.group_caption));
       $("#rankings-container").empty();
       const rankGroups = [...new Set(rankingData.map(r=>r.group_caption))];
-      console.log("Unique groups:", rankGroups);
       rankGroups.forEach(groupName => {
         const rows = rankingData.filter(r=>r.group_caption===groupName);
         const $sec = $(`
@@ -136,11 +138,8 @@
       resp = await fetch(`${RESULTS_API}/results?team_id=${teamId}`);
       if (!resp.ok) return showError("#results-container","Results API error");
       const resultsData = await resp.json();
-      console.log("Results data:", resultsData);
-      console.log("Results group captions:", resultsData.map(r => r.group_caption));
       $("#results-container").empty();
       const resGroups = [...new Set(resultsData.map(r=>r.group_caption))];
-      console.log("Unique result groups:", resGroups);
       resGroups.forEach(groupName => {
         const rows = resultsData.filter(r=>r.group_caption===groupName);
         const $sec = $(`
