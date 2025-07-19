@@ -8,14 +8,14 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Aptos:wght@300;400;500;600;700&display=swap');
 
     * {
       box-sizing: border-box;
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Aptos', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       margin: 0;
       padding: 0;
       background: #f8f9fa;
@@ -64,12 +64,12 @@
     }
 
     .team-selector select:hover {
-      border-color: #667eea;
+      border-color: #4a5568;
     }
 
     .team-selector select:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: #4a5568;
     }
 
     .content-section {
@@ -104,7 +104,7 @@
     }
 
     table.dataTable thead th {
-      background: #667eea;
+      background: #4a5568;
       color: white;
       font-weight: 600;
       padding: 12px 8px;
@@ -147,17 +147,17 @@
 
     .wiedikon-team {
       font-weight: 600;
-      background: #fef5e7 !important;
-      color: #d69e2e;
+      background: #f7fafc !important;
+      color: #2d3748;
     }
 
     .wiedikon-team:hover {
-      background: #fef3c7 !important;
+      background: #edf2f7 !important;
     }
 
     .error-message {
       color: #c53030;
-      background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+      background: #fed7d7;
       padding: 16px 20px;
       border-radius: 12px;
       margin: 20px 0;
@@ -226,17 +226,16 @@
       
       <div class="team-selector">
         <select id="team-selector">
-          <option value="12747">KSC Wiedikon H3</option>
-          <option value="1394">KSC Wiedikon D4</option>
-          <option value="14040">KSC Wiedikon DU23-2</option>
-          <option value="7563">KSC Wiedikon HU23-1</option>
-          <option value="1393">KSC Wiedikon D2</option>
-          <option value="541">KSC Wiedikon H2</option>
-          <option value="6023">KSC Wiedikon Legends</option>
-          <option value="4689">KSC Wiedikon D3</option>
-          <option value="2743">KSC Wiedikon H1</option>
           <option value="1395">KSC Wiedikon D1</option>
+          <option value="1393">KSC Wiedikon D2</option>
+          <option value="4689">KSC Wiedikon D3</option>
+          <option value="1394">KSC Wiedikon D4</option>
           <option value="2301">KSC Wiedikon DU23-1</option>
+          <option value="14040">KSC Wiedikon DU23-2</option>
+          <option value="541">KSC Wiedikon H2</option>
+          <option value="12747">KSC Wiedikon H3</option>
+          <option value="7563">KSC Wiedikon HU23-1</option>
+          <option value="6023">KSC Wiedikon Legends</option>
         </select>
       </div>
     </div>
