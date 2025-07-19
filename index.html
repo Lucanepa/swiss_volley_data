@@ -54,23 +54,7 @@
       white-space: normal;
     }
 
-    #rankings tbody tr:first-child {
-      background-color: #c8e6c9 !important;
-    }
-
-    #rankings tbody tr:nth-child(2) {
-      background-color: #bbdefb !important;
-    }
-
-    #rankings tbody tr:last-child {
-      background-color: #f8d7da !important;
-    }
-
-    .home-game {
-      background-color: #eeeeee !important;
-    }
-
-    .wiedikon-win {
+    .wiedikon-team {
       font-weight: bold;
     }
 
@@ -227,34 +211,11 @@
             { data: "result",    title: "Result" }
           ],
           createdRow: function (row, data) {
-            const result = data.result || "";
-            let homeScore = 0, awayScore = 0;
-            
-            // Only try to split if result is a string
-            if (typeof result === 'string' && result.includes(":")) {
-              const scores = result.split(":").map(n => parseInt(n));
-              if (scores.length >= 2) {
-                homeScore = scores[0];
-                awayScore = scores[1];
-              }
-            }
-
-            const isHome = data.home && data.home.includes("Wiedikon");
             const wiedikonInvolved = (data.home && data.home.includes("Wiedikon")) || 
                                    (data.away && data.away.includes("Wiedikon"));
 
-            if (isHome) {
-              $(row).addClass("home-game");
-            }
-
-            if (wiedikonInvolved && !isNaN(homeScore) && !isNaN(awayScore)) {
-              const wiedikonWon =
-                (data.home && data.home.includes("Wiedikon") && homeScore > awayScore) ||
-                (data.away && data.away.includes("Wiedikon") && awayScore > homeScore);
-
-              if (wiedikonWon) {
-                $(row).addClass("wiedikon-win");
-              }
+            if (wiedikonInvolved) {
+              $(row).addClass("wiedikon-team");
             }
           },
           paging: false,
