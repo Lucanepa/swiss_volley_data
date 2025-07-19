@@ -95,11 +95,11 @@
       const rankingData = await resp.json();
       $("#rankings-container").empty();
       const rankGroups = [...new Set(rankingData.map(r=>r.group_caption||"Cup"))];
-      rankGroups.forEach(group => {
-        const rows = rankingData.filter(r=>(r.group_caption||"Cup")===group);
+      rankGroups.forEach(groupName => {
+        const rows = rankingData.filter(r=>(r.group_caption||"Cup")===groupName);
         const $sec = $(`
           <div class="sub-section">
-            <h3>Ranking — ${group}</h3>
+            <h3>Ranking — ${groupName}</h3>
             <div class="table-wrapper"><table class="display"></table></div>
           </div>`);
         $("#rankings-container").append($sec);
@@ -135,11 +135,11 @@
       const resultsData = await resp.json();
       $("#results-container").empty();
       const resGroups = [...new Set(resultsData.map(r=>r.group_caption||"Cup"))];
-      resGroups.forEach(group => {
-        const rows = resultsData.filter(r=>(r.group_caption||"Cup")===group);
+      resGroups.forEach(groupName => {
+        const rows = resultsData.filter(r=>(r.group_caption||"Cup")===groupName);
         const $sec = $(`
           <div class="sub-section">
-            <h3>Results — ${group}</h3>
+            <h3>Results — ${groupName}</h3>
             <div class="table-wrapper"><table class="display"></table></div>
           </div>`);
         $("#results-container").append($sec);
