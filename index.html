@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>KSC Wiedikon Ranking and Results v2</title>
+  <title>KSC Wiedikon Ranking and Results</title>
 
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
@@ -226,7 +226,7 @@
       
       <div class="team-selector">
         <select id="team-selector">
-          <option value="1395">KSC Wiedikon D1</option>
+          <option value="1395" selected>KSC Wiedikon D1</option>
           <option value="1393">KSC Wiedikon D2</option>
           <option value="4689">KSC Wiedikon D3</option>
           <option value="1394">KSC Wiedikon D4</option>
@@ -341,16 +341,17 @@
         rankingsTable = $("#rankings").DataTable({
           data: rankingData,
           columns: [
-            { data: "rank",         title: "Rank", width: "8%" },
+            { data: "rank",         title: "Rank", width: "7%" },
             { data: "team_name",    title: "Team", width: "auto" },
-            { data: "points",       title: "Pts", width: "8%" },
-            { data: "games_played", title: "# Matches", width: "8%" },
-            { data: "wins",         title: "Matches won", width: "8%" },
-            { data: "defeats",      title: "Matches lost", width: "8%" },
-            { data: "sets_won",     title: "Sets won", width: "8%" },
-            { data: "sets_lost",    title: "Sets lost", width: "8%" },
-            { data: "balls_won",    title: "Balls won", width: "8%" },
-            { data: "balls_lost",   title: "Balls lost", width: "8%" }
+            { data: "group_caption",        title: "Group", width: "8%" },
+            { data: "points",       title: "Pts", width: "7%" },
+            { data: "games_played", title: "# Matches", width: "7%" },
+            { data: "wins",         title: "Matches won", width: "7%" },
+            { data: "defeats",      title: "Matches lost", width: "7%" },
+            { data: "sets_won",     title: "Sets won", width: "7%" },
+            { data: "sets_lost",    title: "Sets lost", width: "7%" },
+            { data: "balls_won",    title: "Balls won", width: "7%" },
+            { data: "balls_lost",   title: "Balls lost", width: "7%" }
           ],
           createdRow: function (row, data) {
             if (data.team_name && data.team_name.includes("Wiedikon")) {
@@ -436,6 +437,7 @@
                 return (row.home && row.home.includes("Wiedikon")) ? "Home" : "Away";
               }
             },
+            { data: "group_caption",     title: "Group", width: "auto" },
             { data: "halle",     title: "Halle", width: "auto" },
             { data: "city",      title: "City", width: "auto" },
             { 
