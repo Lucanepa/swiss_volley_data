@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KSC Wiedikon Rankings and Results</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
   <style>
@@ -18,64 +17,20 @@
     .content-section h2 { margin:0 0 20px; font-size:1.6rem; font-weight:600; }
     .sub-section h3 { margin:1.5em 0 0.5em; font-size:1.25rem; font-weight:500; }
     .table-wrapper { overflow-x:auto; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
-    
-    /* FIXED: More specific font size rules to prevent font explosion */
-    table.dataTable { 
-      width:100% !important; 
-      font-size:12px !important; 
-      border-collapse:separate; 
-      border-spacing:0; 
-      border-radius:12px; 
-      overflow:hidden; 
-      box-shadow:0 4px 6px rgba(0,0,0,0.05); 
-    }
-    
-    /* FIXED: Force font size on all table elements */
-    table.dataTable,
-    table.dataTable thead,
-    table.dataTable tbody,
-    table.dataTable th,
-    table.dataTable td {
-      font-size: 12px !important;
-    }
-    
-    /* FIXED: Mobile-specific font sizing */
-    @media (max-width: 768px) {
-      table.dataTable,
-      table.dataTable thead,
-      table.dataTable tbody,
-      table.dataTable th,
-      table.dataTable td {
-        font-size: 11px !important;
-      }
-    }
-    
-    table.dataTable thead th { 
-      background:#1e40af; 
-      color:white; 
-      font-weight:600; 
-      padding:12px 8px; 
-      text-align:left; 
-      font-size:11px !important; 
-      text-transform:uppercase; 
-    }
-    table.dataTable tbody td { 
-      padding:10px 8px; 
-      border-bottom:1px solid #e2e8f0; 
-      transition:background-color .2s; 
-      font-size: 12px !important;
-    }
+    table.dataTable { width:100% !important; font-size:12px; border-collapse:separate; border-spacing:0; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
+    table.dataTable thead th { background:#1e40af; color:white; font-weight:600; padding:12px 8px; text-align:left; font-size:11px; text-transform:uppercase; }
+    table.dataTable tbody td { padding:10px 8px; border-bottom:1px solid #e2e8f0; transition:background-color .2s; }
     table.dataTable tbody tr:last-child td { border-bottom:none; }
     table.dataTable tbody tr:nth-child(even) { background-color: #f8f9fa; }
     .error-message { color:#c53030; background:#fed7d7; padding:16px; border-radius:12px; margin:20px 0; border-left:4px solid #e53e3e; }
     
-    /* FIXED: Prevent DataTables from overriding font sizes */
-    .dataTables_wrapper .dataTables_length,
-    .dataTables_wrapper .dataTables_filter,
-    .dataTables_wrapper .dataTables_info,
-    .dataTables_wrapper .dataTables_processing,
-    .dataTables_wrapper .dataTables_paginate {
+    /* SIMPLE FIX: Just prevent font size from changing */
+    table.dataTable th,
+    table.dataTable td {
       font-size: 12px !important;
+    }
+    table.dataTable thead th {
+      font-size: 11px !important;
     }
   </style>
 </head>
@@ -140,7 +95,7 @@
       "1395":"KSC Wiedikon D1","2301":"KSC Wiedikon DU23-1"
     };
 
-    // FIXED: Function to destroy existing DataTables properly
+    // SIMPLE FIX: Destroy existing tables before creating new ones
     function destroyDataTables(container) {
       const tables = container.find('table.dataTable');
       tables.each(function() {
@@ -148,16 +103,6 @@
           $(this).DataTable().destroy();
         }
       });
-    }
-
-    // FIXED: Function to force font size after table creation
-    function forceFontSize(table) {
-      setTimeout(() => {
-        table.find('th, td').css('font-size', '12px !important');
-        if (window.innerWidth <= 768) {
-          table.find('th, td').css('font-size', '11px !important');
-        }
-      }, 100);
     }
 
     async function loadData(teamId) {
@@ -168,7 +113,7 @@
       if (!resp.ok) return showError("#rankings-container","Rankings API error");
       const rankingData = await resp.json();
       
-      // FIXED: Properly destroy existing tables
+      // SIMPLE FIX: Destroy existing tables
       destroyDataTables($("#rankings-container"));
       $("#rankings-container").empty();
       
@@ -182,8 +127,7 @@
            </div>`
         );
         $("#rankings-container").append($sec);
-        const $table = $sec.find("table");
-        $table.DataTable({
+        $sec.find("table").DataTable({
           data: rows,
           columns: [
             { data: "rank",       title: "Rank" },
@@ -207,9 +151,6 @@
             }
           }
         });
-        
-        // FIXED: Force font size after table creation
-        forceFontSize($table);
       });
 
       // — Results —
@@ -217,7 +158,7 @@
       if (!resp.ok) return showError("#results-container","Results API error");
       const resultsData = await resp.json();
       
-      // FIXED: Properly destroy existing tables
+      // SIMPLE FIX: Destroy existing tables
       destroyDataTables($("#results-container"));
       $("#results-container").empty();
       
@@ -231,8 +172,7 @@
            </div>`
         );
         $("#results-container").append($sec);
-        const $table = $sec.find("table");
-        $table.DataTable({
+        $sec.find("table").DataTable({
           data: rows,
           columns: [
             { data:"playDate", title:"Date", render:(d,t)=> t==="display" ? formatDate(d) : d },
@@ -250,9 +190,6 @@
             if ((d.teams_home_caption||"").includes("Wiedikon")) $(row).find("td").css("font-weight", "600");
           }
         });
-        
-        // FIXED: Force font size after table creation
-        forceFontSize($table);
       });
     }
 
