@@ -125,7 +125,7 @@
           info:      false,
           searching: false,
           createdRow: (row, data) => {
-            if (data.team_name.includes("Wiedikon")) {
+            if (data.teamCaption.includes("Wiedikon")) {
               $(row).find("td").css("font-weight", "600");
             }
           }
