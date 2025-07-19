@@ -20,6 +20,9 @@
     h1 {
       text-align: center;
       margin-bottom: 40px;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     h2 {
@@ -71,6 +74,15 @@
       font-weight: bold;
     }
 
+    .error-message {
+      color: red;
+      background-color: #ffe6e6;
+      padding: 10px;
+      border: 1px solid #ff9999;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+
     @media screen and (max-width: 768px) {
       html, body {
         overflow-x: auto;
@@ -88,6 +100,7 @@
 
   <h2>Results</h2>
   <div class="table-wrapper">
+    <div id="results-error" style="display: none;" class="error-message"></div>
     <table id="results" class="display"></table>
   </div>
 
@@ -96,16 +109,25 @@
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script>
     function formatDate(dateStr) {
-      const date = new Date(dateStr);
-      const pad = (n) => n.toString().padStart(2, "0");
+      if (!dateStr) return "";
+      
+      try {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return dateStr; // Return original if invalid date
+        
+        const pad = (n) => n.toString().padStart(2, "0");
 
-      const day = pad(date.getDate());
-      const month = pad(date.getMonth() + 1);
-      const year = date.getFullYear();
-      const hours = pad(date.getHours());
-      const minutes = pad(date.getMinutes());
+        const day = pad(date.getDate());
+        const month = pad(date.getMonth() + 1);
+        const year = date.getFullYear();
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
 
-      return `${day}/${month}/${year}<br>${hours}:${minutes}`;
+        return `${day}/${month}/${year}<br>${hours}:${minutes}`;
+      } catch (error) {
+        console.error("Error formatting date:", dateStr, error);
+        return dateStr;
+      }
     }
 
     $(async function () {
@@ -113,96 +135,126 @@
       const RESULTS_API = "https://volley-results-849246684371.europe-west6.run.app";
       const TEAM_ID = 12747;
 
-      // Rankings
-      const r = await fetch(`${RANKINGS_API}/rankings?team_id=${TEAM_ID}`);
-      const rankingData = await r.json();
+      try {
+        // Rankings
+        console.log("Fetching rankings...");
+        const r = await fetch(`${RANKINGS_API}/rankings?team_id=${TEAM_ID}`);
+        if (!r.ok) {
+          throw new Error(`Rankings API error: ${r.status} ${r.statusText}`);
+        }
+        const rankingData = await r.json();
+        console.log("Rankings data:", rankingData);
 
-      $("#rankings").DataTable({
-        data: rankingData,
-        columns: [
-          { data: "team_name",    title: "Team"         },
-          { data: "points",       title: "Pts"          },
-          { data: "games_played", title: "# Matches"    },
-          { data: "wins",         title: "Matches won"  },
-          { data: "defeats",      title: "Matches lost" },
-          { data: "sets_won",     title: "Sets won"     },
-          { data: "sets_lost",    title: "Sets lost"    },
-          { data: "balls_won",    title: "Balls won"    },
-          { data: "balls_lost",   title: "Balls lost"   }
-        ],
-        paging: false,
-        ordering: false,
-        info: false,
-        searching: false
-      });
+        $("#rankings").DataTable({
+          data: rankingData,
+          columns: [
+            { data: "team_name",    title: "Team"         },
+            { data: "points",       title: "Pts"          },
+            { data: "games_played", title: "# Matches"    },
+            { data: "wins",         title: "Matches won"  },
+            { data: "defeats",      title: "Matches lost" },
+            { data: "sets_won",     title: "Sets won"     },
+            { data: "sets_lost",    title: "Sets lost"    },
+            { data: "balls_won",    title: "Balls won"    },
+            { data: "balls_lost",   title: "Balls lost"   }
+          ],
+          paging: false,
+          ordering: false,
+          info: false,
+          searching: false
+        });
 
-      // Results
-      const q = await fetch(`${RESULTS_API}/results?team_id=${TEAM_ID}`);
-      const resultsData = await q.json();
+        // Results
+        console.log("Fetching results...");
+        const q = await fetch(`${RESULTS_API}/results?team_id=${TEAM_ID}`);
+        if (!q.ok) {
+          throw new Error(`Results API error: ${q.status} ${q.statusText}`);
+        }
+        const resultsData = await q.json();
+        console.log("Results data:", resultsData);
 
-      const resultsTable = $("#results").DataTable({
-        data: resultsData,
-        columns: [
-  {
-    data: "play_date",
-    title: "Date",
-    render: data => formatDate(data)
-  },
-  {
-    title: "Match",
-    data: function(row) {
-      const result = row.result || "";
-      const [homeSets, awaySets] = result.split(":").map(n => parseInt(n));
-      let home = row.home || "";
-      let away = row.away || "";
+        if (!Array.isArray(resultsData) || resultsData.length === 0) {
+          $("#results-error").text("No results data available").show();
+          return;
+        }
 
-      if (!isNaN(homeSets) && !isNaN(awaySets)) {
-        if (homeSets > awaySets) home += " 🏆";
-        else if (awaySets > homeSets) away += " 🏆";
-      }
+        const resultsTable = $("#results").DataTable({
+          data: resultsData,
+          columns: [
+            {
+              data: "play_date",
+              title: "Date",
+              render: function(data, type, row) {
+                if (type === 'display') {
+                  return formatDate(data);
+                }
+                return data;
+              }
+            },
+            {
+              title: "Match",
+              data: null,
+              render: function(data, type, row) {
+                const result = row.result || "";
+                const [homeSets, awaySets] = result.split(":").map(n => parseInt(n));
+                let home = row.home || "";
+                let away = row.away || "";
 
-      return `${home} - ${away}`;
-    }
-  },
-  {
-    title: "Home/Away",
-    data: function(row) {
-      return row.home.includes("Wiedikon") ? "Home" : "Away";
-    }
-  },
-  { data: "halle",     title: "Halle"     },
-  { data: "city",      title: "City"      },
-  { data: "plus_code", title: "Plus Code" },
-  { data: "referees",  title: "Referee(s)" },
-  { data: "result",    title: "Result" }
-],
+                if (!isNaN(homeSets) && !isNaN(awaySets)) {
+                  if (homeSets > awaySets) home += " 🏆";
+                  else if (awaySets > homeSets) away += " 🏆";
+                }
 
-        createdRow: function (row, data) {
-          const result = data.result || "";
-          const [homeScore, awayScore] = result.split(":").map(n => parseInt(n));
+                return `${home} - ${away}`;
+              }
+            },
+            {
+              title: "Home/Away",
+              data: null,
+              render: function(data, type, row) {
+                return (row.home && row.home.includes("Wiedikon")) ? "Home" : "Away";
+              }
+            },
+            { data: "halle",     title: "Halle"     },
+            { data: "city",      title: "City"      },
+            { data: "plus_code", title: "Plus Code" },
+            { data: "referees",  title: "Referee(s)" },
+            { data: "result",    title: "Result" }
+          ],
+          createdRow: function (row, data) {
+            const result = data.result || "";
+            const [homeScore, awayScore] = result.split(":").map(n => parseInt(n));
 
-          const isHome = data.home.includes("Wiedikon");
-          const wiedikonInvolved = data.home.includes("Wiedikon") || data.away.includes("Wiedikon");
+            const isHome = data.home && data.home.includes("Wiedikon");
+            const wiedikonInvolved = (data.home && data.home.includes("Wiedikon")) || 
+                                   (data.away && data.away.includes("Wiedikon"));
 
-          if (isHome) {
-            $(row).addClass("home-game");
-          }
-
-          if (wiedikonInvolved && !isNaN(homeScore) && !isNaN(awayScore)) {
-            const wiedikonWon =
-              (data.home.includes("Wiedikon") && homeScore > awayScore) ||
-              (data.away.includes("Wiedikon") && awayScore > homeScore);
-
-            if (wiedikonWon) {
-              $(row).addClass("wiedikon-win");
+            if (isHome) {
+              $(row).addClass("home-game");
             }
-          }
-        },
-        paging: false,
-        ordering: false,
-        info: false,
-        searching: false
-      });
+
+            if (wiedikonInvolved && !isNaN(homeScore) && !isNaN(awayScore)) {
+              const wiedikonWon =
+                (data.home && data.home.includes("Wiedikon") && homeScore > awayScore) ||
+                (data.away && data.away.includes("Wiedikon") && awayScore > homeScore);
+
+              if (wiedikonWon) {
+                $(row).addClass("wiedikon-win");
+              }
+            }
+          },
+          paging: false,
+          ordering: false,
+          info: false,
+          searching: false
+        });
+
+        console.log("Results table initialized successfully");
+
+      } catch (error) {
+        console.error("Error loading data:", error);
+        $("#results-error").text(`Error loading data: ${error.message}`).show();
+      }
     });
   </script>
 </body>
