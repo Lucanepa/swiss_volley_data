@@ -23,15 +23,6 @@
     table.dataTable tbody tr:last-child td { border-bottom:none; }
     table.dataTable tbody tr:nth-child(even) { background-color: #f8f9fa; }
     .error-message { color:#c53030; background:#fed7d7; padding:16px; border-radius:12px; margin:20px 0; border-left:4px solid #e53e3e; }
-    
-    /* SIMPLE FIX: Just prevent font size from changing */
-    table.dataTable th,
-    table.dataTable td {
-      font-size: 12px !important;
-    }
-    table.dataTable thead th {
-      font-size: 11px !important;
-    }
   </style>
 </head>
 <body>
@@ -72,6 +63,10 @@
     const RANKINGS_API = "https://volley-rankings-n72zsqdqea-oa.a.run.app";
     const RESULTS_API  = "https://volley-results-n72zsqdqea-oa.a.run.app";
 
+    // Store DataTable instances for proper cleanup
+    let rankingTables = [];
+    let resultsTables = [];
+
     function formatDate(d) {
       if (!d) return "";
       const dt = new Date(d);
@@ -95,28 +90,33 @@
       "1395":"KSC Wiedikon D1","2301":"KSC Wiedikon DU23-1"
     };
 
-    // SIMPLE FIX: Destroy existing tables before creating new ones
-    function destroyDataTables(container) {
-      const tables = container.find('table.dataTable');
-      tables.each(function() {
-        if ($.fn.DataTable.isDataTable(this)) {
-          $(this).DataTable().destroy();
+    function destroyExistingTables() {
+      // Properly destroy existing DataTables
+      rankingTables.forEach(table => {
+        if ($.fn.DataTable.isDataTable(table.node())) {
+          table.destroy();
         }
       });
+      resultsTables.forEach(table => {
+        if ($.fn.DataTable.isDataTable(table.node())) {
+          table.destroy();
+        }
+      });
+      rankingTables = [];
+      resultsTables = [];
     }
 
     async function loadData(teamId) {
+      // Destroy existing tables before creating new ones
+      destroyExistingTables();
+      
       $("#page-title").text(`${teamNames[teamId]} Rankings and Results`);
 
       // — Rankings —
       let resp = await fetch(`${RANKINGS_API}/rankings?team_id=${teamId}`);
       if (!resp.ok) return showError("#rankings-container","Rankings API error");
       const rankingData = await resp.json();
-      
-      // SIMPLE FIX: Destroy existing tables
-      destroyDataTables($("#rankings-container"));
       $("#rankings-container").empty();
-      
       const rankGroups = [...new Set(rankingData.map(r=>r.group_caption))];
       rankGroups.forEach(groupName => {
         const rows = rankingData.filter(r=>r.group_caption===groupName);
@@ -127,7 +127,7 @@
            </div>`
         );
         $("#rankings-container").append($sec);
-        $sec.find("table").DataTable({
+        const table = $sec.find("table").DataTable({
           data: rows,
           columns: [
             { data: "rank",       title: "Rank" },
@@ -151,17 +151,14 @@
             }
           }
         });
+        rankingTables.push(table);
       });
 
       // — Results —
       resp = await fetch(`${RESULTS_API}/results?team_id=${teamId}`);
       if (!resp.ok) return showError("#results-container","Results API error");
       const resultsData = await resp.json();
-      
-      // SIMPLE FIX: Destroy existing tables
-      destroyDataTables($("#results-container"));
       $("#results-container").empty();
-      
       const resGroups = [...new Set(resultsData.map(r=>r.group_caption))];
       resGroups.forEach(groupName => {
         const rows = resultsData.filter(r=>r.group_caption===groupName);
@@ -172,7 +169,7 @@
            </div>`
         );
         $("#results-container").append($sec);
-        $sec.find("table").DataTable({
+        const table = $sec.find("table").DataTable({
           data: rows,
           columns: [
             { data:"playDate", title:"Date", render:(d,t)=> t==="display" ? formatDate(d) : d },
@@ -190,6 +187,7 @@
             if ((d.teams_home_caption||"").includes("Wiedikon")) $(row).find("td").css("font-weight", "600");
           }
         });
+        resultsTables.push(table);
       });
     }
 
@@ -205,4 +203,4 @@
     });
   </script>
 </body>
-</html> 
+</html>
