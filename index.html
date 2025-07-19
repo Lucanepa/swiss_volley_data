@@ -103,13 +103,30 @@
 
         const day = pad(date.getDate());
         const month = pad(date.getMonth() + 1);
-        const year = date.getFullYear();
+        const year = date.getFullYear().toString().slice(-2); // Get last 2 digits
+
+        return `${day}.${month}.${year}`;
+      } catch (error) {
+        console.error("Error formatting date:", dateStr, error);
+        return dateStr;
+      }
+    }
+
+    function formatTime(dateStr) {
+      if (!dateStr) return "";
+      
+      try {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return dateStr; // Return original if invalid date
+        
+        const pad = (n) => n.toString().padStart(2, "0");
+
         const hours = pad(date.getHours());
         const minutes = pad(date.getMinutes());
 
-        return `${day}/${month}/${year}<br>${hours}:${minutes}`;
+        return `${hours}:${minutes}`;
       } catch (error) {
-        console.error("Error formatting date:", dateStr, error);
+        console.error("Error formatting time:", dateStr, error);
         return dateStr;
       }
     }
@@ -182,20 +199,22 @@
               }
             },
             {
+              data: "play_date",
+              title: "Time",
+              render: function(data, type, row) {
+                if (type === 'display') {
+                  return formatTime(data);
+                }
+                return data;
+              }
+            },
+            {
               title: "Match",
               data: null,
               render: function(data, type, row) {
                 const result = row.result || "";
                 let home = row.home || "";
                 let away = row.away || "";
-                
-                // Make Wiedikon team bold
-                if (home.includes("Wiedikon")) {
-                  home = `<strong>${home}</strong>`;
-                }
-                if (away.includes("Wiedikon")) {
-                  away = `<strong>${away}</strong>`;
-                }
                 
                 // Only try to split if result is a string
                 if (typeof result === 'string' && result.includes(":")) {
@@ -219,7 +238,16 @@
             },
             { data: "halle",     title: "Halle"     },
             { data: "city",      title: "City"      },
-            { data: "plus_code", title: "Plus Code" },
+            { 
+              data: "plus_code", 
+              title: "Plus Code",
+              render: function(data, type, row) {
+                if (type === 'display' && data) {
+                  return `<a href="https://maps.google.com/?q=${encodeURIComponent(data)}" target="_blank">${data}</a>`;
+                }
+                return data;
+              }
+            },
             { data: "referees",  title: "Referee(s)" },
             { data: "result",    title: "Result" }
           ],
