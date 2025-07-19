@@ -25,7 +25,7 @@
       width:100% !important;
       font-size:12px;
       border-collapse: separate;
-      border-spacing: 0 0.75rem;
+      border-spacing: 0 0.75rem; /* vertical gap */
     }
 
     table.dataTable thead th {
@@ -61,7 +61,7 @@
       border-bottom: none;
     }
 
-    /* Prevent the Team column from wrapping, let it size to its content */
+    /* Prevent the Team column from wrapping */
     table.dataTable th:nth-child(3),
     table.dataTable td:nth-child(3) {
       white-space: nowrap;
@@ -144,9 +144,10 @@
           .then(r => r.ok ? r.json() : [])
           .then(data => {
             const caption = teamNames[id];
-            const entry = data
-              .filter(r => r.teamCaption === caption && r.group_caption && !r.group_caption.toLowerCase().includes("cup"))
-              .shift();
+            const entry = data.find(r =>
+              r.teamCaption===caption &&
+              r.group_caption && !r.group_caption.toLowerCase().includes("cup")
+            );
             if (entry) {
               rows.push({
                 group:       entry.group_caption,
@@ -162,12 +163,11 @@
           .catch(()=>{})
       ));
 
-      const filtered = rows.sort((a,b)=>a.group.localeCompare(b.group) || a.rank - b.rank);
+      rows.sort((a,b)=>a.group.localeCompare(b.group) || a.rank - b.rank);
 
       const $cont = $("#overall-rankings-container").empty();
-      if (!filtered.length) {
-        $cont.html(`<div class="error-message">No rankings data available.</div>`);
-        return;
+      if (!rows.length) {
+        return $cont.html(`<div class="error-message">No rankings data available.</div>`);
       }
 
       const $sec = $(`
@@ -178,8 +178,8 @@
       $cont.append($sec);
 
       $sec.find("table").DataTable({
-        data: filtered,
-        autoWidth: true,  // let DataTables respect our width hints but still size dynamically
+        data:        rows,
+        autoWidth:   true,
         columns: [
           { data: "group",       visible: false },
           { data: "rank",        title: "Rank" },
@@ -190,14 +190,13 @@
           { data: "defeats",     title: "Matches lost" }
         ],
         columnDefs: [
-          // equally divide the 5 non-team columns
           { width: '16.6667%', targets: [1, 3, 4, 5, 6] }
         ],
-        rowGroup: { dataSrc: "group" },
-        paging:    false,
-        ordering:  false,
-        info:      false,
-        searching: false,
+        rowGroup:   { dataSrc: "group" },
+        paging:     false,
+        ordering:   false,
+        info:       false,
+        searching:  false,
         createdRow: (row) => {
           $(row).css({
             "border":           "2px solid #e2e8f0",
@@ -212,7 +211,110 @@
     }
 
     async function loadNextGames() {
-      /* existing loadNextGames code unchanged */
+      // 1) Fetch all teams' fixtures and dedupe
+      const all = await Promise.all(TEAM_IDS.map(id =>
+        fetch(`${RESULTS_API}/results?team_id=${id}`)
+          .then(r=>r.ok?r.json():[])
+          .catch(()=>[])
+      ));
+      const map = new Map();
+      all.flat().forEach(r => {
+        const key = `${r.playDate}|${r.teams_home_caption}|${r.teams_away_caption}`;
+        if (!map.has(key)) map.set(key, r);
+      });
+      const combined = Array.from(map.values());
+
+      // 2) Filter future games, sort
+      const now      = new Date();
+      const upcoming = combined
+        .filter(r => new Date(r.playDate) >= now)
+        .sort((a,b) => new Date(a.playDate) - new Date(b.playDate));
+
+      // 3) Determine date‑blocks based on selector N
+      const N   = parseInt($("#block-selector").val(),10);
+      const seen = new Set();
+      for (const g of upcoming) {
+        const iso = new Date(g.playDate).toISOString().slice(0,10);
+        if (seen.size < N) seen.add(iso);
+        else break;
+      }
+      const filtered = upcoming.filter(g =>
+        seen.has(new Date(g.playDate).toISOString().slice(0,10))
+      );
+
+      // 4) Render or “no data” message
+      const $cont = $("#results-container").empty();
+      if (!filtered.length) {
+        return $cont.html(`<div class="error-message">No upcoming games found.</div>`);
+      }
+
+      const $sec = $(`
+        <div class="sub-section">
+          <h3>Next ${seen.size} date block(s)</h3>
+          <div class="table-wrapper">
+            <table id="upcoming-games" class="display"></table>
+          </div>
+        </div>
+      `);
+      $cont.append($sec);
+
+      // 5) Initialize DataTable
+      $sec.find("table").DataTable({
+        data: filtered,
+        columns: [
+          {
+            data:   "playDate",
+            title:  "Date",
+            render: (d,t) => t==="display" ? formatDate(d) : d
+          },
+          {
+            data:   "playDate",
+            title:  "Time",
+            render: (d,t) => t==="display" ? formatTime(d) : d
+          },
+          {
+            data:   null,
+            title:  "Match",
+            render: (_,__,r) => `${r.teams_home_caption} – ${r.teams_away_caption}`
+          },
+          { data: "hall_caption", title: "Halle" },
+          { data: "hall_city",    title: "City" },
+          {
+            data:   "hall_plusCode",
+            title:  "Plus Code",
+            render: d => d ? `<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>` : ""
+          },
+          { data: "referees",     title: "Referee(s)" },
+          {
+            data:  null,
+            title: "Event",
+            render: (_,__,r) => {
+              const iso    = new Date(r.playDate).toISOString().slice(0,10);
+              const isHome = r.teams_home_caption.includes("Wiedikon");
+              const flags  = [];
+              if (isHome && isSpecialDate(iso)) {
+                flags.push("Spielsamstag");
+              } else if (isHome) {
+                flags.push(`<span class="cheer">🚩 Come and cheer!</span>`);
+              }
+              return flags.join(" • ");
+            }
+          }
+        ],
+        paging:    false,
+        ordering:  false,
+        info:      false,
+        searching: false,
+        createdRow: (row, data) => {
+          const iso = new Date(data.playDate).toISOString().slice(0,10);
+          if (data.teams_home_caption.includes("Wiedikon")) {
+            $(row).find("td").css("font-weight", "600");
+            if (isSpecialDate(iso)) {
+              $(row).css("background-color","#FFD700");
+            }
+          }
+        }
+      });
     }
 
     $(function(){
