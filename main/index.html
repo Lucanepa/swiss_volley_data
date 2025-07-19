@@ -100,9 +100,14 @@
           .then(data => {
             const caption = teamNames[id];
             console.log(`Team ${id} (${caption}):`, data);
-            const found = data.find(r=>r.teamCaption===caption);
-            console.log(`Found for ${caption}:`, found);
-            if (found && found.group_caption) {
+            const allMatches = data.filter(r=>r.teamCaption===caption);
+            console.log(`All matches for ${caption}:`, allMatches);
+            
+            // Find the non-Cup entry
+            const found = allMatches.find(r => r.group_caption && !r.group_caption.toLowerCase().includes("cup"));
+            console.log(`Non-cup entry for ${caption}:`, found);
+            
+            if (found) {
               console.log(`Adding ${caption} with group: ${found.group_caption}`);
               rows.push({
                 group: found.group_caption,
@@ -114,7 +119,7 @@
                 defeats:found.defeats
               });
             } else {
-              console.log(`Skipping ${caption}: found=${!!found}, group_caption=${found?.group_caption}`);
+              console.log(`Skipping ${caption}: no non-cup entry found`);
             }
           })
           .catch(err => console.log(`Error for team ${id}:`, err))
