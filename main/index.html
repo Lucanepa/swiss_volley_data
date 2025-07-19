@@ -120,12 +120,17 @@
       "1395":"KSC Wiedikon D1","2301":"KSC Wiedikon DU23-1"
     };
 
-    function formatDate(d) {
+    // helper to format as "Weekday, dd.mm.yy"
+    function formatDateWithDay(d) {
       const dt = new Date(d);
-      if (isNaN(dt)) return d||"";
-      const p = n=>n.toString().padStart(2,"0");
-      return `${p(dt.getDate())}.${p(dt.getMonth()+1)}.${dt.getFullYear().toString().slice(-2)}`;
+      if (isNaN(dt)) return d || "";
+      const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const dayName = weekdays[dt.getDay()];
+      const p = n => n.toString().padStart(2, "0");
+      const shortYear = dt.getFullYear().toString().slice(-2);
+      return `${dayName}, ${p(dt.getDate())}.${p(dt.getMonth()+1)}.${shortYear}`;
     }
+
     function formatTime(d) {
       const dt = new Date(d);
       if (isNaN(dt)) return d||"";
@@ -140,8 +145,7 @@
       const rows = [];
       await Promise.all(TEAM_IDS.map(id =>
         fetch(`${RANKINGS_API}/rankings?team_id=${id}`)
-          .then(r=>r.ok?r.json():[])
-          .then(data=>{
+          .then(r=>r.ok?r.json():[]).then(data=>{
             const cap = teamNames[id];
             const e = data.find(r=>
               r.teamCaption===cap &&
@@ -234,7 +238,6 @@
 
       const $tbl = $(`
         <div class="sub-section">
-        
           <div class="table-wrapper">
             <table id="upcoming-games" class="display"></table>
           </div>
@@ -246,34 +249,39 @@
         data: filtered,
         columns: [
           {
-            data: "playDate", title: "Date",
-            render: (d,t)=> t==="display" ? formatDate(d) : d
+            data: "playDate",
+            title: "Date",
+            render: (d, type) =>
+              type === "display"
+                ? formatDateWithDay(d)
+                : d
           },
           {
-            data: "playDate", title: "Time",
+            data: "playDate",
+            title: "Time",
             render: (d,t)=> t==="display" ? formatTime(d) : d
           },
           {
-            data: null, title: "Match",
+            data: null,
+            title: "Match",
             render: (_,__,r)=>`${r.teams_home_caption} – ${r.teams_away_caption}`
           },
           { data: "hall_caption", title: "Halle" },
           { data: "hall_city",    title: "City" },
           {
-            data: "hall_plusCode", title: "Plus Code",
+            data: "hall_plusCode",
+            title: "Plus Code",
             render: d => {
-    if (!d) return "";
-    // 1) insert the '+' between halves
-    const code = d.trim().replace(/\s+/g, "+");
-    // 2) percent‑encode it so '+' → '%2B'
-    const url = "https://www.google.com/maps/search/?api=1&query="
-                + encodeURIComponent(code);
-    return `<a href="${url}" target="_blank">${d}</a>`;
-  }
-            
+              if (!d) return "";
+              const code = d.trim().replace(/\s+/g, "+");
+              const url = "https://www.google.com/maps/search/?api=1&query="
+                          + encodeURIComponent(code);
+              return `<a href="${url}" target="_blank">${d}</a>`;
+            }
           },
           {
-            data: null, title: "Event",
+            data: null,
+            title: "Event",
             render: (_,__,r)=>{
               const iso = new Date(r.playDate).toISOString().slice(0,10);
               const isHome = r.teams_home_caption.includes("Wiedikon");
