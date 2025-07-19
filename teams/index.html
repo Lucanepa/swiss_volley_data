@@ -67,16 +67,16 @@
       if (!d) return "";
       const dt = new Date(d);
       if (isNaN(dt)) return d;
-      const pad = n => n.toString().padStart(2,"0");
-      return ${pad(dt.getDate())}.${pad(dt.getMonth()+1)}.${dt.getFullYear().toString().slice(-2)};
+      const pad = n => n.toString().padStart(2, "0");
+      return `${pad(dt.getDate())}.${pad(dt.getMonth()+1)}.${dt.getFullYear().toString().slice(-2)}`;
     }
     
     function formatTime(d) {
       if (!d) return "";
       const dt = new Date(d);
       if (isNaN(dt)) return d;
-      const pad = n => n.toString().padStart(2,"0");
-      return ${pad(dt.getHours())}:${pad(dt.getMinutes())};
+      const pad = n => n.toString().padStart(2, "0");
+      return `${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
     }
 
     const teamNames = {
@@ -87,42 +87,40 @@
     };
 
     async function loadData(teamId) {
-      $("#page-title").text(${teamNames[teamId]} Rankings and Results);
+      $("#page-title").text(`${teamNames[teamId]} Rankings and Results`);
 
       // — Rankings —
-      let resp = await fetch(${RANKINGS_API}/rankings?team_id=${teamId});
+      let resp = await fetch(`${RANKINGS_API}/rankings?team_id=${teamId}`);
       if (!resp.ok) return showError("#rankings-container","Rankings API error");
       const rankingData = await resp.json();
-      console.log("Ranking data:", rankingData);
-      console.log("Group captions:", rankingData.map(r => r.group_caption));
       $("#rankings-container").empty();
       const rankGroups = [...new Set(rankingData.map(r=>r.group_caption))];
-      console.log("Unique groups:", rankGroups);
       rankGroups.forEach(groupName => {
         const rows = rankingData.filter(r=>r.group_caption===groupName);
         const $sec = $(
-          <div class="sub-section">
-            <h3>Ranking — ${groupName || "Error: no group name"}</h3>
-            <div class="table-wrapper"><table class="display"></table></div>
-          </div>);
+          `<div class="sub-section">
+             <h3>Ranking — ${groupName || "Error: no group name"}</h3>
+             <div class="table-wrapper"><table class="display"></table></div>
+           </div>`
+        );
         $("#rankings-container").append($sec);
         $sec.find("table").DataTable({
           data: rows,
           columns: [
-            { data: "rank",           title: "Rank" },
-            { data: "teamCaption",      title: "Team" },
-            { data: "points",         title: "Points" },
-            { data: "games",          title: "# Matches" },
-            { data: "wins",           title: "Matches won" },
-            { data: "defeats",        title: "Matches lost" },
-            { data: "setsWon",        title: "Sets won" },
-            { data: "setsLost",       title: "Sets lost" },
-            { data: "ballsWon",       title: "Balls won" },
-            { data: "ballsLost",      title: "Balls lost" }
+            { data: "rank",       title: "Rank" },
+            { data: "teamCaption", title: "Team" },
+            { data: "points",     title: "Points" },
+            { data: "games",      title: "# Matches" },
+            { data: "wins",       title: "Matches won" },
+            { data: "defeats",    title: "Matches lost" },
+            { data: "setsWon",    title: "Sets won" },
+            { data: "setsLost",   title: "Sets lost" },
+            { data: "ballsWon",   title: "Balls won" },
+            { data: "ballsLost",  title: "Balls lost" }
           ],
-          paging:    false,
-          ordering:  false,
-          info:      false,
+          paging: false,
+          ordering: false,
+          info: false,
           searching: false,
           createdRow: (row, data) => {
             if (data.teamCaption.includes("Wiedikon")) {
@@ -133,36 +131,34 @@
       });
 
       // — Results —
-      resp = await fetch(${RESULTS_API}/results?team_id=${teamId});
+      resp = await fetch(`${RESULTS_API}/results?team_id=${teamId}`);
       if (!resp.ok) return showError("#results-container","Results API error");
       const resultsData = await resp.json();
-      console.log("Results data:", resultsData);
-      console.log("Results group captions:", resultsData.map(r => r.group_caption));
       $("#results-container").empty();
       const resGroups = [...new Set(resultsData.map(r=>r.group_caption))];
-      console.log("Unique result groups:", resGroups);
       resGroups.forEach(groupName => {
         const rows = resultsData.filter(r=>r.group_caption===groupName);
         const $sec = $(
-          <div class="sub-section">
-            <h3>Results — ${groupName || "Error: no group name"}</h3>
-            <div class="table-wrapper"><table class="display"></table></div>
-          </div>);
+          `<div class="sub-section">
+             <h3>Results — ${groupName || "Error: no group name"}</h3>
+             <div class="table-wrapper"><table class="display"></table></div>
+           </div>`
+        );
         $("#results-container").append($sec);
         $sec.find("table").DataTable({
           data: rows,
           columns: [
-            {data:"playDate",title:"Date",render:(d,t)=>t==="display"?formatDate(d):d},
-            {data:"playDate",title:"Time",render:(d,t)=>t==="display"?formatTime(d):d},
-            {data:null,title:"Match",render:(_,__,r)=>${r.teams_home_caption} – ${r.teams_away_caption}},
-            {data:null,title:"Home/Away",render:(_,__,r)=>r.teams_home_caption.includes("Wiedikon")?"Home":"Away"},
-            {data:"hall_caption",title:"Halle"},
-            {data:"hall_city",title:"City"},
-            {data:"hall_plusCode",title:"Plus Code",render:d=>d?<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>:""},
-            {data:"referees",title:"Referee(s)"},
-            {data:"resultSummary",title:"Result",render:d=>Array.isArray(d)?d.join(", "):d}
+            { data:"playDate", title:"Date", render:(d,t)=> t==="display" ? formatDate(d) : d },
+            { data:"playDate", title:"Time", render:(d,t)=> t==="display" ? formatTime(d) : d },
+            { data:null, title:"Match", render:(_,__,r)=> `${r.teams_home_caption} – ${r.teams_away_caption}` },
+            { data:null, title:"Home/Away", render:(_,__,r)=> r.teams_home_caption.includes("Wiedikon") ? "Home" : "Away" },
+            { data:"hall_caption", title:"Halle" },
+            { data:"hall_city", title:"City" },
+            { data:"hall_plusCode", title:"Plus Code", render:d=> d ? `<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>` : "" },
+            { data:"referees", title:"Referee(s)" },
+            { data:"resultSummary", title:"Result", render:d=> Array.isArray(d) ? d.join(", ") : d }
           ],
-          paging:false,ordering:false,info:false,searching:false,
+          paging:false, ordering:false, info:false, searching:false,
           createdRow:(row,d)=> {
             if ((d.teams_home_caption||"").includes("Wiedikon")) $(row).find("td").css("font-weight", "600");
           }
@@ -170,8 +166,8 @@
       });
     }
 
-    function showError(selector,msg) {
-      $(selector).html(<div class="error-message">${msg}</div>);
+    function showError(selector, msg) {
+      $(selector).html(`<div class="error-message">${msg}</div>`);
     }
 
     $(async function() {
