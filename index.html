@@ -2,228 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>KSC Wiedikon Ranking and Results</title>
-
-  <!-- DataTables CSS -->
+  <title>KSC Wiedikon Rankings and Results</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
-
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Aptos:wght@300;400;500;600;700&display=swap');
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Aptos', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f0f4f8;
-      min-height: 100vh;
-      color: #2d3748;
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 40px;
-      background: white;
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-      margin: 0 0 20px 0;
-      font-size: 2.2rem;
-      font-weight: 600;
-      color: #2d3748;
-    }
-
-    .team-selector {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .team-selector select {
-      padding: 10px 16px;
-      font-size: 16px;
-      font-weight: 500;
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      background: white;
-      cursor: pointer;
-      min-width: 280px;
-      transition: border-color 0.2s ease;
-    }
-
-    .team-selector select:hover {
-      border-color: #1e40af;
-    }
-
-    .team-selector select:focus {
-      outline: none;
-      border-color: #1e40af;
-    }
-
-    .content-section {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 25px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
-      margin: 0 0 20px 0;
-      font-size: 1.6rem;
-      font-weight: 600;
-      color: #2d3748;
-    }
-
-    .table-wrapper {
-      overflow-x: auto;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    table.dataTable {
-      width: 100% !important;
-      font-size: 12px;
-      border-collapse: separate;
-      border-spacing: 0;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    table.dataTable thead th {
-      background: #1e40af;
-      color: white;
-      font-weight: 600;
-      padding: 12px 8px;
-      text-align: left;
-      border: none;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    table.dataTable tbody td {
-      padding: 10px 8px;
-      border-bottom: 1px solid #e2e8f0;
-      background: white;
-      transition: background-color 0.2s ease;
-    }
-
-    table.dataTable tbody tr:hover td {
-      background-color: #f7fafc;
-    }
-
-    table.dataTable tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    /* Prevent wrapping for date and time columns */
-    table.dataTable th:nth-child(1),
-    table.dataTable th:nth-child(2),
-    table.dataTable td:nth-child(1),
-    table.dataTable td:nth-child(2) {
-      white-space: nowrap;
-      min-width: 80px;
-    }
-
-    /* Prevent wrapping for rankings table headers */
-    #rankings table.dataTable th {
-      white-space: nowrap;
-      min-width: 60px;
-    }
-
-    .wiedikon-team {
-      font-weight: 600;
-      background: #fef3c7 !important;
-      color: #92400e;
-    }
-
-    .wiedikon-team:hover {
-      background: #fde68a !important;
-    }
-
-    .error-message {
-      color: #c53030;
-      background: #fed7d7;
-      padding: 16px 20px;
-      border-radius: 12px;
-      margin: 20px 0;
-      border-left: 4px solid #e53e3e;
-      font-weight: 500;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-
-
-    /* Responsive design */
-    @media screen and (max-width: 768px) {
-      .container {
-        padding: 15px;
-      }
-
-      .header {
-        padding: 20px;
-        margin-bottom: 20px;
-      }
-
-      h1 {
-        font-size: 2rem;
-      }
-
-      .content-section {
-        padding: 20px;
-        margin-bottom: 20px;
-      }
-
-      h2 {
-        font-size: 1.5rem;
-      }
-
-      .team-selector select {
-        min-width: 250px;
-        font-size: 14px;
-      }
-
-      table.dataTable {
-        font-size: 11px;
-      }
-
-      table.dataTable thead th,
-      table.dataTable tbody td {
-        padding: 8px 6px;
-      }
-    }
-
-    @media screen and (max-width: 480px) {
-      h1 {
-        font-size: 1.8rem;
-      }
-
-      .team-selector select {
-        min-width: 200px;
-        font-size: 13px;
-      }
-    }
+    * { box-sizing: border-box; }
+    body { font-family: 'Aptos', sans-serif; margin:0; padding:0; background:#f0f4f8; color:#2d3748; line-height:1.6; }
+    .container { max-width:1400px; margin:0 auto; padding:20px; }
+    .header { text-align:center; margin-bottom:40px; background:white; border-radius:12px; padding:30px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    h1 { margin:0 0 20px; font-size:2.2rem; font-weight:600; }
+    .team-selector { text-align:center; margin-bottom:30px; }
+    .team-selector select { padding:10px 16px; font-size:16px; font-weight:500; border:2px solid #e2e8f0; border-radius:8px; background:white; cursor:pointer; min-width:280px; }
+    .content-section { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .content-section h2 { margin:0 0 20px; font-size:1.6rem; font-weight:600; }
+    .sub-section h3 { margin:1.5em 0 0.5em; font-size:1.25rem; font-weight:500; }
+    .table-wrapper { overflow-x:auto; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
+    table.dataTable { width:100% !important; font-size:12px; border-collapse:separate; border-spacing:0; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
+    table.dataTable thead th { background:#1e40af; color:white; font-weight:600; padding:12px 8px; text-align:left; font-size:11px; text-transform:uppercase; }
+    table.dataTable tbody td { padding:10px 8px; border-bottom:1px solid #e2e8f0; transition:background-color .2s; }
+    table.dataTable tbody tr:last-child td { border-bottom:none; }
+    .wiedikon-team { font-weight:600; background:#fef3c7!important; color:#92400e; }
+    .error-message { color:#c53030; background:#fed7d7; padding:16px; border-radius:12px; margin:20px 0; border-left:4px solid #e53e3e; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1 id="page-title">KSC Wiedikon Ranking and Results</h1>
-      
+      <h1 id="page-title">KSC Wiedikon Rankings and Results</h1>
       <div class="team-selector">
         <select id="team-selector">
           <option value="1395" selected>KSC Wiedikon D1</option>
@@ -235,222 +40,131 @@
           <option value="2743">KSC Wiedikon H1</option>
           <option value="541">KSC Wiedikon H2</option>
           <option value="12747">KSC Wiedikon H3</option>
-          <option value="7563">KSC Wiedikon HU23-1</option>
           <option value="6023">KSC Wiedikon Legends</option>
+          <option value="7563">KSC Wiedikon HU23-1</option>
         </select>
       </div>
     </div>
 
     <div class="content-section">
       <h2>Rankings</h2>
-      <div class="table-wrapper">
-        <table id="rankings" class="display"></table>
-      </div>
+      <div id="rankings-container"></div>
     </div>
 
     <div class="content-section">
       <h2>Results</h2>
-      <div class="table-wrapper">
-        <div id="results-error" style="display: none;" class="error-message"></div>
-        <table id="results" class="display"></table>
-      </div>
+      <div id="results-container"></div>
     </div>
   </div>
 
-  <!-- jQuery & DataTables JS -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script>
-    function formatDate(dateStr) {
-      if (!dateStr) return "";
-      
-      try {
-        const date = new Date(dateStr);
-        if (isNaN(date.getTime())) return dateStr; // Return original if invalid date
-        
-        const pad = (n) => n.toString().padStart(2, "0");
-
-        const day = pad(date.getDate());
-        const month = pad(date.getMonth() + 1);
-        const year = date.getFullYear().toString().slice(-2); // Get last 2 digits
-
-        return `${day}.${month}.${year}`;
-      } catch (error) {
-        console.error("Error formatting date:", dateStr, error);
-        return dateStr;
-      }
-    }
-
-    function formatTime(dateStr) {
-      if (!dateStr) return "";
-      
-      try {
-        const date = new Date(dateStr);
-        if (isNaN(date.getTime())) return dateStr; // Return original if invalid date
-        
-        const pad = (n) => n.toString().padStart(2, "0");
-
-        const hours = pad(date.getHours());
-        const minutes = pad(date.getMinutes());
-
-        return `${hours}:${minutes}`;
-      } catch (error) {
-        console.error("Error formatting time:", dateStr, error);
-        return dateStr;
-      }
-    }
-
-    let rankingsTable, resultsTable;
     const RANKINGS_API = "https://volley-rankings-n72zsqdqea-oa.a.run.app";
-    const RESULTS_API = "https://volley-results-n72zsqdqea-oa.a.run.app";
-    
+    const RESULTS_API  = "https://volley-results-n72zsqdqea-oa.a.run.app";
+
+    function formatDate(d) {
+      if (!d) return "";
+      const dt = new Date(d);
+      if (isNaN(dt)) return d;
+      const pad = n => n.toString().padStart(2,"0");
+      return `${pad(dt.getDate())}.${pad(dt.getMonth()+1)}.${dt.getFullYear().toString().slice(-2)}`;
+    }
+    function formatTime(d) {
+      if (!d) return "";
+      const dt = new Date(d);
+      if (isNaN(dt)) return d;
+      const pad = n => n.toString().padStart(2,"0");
+      return `${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+    }
+
     const teamNames = {
-      "12747": "KSC Wiedikon H3",
-      "1394": "KSC Wiedikon D4",
-      "14040": "KSC Wiedikon DU23-2",
-      "7563": "KSC Wiedikon HU23-1",
-      "1393": "KSC Wiedikon D2",
-      "541": "KSC Wiedikon H2",
-      "6023": "KSC Wiedikon Legends",
-      "4689": "KSC Wiedikon D3",
-      "2743": "KSC Wiedikon H1",
-      "1395": "KSC Wiedikon D1",
-      "2301": "KSC Wiedikon DU23-1"
+      "12747":"KSC Wiedikon H3","1394":"KSC Wiedikon D4","14040":"KSC Wiedikon DU23-2",
+      "7563":"KSC Wiedikon HU23-1","1393":"KSC Wiedikon D2","541":"KSC Wiedikon H2",
+      "6023":"KSC Wiedikon Legends","4689":"KSC Wiedikon D3","2743":"KSC Wiedikon H1",
+      "1395":"KSC Wiedikon D1","2301":"KSC Wiedikon DU23-1"
     };
 
     async function loadData(teamId) {
-      try {
-        const teamName = teamNames[teamId];
-        $("#page-title").text(`${teamName} Ranking and Results`);
-        $("#results-error").hide();
-        
+      $("#page-title").text(`${teamNames[teamId]} Rankings and Results`);
 
-
-        // Rankings
-        console.log("Fetching rankings...");
-        const r = await fetch(`${RANKINGS_API}/rankings?team_id=${teamId}`);
-        if (!r.ok) {
-          throw new Error(`Rankings API error: ${r.status} ${r.statusText}`);
-        }
-        const rankingData = await r.json();
-        console.log("Rankings data:", rankingData);
-
-        if (rankingsTable) {
-          rankingsTable.destroy();
-        }
-
-        rankingsTable = $("#rankings").DataTable({
-          data: rankingData,
+      // — Rankings —
+      let resp = await fetch(`${RANKINGS_API}/rankings?team_id=${teamId}`);
+      if (!resp.ok) return showError("#rankings-container","Rankings API error");
+      const rankingData = await resp.json();
+      $("#rankings-container").empty();
+      const rankGroups = [...new Set(rankingData.map(r=>r.group_caption||""))];
+      rankGroups.forEach(group => {
+        const rows = rankingData.filter(r=>r.group_caption===group);
+        const $sec = $(`
+          <div class="sub-section">
+            <h3>Ranking — ${group||"No group"}</h3>
+            <div class="table-wrapper"><table class="display"></table></div>
+          </div>`);
+        $("#rankings-container").append($sec);
+        $sec.find("table").DataTable({
+          data: rows,
           columns: [
-            { data: "rank",         title: "Rank", width: "7%" },
-            { data: "teamCaption",    title: "Team", width: "auto" },
-            { data: "group_caption",        title: "Group", width: "8%", defaultContent: "" },
-            { data: "points",       title: "Pts", width: "7%" },
-            { data: "games", title: "# Matches", width: "7%" },
-            { data: "wins",         title: "Matches won", width: "7%" },
-            { data: "defeats",      title: "Matches lost", width: "7%" },
-            { data: "setsWon",     title: "Sets won", width: "7%" },
-            { data: "setsLost",    title: "Sets lost", width: "7%" },
-            { data: "ballsWon",    title: "Balls won", width: "7%" },
-            { data: "ballsLost",   title: "Balls lost", width: "7%" }
+            {data:"rank",title:"Rank"},
+            {data:"team_name",title:"Team"},
+            {data:"group_caption",title:"Group"},
+            {data:"points",title:"Pts"},
+            {data:"games_played",title:"# Matches"},
+            {data:"wins",title:"Matches won"},
+            {data:"defeats",title:"Matches lost"},
+            {data:"sets_won",title:"Sets won"},
+            {data:"sets_lost",title:"Sets lost"},
+            {data:"balls_won",title:"Balls won"},
+            {data:"balls_lost",title:"Balls lost"}
           ],
-          createdRow: function (row, data) {
-            if (data.team_name && data.team_name.includes("Wiedikon")) {
-              $(row).addClass("wiedikon-team");
-            }
-          },
-          paging: false,
-          ordering: false,
-          info: false,
-          searching: false
+          paging:false,ordering:false,info:false,searching:false,
+          createdRow:(row,data)=>data.team_name.includes("Wiedikon")&&$(row).addClass("wiedikon-team")
         });
-
-        // Results
-        console.log("Fetching results...");
-        const q = await fetch(`${RESULTS_API}/results?team_id=${teamId}`);
-        if (!q.ok) {
-          throw new Error(`Results API error: ${q.status} ${q.statusText}`);
-        }
-        const resultsData = await q.json();
-        console.log("Results data:", resultsData);
-
-        if (resultsTable) {
-          resultsTable.destroy();
-        }
-
-        if (!Array.isArray(resultsData) || resultsData.length === 0) {
-          $("#results-error").text("No results data available").show();
-          return;
-        }
-
-        resultsTable = $("#results").DataTable({
-  data: resultsData,
-  columns: [
-    {
-      data: "playDate",
-      title: "Date",
-      render: (data, type) => type === "display" ? formatDate(data) : data
-    },
-    {
-      data: "playDate",
-      title: "Time",
-      render: (data, type) => type === "display" ? formatTime(data) : data
-    },
-    {
-      title: "Match",
-      data: null,
-      render: (data, type, row) => {
-        const home = row.teams_home_caption;
-        const away = row.teams_away_caption;
-        // optionally add trophies based on resultSummary or setResults
-        return `${home} – ${away}`;
-      }
-    },
-    {
-      title: "Home/Away",
-      data: null,
-      render: (_, __, row) => row.teams_home_caption.includes("Wiedikon") ? "Home" : "Away"
-    },
-    { data: "group_caption", title: "Group" },
-    { data: "hall_caption",  title: "Halle" },
-    { data: "hall_city",     title: "City" },
-    { 
-      data: "hall_plusCode", 
-      title: "Plus Code",
-      render: (data, type) => type === "display" && data
-        ? `<a href="https://maps.google.com/?q=${encodeURIComponent(data)}" target="_blank">${data}</a>`
-        : data
-    },
-    { data: "referees",      title: "Referee(s)" },
-    { 
-      data: "resultSummary", 
-      title: "Result",
-      render: data => Array.isArray(data) ? data.join(", ") : data 
-    }
-  ],
-  paging: false,
-  ordering: false,
-  info: false,
-  searching: false
-});
-
-        console.log("Results table initialized successfully");
-
-      } catch (error) {
-        console.error("Error loading data:", error);
-        $("#results-error").text(`Error loading data: ${error.message}`).show();
-      }
-    }
-
-    $(async function () {
-      // Load initial data for the selected team (D1)
-      await loadData("1395");
-
-      // Set up team selector change handler
-      $("#team-selector").on("change", function() {
-        const selectedTeamId = $(this).val();
-        loadData(selectedTeamId);
       });
+
+      // — Results —
+      resp = await fetch(`${RESULTS_API}/results?team_id=${teamId}`);
+      if (!resp.ok) return showError("#results-container","Results API error");
+      const resultsData = await resp.json();
+      $("#results-container").empty();
+      const resGroups = [...new Set(resultsData.map(r=>r.group_caption||""))];
+      resGroups.forEach(group => {
+        const rows = resultsData.filter(r=>r.group_caption===group);
+        const $sec = $(`
+          <div class="sub-section">
+            <h3>Results — ${group||"No group"}</h3>
+            <div class="table-wrapper"><table class="display"></table></div>
+          </div>`);
+        $("#results-container").append($sec);
+        $sec.find("table").DataTable({
+          data: rows,
+          columns: [
+            {data:"playDate",title:"Date",render:(d,t)=>t==="display"?formatDate(d):d},
+            {data:"playDate",title:"Time",render:(d,t)=>t==="display"?formatTime(d):d},
+            {data:null,title:"Match",render:(_,__,r)=>`${r.teams_home_caption} – ${r.teams_away_caption}`},
+            {data:null,title:"Home/Away",render:(_,__,r)=>r.teams_home_caption.includes("Wiedikon")?"Home":"Away"},
+            {data:"group_caption",title:"Group"},
+            {data:"hall_caption",title:"Halle"},
+            {data:"hall_city",title:"City"},
+            {data:"hall_plusCode",title:"Plus Code",render:d=>d?`<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>`:""},
+            {data:"referees",title:"Referee(s)"},
+            {data:"resultSummary",title:"Result",render:d=>Array.isArray(d)?d.join(", "):d}
+          ],
+          paging:false,ordering:false,info:false,searching:false,
+          createdRow:(row,d)=> {
+            if ((d.teams_home_caption||"").includes("Wiedikon")) $(row).addClass("wiedikon-team");
+          }
+        });
+      });
+    }
+
+    function showError(selector,msg) {
+      $(selector).html(`<div class="error-message">${msg}</div>`);
+    }
+
+    $(async()=>{
+      await loadData("1395");
+      $("#team-selector").change(()=>loadData($("#team-selector").val()));
     });
   </script>
 </body>
