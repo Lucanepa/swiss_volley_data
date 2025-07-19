@@ -100,9 +100,9 @@
           .then(data => {
             const caption = teamNames[id];
             const found = data.find(r=>r.teamCaption===caption);
-            if (found) {
+            if (found && found.group_caption && !found.group_caption.toLowerCase().includes("cup")) {
               rows.push({
-                group: found.group_caption||"",
+                group: found.group_caption,
                 rank:  found.rank,
                 teamCaption: found.teamCaption,
                 points: found.points,
@@ -114,45 +114,58 @@
           })
           .catch(()=>{})
       ));
-      // sort alphabetically by group
-      rows.sort((a,b)=>a.group.localeCompare(b.group));
+      
+      // group by league
+      const groups = {};
+      rows.forEach(row => {
+        if (!groups[row.group]) groups[row.group] = [];
+        groups[row.group].push(row);
+      });
 
       const $cont = $("#overall-rankings-container").empty();
       if (!rows.length) {
         $cont.html(`<div class="error-message">No rankings data available.</div>`);
         return;
       }
-      const $sec = $(`
-        <div class="table-wrapper"><table id="overall-rankings" class="display"></table></div>
-      `);
-      $cont.append($sec);
-      $sec.find("table").DataTable({
-        data: rows,
-        columns: [
-          { data: "group",        title: "League" },
-          { data: "rank",         title: "Rank" },
-          { data: "teamCaption",  title: "Team" },
-          { data: "points",       title: "Points" },
-          { data: "games",        title: "Matches played" },
-          { data: "wins",         title: "Matches won" },
-          { data: "defeats",      title: "Matches lost" }
-        ],
-        paging: false,
-        ordering: false,
-        info: false,
-        searching: false,
-        createdRow: (row, data) => {
-          $(row).css({
-            "border": "2px solid #e2e8f0",
-            "border-radius": "8px",
-            "margin": "8px 0",
-            "background-color": "#f8fafc"
-          });
-          $(row).find("td").css({
-            "padding": "16px 12px",
-            "border": "none"
-          });
-        }
+
+      // create separate table for each league
+      Object.keys(groups).sort().forEach(leagueName => {
+        const leagueRows = groups[leagueName];
+        const $sec = $(`
+          <div class="sub-section" style="margin-bottom: 30px;">
+            <h3>${leagueName}</h3>
+            <div class="table-wrapper"><table class="display"></table></div>
+          </div>
+        `);
+        $cont.append($sec);
+        
+        $sec.find("table").DataTable({
+          data: leagueRows,
+          columns: [
+            { data: "rank",         title: "Rank" },
+            { data: "teamCaption",  title: "Team" },
+            { data: "points",       title: "Points" },
+            { data: "games",        title: "Matches played" },
+            { data: "wins",         title: "Matches won" },
+            { data: "defeats",      title: "Matches lost" }
+          ],
+          paging: false,
+          ordering: false,
+          info: false,
+          searching: false,
+          createdRow: (row, data) => {
+            $(row).css({
+              "border": "2px solid #e2e8f0",
+              "border-radius": "8px",
+              "margin": "8px 0",
+              "background-color": "#f8fafc"
+            });
+            $(row).find("td").css({
+              "padding": "16px 12px",
+              "border": "none"
+            });
+          }
+        });
       });
     }
 
