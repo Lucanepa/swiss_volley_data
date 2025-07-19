@@ -4,75 +4,90 @@
   <meta charset="UTF-8"/>
   <title>Wiedikon Volleyball – Rankings & Upcoming Games</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
-  <!-- RowGroup extension CSS for grouping rows -->
   <link rel="stylesheet" href="https://cdn.datatables.net/rowgroup/1.3.1/css/rowGroup.dataTables.min.css"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Aptos:wght@300;400;500;600;700&display=swap');
     * { box-sizing: border-box; }
-    body { font-family: 'Aptos', sans-serif; margin:0; padding:0; background:#f0f4f8; color:#2d3748; line-height:1.6; }
-    .container { max-width:1400px; margin:0 auto; padding:20px; }
-    .header { text-align:center; margin-bottom:40px; background:white; border-radius:12px; padding:30px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-    h1 { margin:0; font-size:2.2rem; font-weight:600; }
-    .block-selector { text-align:center; margin-bottom:30px; }
-    .block-selector select { padding:10px 16px; font-size:16px; font-weight:500; border:2px solid #e2e8f0; border-radius:8px; background:white; cursor:pointer; min-width:180px; }
-    .content-section { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-    .content-section h2 { margin:0 0 20px; font-size:1.6rem; font-weight:600; }
-    .sub-section h3 { margin:1.5em 0 0.5em; font-size:1.25rem; font-weight:500; }
-    .table-wrapper { overflow-x:auto; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
-
-    /* keep default auto table layout so team column can size to content */
-    table.dataTable {
-      width:100% !important;
-      font-size:12px;
-      border-collapse: separate;
-      border-spacing: 0 0.75rem; /* vertical gap */
+    body {
+      font-family: 'Aptos', sans-serif;
+      margin: 0; padding: 0;
+      background: #f0f4f8; color: #2d3748; line-height: 1.6;
+    }
+    .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+    .header {
+      text-align: center; margin-bottom: 40px;
+      background: white; border-radius: 12px;
+      padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 { margin: 0; font-size: 2.2rem; font-weight: 600; }
+    .block-selector { text-align: center; margin-bottom: 30px; }
+    .block-selector select {
+      padding: 10px 16px; font-size: 16px; font-weight: 500;
+      border: 2px solid #e2e8f0; border-radius: 8px;
+      background: white; cursor: pointer; min-width: 140px;
+    }
+    .content-section {
+      background: white; border-radius: 12px;
+      padding: 25px; margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .content-section h2 { margin: 0 0 20px; font-size: 1.6rem; font-weight: 600; }
+    .sub-section h3 { margin: 1.5em 0 0.5em; font-size: 1.25rem; font-weight: 500; }
+    .table-wrapper {
+      overflow-x: auto; border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
 
+    /* DataTables spacing & group rows */
+    table.dataTable {
+      width: 100% !important; font-size: 12px;
+      border-collapse: separate; border-spacing: 0 0.75rem;
+    }
     table.dataTable thead th {
-      background:#1e40af;
-      color:white;
-      font-weight:600;
-      padding:12px 8px;
-      text-align:left;
-      font-size:11px;
-      text-transform:uppercase;
+      background: #1e40af; color: white; font-weight: 600;
+      padding: 12px 8px; font-size: 11px; text-transform: uppercase;
     }
     table.dataTable tbody td {
-      padding:10px 8px;
-      border-bottom:1px solid #e2e8f0;
-      transition:background-color .2s;
+      padding: 10px 8px; border-bottom: 1px solid #e2e8f0;
+      transition: background-color .2s;
     }
-    table.dataTable tbody tr:last-child td {
-      border-bottom:none;
-    }
-    table.dataTable tbody tr:nth-child(even) {
-      background-color: #f8f9fa;
-    }
+    table.dataTable tbody tr:last-child td { border-bottom: none; }
+    table.dataTable tbody tr:nth-child(even) { background: #f8f9fa; }
 
-    /* Style for the injected group rows (league dividers) */
-    table.dataTable tbody tr.group {
-      background: transparent !important;
-    }
+    table.dataTable tbody tr.group { background: transparent !important; }
     table.dataTable tbody tr.group td {
-      padding: 0.5rem 0;
-      font-weight: 600;
-      color: #1e40af;
-      border-top: 2px solid #1e40af;
-      border-bottom: none;
+      padding: .5rem 0; font-weight: 600; color: #1e40af;
+      border-top: 2px solid #1e40af; border-bottom: none;
     }
 
-    /* Prevent the Team column from wrapping */
+    /* Team column no wrap */
     table.dataTable th:nth-child(3),
     table.dataTable td:nth-child(3) {
       white-space: nowrap;
     }
 
-    .error-message { color:#c53030; background:#fed7d7; padding:16px; border-radius:12px; margin:20px 0; border-left:4px solid #e53e3e; }
-    .cheer { display:inline-block; margin-left:6px; animation:wave 1s infinite; }
+    .error-message {
+      color: #c53030; background: #fed7d7;
+      padding: 16px; border-radius: 12px;
+      margin: 20px 0; border-left: 4px solid #e53e3e;
+    }
+    .cheer { display: inline-block; margin-left: 6px; animation: wave 1s infinite; }
     @keyframes wave {
       0%,100%{transform:translateX(0) rotate(0deg);}
       25%{transform:translateX(-2px) rotate(-2deg);}
       75%{transform:translateX(2px) rotate(2deg);}
+    }
+
+    /* ── Mobile tweaks ── */
+    @media (max-width: 768px) {
+      body { font-size: 14px; }
+      h1 { font-size: 1.8rem; }
+      .content-section h2 { font-size: 1.4rem; }
+      .sub-section h3 { font-size: 1.1rem; }
+      .block-selector select { padding: 6px 10px; font-size: 14px; }
+      table.dataTable { font-size: 10px; }
+      table.dataTable thead th { padding: 8px 6px; font-size: 9px; }
+      table.dataTable tbody td { padding: 6px 4px; }
     }
   </style>
 </head>
@@ -86,10 +101,9 @@
       <h2>Next games</h2>
       <div class="block-selector">
         <label for="block-selector" style="margin-right:8px;font-weight:500;">Show next</label>
+        <!-- only one option now -->
         <select id="block-selector">
           <option value="10" selected>10 dates</option>
-          <option value="15">15 dates</option>
-          <option value="20">20 dates</option>
         </select>
       </div>
       <div id="results-container"></div>
@@ -107,13 +121,8 @@
   <script>
     const RANKINGS_API = "https://volley-rankings-n72zsqdqea-oa.a.run.app";
     const RESULTS_API  = "https://volley-results-n72zsqdqea-oa.a.run.app";
-    const TEAM_IDS = [
-      "1395","1393","4689","1394","2301",
-      "14040","2743","541","12747","6023","7563"
-    ];
-    const SPECIAL_DATES = [
-      "2025-09-27","2025-11-01","2026-01-31","2026-03-07"
-    ];
+    const TEAM_IDS = [ "1395","1393","4689","1394","2301","14040","2743","541","12747","6023","7563" ];
+    const SPECIAL_DATES = [ "2025-09-27","2025-11-01","2026-01-31","2026-03-07" ];
     const teamNames = {
       "12747":"KSC Wiedikon H3","1394":"KSC Wiedikon D4","14040":"KSC Wiedikon DU23-2",
       "7563":"KSC Wiedikon HU23-1","1393":"KSC Wiedikon D2","541":"KSC Wiedikon H2",
@@ -148,169 +157,119 @@
               r.teamCaption===caption &&
               r.group_caption && !r.group_caption.toLowerCase().includes("cup")
             );
-            if (entry) {
-              rows.push({
-                group:       entry.group_caption,
-                rank:        entry.rank,
-                teamCaption: entry.teamCaption,
-                points:      entry.points,
-                games:       entry.games,
-                wins:        entry.wins,
-                defeats:     entry.defeats
-              });
-            }
-          })
-          .catch(()=>{})
+            if (entry) rows.push({
+              group:       entry.group_caption,
+              rank:        entry.rank,
+              teamCaption: entry.teamCaption,
+              points:      entry.points,
+              games:       entry.games,
+              wins:        entry.wins,
+              defeats:     entry.defeats
+            });
+          }).catch(()=>{})
       ));
 
-      rows.sort((a,b)=>a.group.localeCompare(b.group) || a.rank - b.rank);
+      rows.sort((a,b)=>a.group.localeCompare(b.group)||a.rank-b.rank);
+      const $c=$("#overall-rankings-container").empty();
+      if(!rows.length) return $c.html(`<div class="error-message">No rankings data available.</div>`);
 
-      const $cont = $("#overall-rankings-container").empty();
-      if (!rows.length) {
-        return $cont.html(`<div class="error-message">No rankings data available.</div>`);
-      }
-
-      const $sec = $(`
+      const $sec=$(`
         <div class="table-wrapper">
           <table id="overall-rankings" class="display"></table>
         </div>
       `);
-      $cont.append($sec);
+      $c.append($sec);
 
       $sec.find("table").DataTable({
-        data:        rows,
-        autoWidth:   true,
+        data: rows,
+        autoWidth: true,
         columns: [
-          { data: "group",       visible: false },
-          { data: "rank",        title: "Rank" },
-          { data: "teamCaption", title: "Team" },
-          { data: "points",      title: "Points" },
-          { data: "games",       title: "Matches played" },
-          { data: "wins",        title: "Matches won" },
-          { data: "defeats",     title: "Matches lost" }
+          {data:"group", visible:false},
+          {data:"rank", title:"Rank"},
+          {data:"teamCaption", title:"Team"},
+          {data:"points", title:"Points"},
+          {data:"games", title:"Matches played"},
+          {data:"wins", title:"Matches won"},
+          {data:"defeats", title:"Matches lost"}
         ],
-        columnDefs: [
-          { width: '16.6667%', targets: [1, 3, 4, 5, 6] }
-        ],
-        rowGroup:   { dataSrc: "group" },
-        paging:     false,
-        ordering:   false,
-        info:       false,
-        searching:  false,
-        createdRow: (row) => {
+        columnDefs: [{ width: '16.6667%', targets: [1,3,4,5,6] }],
+        rowGroup: { dataSrc: "group" },
+        paging:false, ordering:false, info:false, searching:false,
+        createdRow:(row)=> {
           $(row).css({
-            "border":           "2px solid #e2e8f0",
-            "border-radius":    "8px",
-            "background-color": "#f8fafc"
-          }).find("td").css({
-            "padding": "16px 12px",
-            "border":  "none"
-          });
+            border:"2px solid #e2e8f0",
+            "border-radius":"8px",
+            "background-color":"#f8fafc"
+          }).find("td").css({ padding:"16px 12px", border:"none" });
         }
       });
     }
 
     async function loadNextGames() {
-      // 1) Fetch all teams' fixtures and dedupe
-      const all = await Promise.all(TEAM_IDS.map(id =>
+      const all = await Promise.all(TEAM_IDS.map(id=>
         fetch(`${RESULTS_API}/results?team_id=${id}`)
-          .then(r=>r.ok?r.json():[])
-          .catch(()=>[])
+          .then(r=>r.ok?r.json():[]).catch(()=>[])
       ));
       const map = new Map();
-      all.flat().forEach(r => {
+      all.flat().forEach(r=>{
         const key = `${r.playDate}|${r.teams_home_caption}|${r.teams_away_caption}`;
-        if (!map.has(key)) map.set(key, r);
+        if(!map.has(key)) map.set(key,r);
       });
       const combined = Array.from(map.values());
-
-      // 2) Filter future games, sort
-      const now      = new Date();
+      const now = new Date();
       const upcoming = combined
-        .filter(r => new Date(r.playDate) >= now)
-        .sort((a,b) => new Date(a.playDate) - new Date(b.playDate));
+        .filter(r=>new Date(r.playDate)>=now)
+        .sort((a,b)=>new Date(a.playDate)-new Date(b.playDate));
 
-      // 3) Determine date‑blocks based on selector N
-      const N   = parseInt($("#block-selector").val(),10);
+      const N = 10; // fixed
       const seen = new Set();
-      for (const g of upcoming) {
+      for(const g of upcoming) {
         const iso = new Date(g.playDate).toISOString().slice(0,10);
-        if (seen.size < N) seen.add(iso);
-        else break;
+        if(seen.size < N) seen.add(iso); else break;
       }
-      const filtered = upcoming.filter(g =>
+      const filtered = upcoming.filter(g=>
         seen.has(new Date(g.playDate).toISOString().slice(0,10))
       );
 
-      // 4) Render or “no data” message
-      const $cont = $("#results-container").empty();
-      if (!filtered.length) {
-        return $cont.html(`<div class="error-message">No upcoming games found.</div>`);
-      }
+      const $c=$("#results-container").empty();
+      if(!filtered.length) return $c.html(`<div class="error-message">No upcoming games found.</div>`);
 
-      const $sec = $(`
+      const $sec=$(`
         <div class="sub-section">
           <div class="table-wrapper">
             <table id="upcoming-games" class="display"></table>
           </div>
         </div>
       `);
-      $cont.append($sec);
+      $c.append($sec);
 
-      // 5) Initialize DataTable
       $sec.find("table").DataTable({
         data: filtered,
         columns: [
-          {
-            data:   "playDate",
-            title:  "Date",
-            render: (d,t) => t==="display" ? formatDate(d) : d
+          { data:"playDate", title:"Date", render:(d,t)=>t==="display"?formatDate(d):d },
+          { data:"playDate", title:"Time", render:(d,t)=>t==="display"?formatTime(d):d },
+          { data:null, title:"Match", render:(_,__,r)=>`${r.teams_home_caption} – ${r.teams_away_caption}` },
+          { data:"hall_caption", title:"Halle" },
+          { data:"hall_city",    title:"City" },
+          { data:"hall_plusCode",title:"Plus Code", render:d=>
+              d?`<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>`:""
           },
-          {
-            data:   "playDate",
-            title:  "Time",
-            render: (d,t) => t==="display" ? formatTime(d) : d
-          },
-          {
-            data:   null,
-            title:  "Match",
-            render: (_,__,r) => `${r.teams_home_caption} – ${r.teams_away_caption}`
-          },
-          { data: "hall_caption", title: "Halle" },
-          { data: "hall_city",    title: "City" },
-          {
-            data:   "hall_plusCode",
-            title:  "Plus Code",
-            render: d => d ? `<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>` : ""
-          },
-          { data: "referees",     title: "Referee(s)" },
-          {
-            data:  null,
-            title: "Event",
-            render: (_,__,r) => {
-              const iso    = new Date(r.playDate).toISOString().slice(0,10);
+          { data:"referees",     title:"Referee(s)" },
+          { data:null, title:"Event", render:(_,__,r)=>{
+              const iso = new Date(r.playDate).toISOString().slice(0,10);
               const isHome = r.teams_home_caption.includes("Wiedikon");
-              const flags  = [];
-              if (isHome && isSpecialDate(iso)) {
-                flags.push("Spielsamstag");
-              } else if (isHome) {
-                flags.push(`<span class="cheer">🚩 Come and cheer!</span>`);
-              }
+              const flags = [];
+              if(isHome && isSpecialDate(iso)) flags.push("Spielsamstag");
+              else if(isHome) flags.push(`<span class="cheer">🚩 Come and cheer!</span>`);
               return flags.join(" • ");
-            }
-          }
+          }}
         ],
-        paging:    false,
-        ordering:  false,
-        info:      false,
-        searching: false,
-        createdRow: (row, data) => {
+        paging:false, ordering:false, info:false, searching:false,
+        createdRow:(row,data)=>{
           const iso = new Date(data.playDate).toISOString().slice(0,10);
-          if (data.teams_home_caption.includes("Wiedikon")) {
-            $(row).find("td").css("font-weight", "600");
-            if (isSpecialDate(iso)) {
-              $(row).css("background-color","#FFD700");
-            }
+          if(data.teams_home_caption.includes("Wiedikon")){
+            $(row).find("td").css("font-weight","600");
+            if(isSpecialDate(iso)) $(row).css("background-color","#FFD700");
           }
         }
       });
@@ -319,7 +278,6 @@
     $(function(){
       loadNextGames();
       loadOverallRankings();
-      $("#block-selector").change(loadNextGames);
     });
   </script>
 </body>
