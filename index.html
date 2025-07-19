@@ -132,17 +132,22 @@
         $("#rankings").DataTable({
           data: rankingData,
           columns: [
-            { data: "rank",         title: "Rank", width: "60px" },
+            { data: "rank",         title: "Rank", width: "8%" },
             { data: "team_name",    title: "Team", width: "auto" },
-            { data: "points",       title: "Pts", width: "60px" },
-            { data: "games_played", title: "# Matches", width: "60px" },
-            { data: "wins",         title: "Matches won", width: "60px" },
-            { data: "defeats",      title: "Matches lost", width: "60px" },
-            { data: "sets_won",     title: "Sets won", width: "60px" },
-            { data: "sets_lost",    title: "Sets lost", width: "60px" },
-            { data: "balls_won",    title: "Balls won", width: "60px" },
-            { data: "balls_lost",   title: "Balls lost", width: "60px" }
+            { data: "points",       title: "Pts", width: "8%" },
+            { data: "games_played", title: "# Matches", width: "8%" },
+            { data: "wins",         title: "Matches won", width: "8%" },
+            { data: "defeats",      title: "Matches lost", width: "8%" },
+            { data: "sets_won",     title: "Sets won", width: "8%" },
+            { data: "sets_lost",    title: "Sets lost", width: "8%" },
+            { data: "balls_won",    title: "Balls won", width: "8%" },
+            { data: "balls_lost",   title: "Balls lost", width: "8%" }
           ],
+          createdRow: function (row, data) {
+            if (data.team_name && data.team_name.includes("Wiedikon")) {
+              $(row).addClass("wiedikon-team");
+            }
+          },
           paging: false,
           ordering: false,
           info: false,
@@ -184,6 +189,14 @@
                 let home = row.home || "";
                 let away = row.away || "";
                 
+                // Make Wiedikon team bold
+                if (home.includes("Wiedikon")) {
+                  home = `<strong>${home}</strong>`;
+                }
+                if (away.includes("Wiedikon")) {
+                  away = `<strong>${away}</strong>`;
+                }
+                
                 // Only try to split if result is a string
                 if (typeof result === 'string' && result.includes(":")) {
                   const [homeSets, awaySets] = result.split(":").map(n => parseInt(n));
@@ -211,11 +224,16 @@
             { data: "result",    title: "Result" }
           ],
           createdRow: function (row, data) {
+            const isHome = data.home && data.home.includes("Wiedikon");
             const wiedikonInvolved = (data.home && data.home.includes("Wiedikon")) || 
                                    (data.away && data.away.includes("Wiedikon"));
 
             if (wiedikonInvolved) {
-              $(row).addClass("wiedikon-team");
+              if (isHome) {
+                // Full row bold for home games
+                $(row).addClass("wiedikon-team");
+              }
+              // For away games, only the team name is bold (handled in the render function)
             }
           },
           paging: false,
