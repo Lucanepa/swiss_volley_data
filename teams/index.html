@@ -135,11 +135,7 @@
             { data: "points",     title: "Points" },
             { data: "games",      title: "# Matches" },
             { data: "wins",       title: "Matches won" },
-            { data: "defeats",    title: "Matches lost" },
-            { data: "setsWon",    title: "Sets won" },
-            { data: "setsLost",   title: "Sets lost" },
-            { data: "ballsWon",   title: "Balls won" },
-            { data: "ballsLost",  title: "Balls lost" }
+            { data: "defeats",    title: "Matches lost" }
           ],
           paging: false,
           ordering: false,
@@ -179,7 +175,6 @@
             { data:"hall_caption", title:"Halle" },
             { data:"hall_city", title:"City" },
             { data:"hall_plusCode", title:"Plus Code", render:d=> d ? `<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>` : "" },
-            { data:"referees", title:"Referee(s)" },
             { data:"resultSummary", title:"Result", render:d=> Array.isArray(d) ? d.join(", ") : d }
           ],
           paging:false, ordering:false, info:false, searching:false,
