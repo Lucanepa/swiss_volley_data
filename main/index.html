@@ -23,6 +23,18 @@
     table.dataTable tbody tr:last-child td { border-bottom:none; }
     table.dataTable tbody tr:nth-child(even) { background-color: #f8f9fa; }
     .error-message { color:#c53030; background:#fed7d7; padding:16px; border-radius:12px; margin:20px 0; border-left:4px solid #e53e3e; }
+
+    /* moving flag animation */
+    .cheer {
+      display: inline-block;
+      margin-left: 6px;
+      animation: wave 1s infinite;
+    }
+    @keyframes wave {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      25% { transform: translateX(-2px) rotate(-2deg); }
+      75% { transform: translateX(2px) rotate(2deg); }
+    }
   </style>
 </head>
 <body>
@@ -32,12 +44,11 @@
     </div>
 
     <div class="content-section">
-      <h2>Next Fixtures</h2>
+      <h2>Upcoming</h2>
       <div class="block-selector">
         <label for="block-selector" style="margin-right:8px;font-weight:500;">Show next</label>
         <select id="block-selector">
-          <option value="5" selected>5 dates</option>
-          <option value="10">10 dates</option>
+          <option value="10" selected>10 dates</option>
           <option value="15">15 dates</option>
           <option value="20">20 dates</option>
         </select>
@@ -50,10 +61,16 @@
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script>
     const RESULTS_API = "https://volley-results-n72zsqdqea-oa.a.run.app";
-    // List all your team IDs here if you want a league‑wide feed
     const TEAM_IDS = [
       "1395","1393","4689","1394","2301",
       "14040","2743","541","12747","6023","7563"
+    ];
+    // ISO yyyy-mm-dd for special Spielsamstag home dates
+    const SPECIAL_DATES = [
+      "2025-09-27",
+      "2025-11-01",
+      "2026-01-31",
+      "2026-03-07"
     ];
 
     function formatDate(d) {
@@ -70,75 +87,93 @@
       return `${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
     }
 
+    function isSpecialDate(isoDate) {
+      return SPECIAL_DATES.includes(isoDate);
+    }
+
     async function loadNextGames() {
-      // fetch results for each team, merge into one array
-      const allArrays = await Promise.all(
+      // fetch all teams' upcoming results
+      const all = await Promise.all(
         TEAM_IDS.map(id =>
           fetch(`${RESULTS_API}/results?team_id=${id}`)
             .then(r => r.ok ? r.json() : [])
             .catch(() => [])
         )
       );
-      let combined = allArrays.flat();
-
-      // dedupe by date + matchup
-      const uniq = new Map();
-      combined.forEach(r => {
+      // merge & dedupe
+      const map = new Map();
+      all.flat().forEach(r => {
         const key = `${r.playDate}|${r.teams_home_caption}|${r.teams_away_caption}`;
-        if (!uniq.has(key)) uniq.set(key, r);
+        if (!map.has(key)) map.set(key, r);
       });
-      const resultsData = Array.from(uniq.values());
+      const combined = Array.from(map.values());
 
       const now = new Date();
-      const upcoming = resultsData
+      const upcoming = combined
         .filter(r => new Date(r.playDate) >= now)
-        .sort((a, b) => new Date(a.playDate) - new Date(b.playDate));
+        .sort((a,b) => new Date(a.playDate) - new Date(b.playDate));
 
-      // pick first N distinct dates
-      const N = parseInt($("#block-selector").val(), 10) || 5;
-      const seenDates = new Set();
-      for (const game of upcoming) {
-        const dateKey = new Date(game.playDate).toISOString().split("T")[0];
-        if (seenDates.size < N) seenDates.add(dateKey);
+      const N = parseInt($("#block-selector").val(),10) || 5;
+      const seen = new Set();
+      for (const g of upcoming) {
+        const iso = new Date(g.playDate).toISOString().slice(0,10);
+        if (seen.size < N) seen.add(iso);
         else break;
       }
+      const filtered = upcoming.filter(g => seen.has(new Date(g.playDate).toISOString().slice(0,10)));
 
-      const filtered = upcoming.filter(game =>
-        seenDates.has(new Date(game.playDate).toISOString().split("T")[0])
-      );
-
-      // render
       $("#results-container").empty();
-      if (filtered.length === 0) {
+      if (!filtered.length) {
         $("#results-container").html(`<div class="error-message">No upcoming games found.</div>`);
         return;
       }
+
       const $sec = $(`
         <div class="sub-section">
-          <h3>Next ${seenDates.size} date block(s)</h3>
+          <h3>Next ${seen.size} date block(s)</h3>
           <div class="table-wrapper"><table class="display"></table></div>
         </div>`);
       $("#results-container").append($sec);
+
       $sec.find("table").DataTable({
         data: filtered,
         columns: [
-          { data: "playDate",      title: "Date",      render: (d,t) => t==="display" ? formatDate(d) : d },
-          { data: "playDate",      title: "Time",      render: (d,t) => t==="display" ? formatTime(d) : d },
-          { data: null,            title: "Match",     render: (_,__,r) => `${r.teams_home_caption} – ${r.teams_away_caption}` },
+          { data: "playDate",      title: "Date",   render:(d,t)=> t==="display"? formatDate(d): d },
+          { data: "playDate",      title: "Time",   render:(d,t)=> t==="display"? formatTime(d): d },
+          { data: null,            title: "Match",  render:(_,__,r)=> `${r.teams_home_caption} – ${r.teams_away_caption}` },
           { data: "hall_caption",  title: "Halle" },
           { data: "hall_city",     title: "City" },
-          { data: "hall_plusCode", title: "Plus Code", render: d => d ? `<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>` : "" },
+          { data: "hall_plusCode", title: "Plus Code", render:d=> d?`<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>`:"" },
           { data: "referees",      title: "Referee(s)" },
-          { data: "resultSummary", title: "Result",    render: d => Array.isArray(d) ? d.join(", ") : d }
+          { data: "resultSummary", title: "Result", render:d=> Array.isArray(d)? d.join(", ") : d },
+          { data: null,            title: "Event", render:(_,__,r)=>{
+              const iso = new Date(r.playDate).toISOString().slice(0,10);
+              const isHome = r.teams_home_caption.includes("Wiedikon");
+              let parts = [];
+              if (isHome && isSpecialDate(iso)) {
+                parts.push("Spielsamstag");
+              } else if (isHome) {
+                parts.push(`<span class="cheer">🚩 Come and cheer!</span>`);
+              }
+              return parts.join(" • ");
+            }
+          }
         ],
         paging: false,
         ordering: false,
         info: false,
-        searching: false
+        searching: false,
+        createdRow: (row, data) => {
+          const iso = new Date(data.playDate).toISOString().slice(0,10);
+          const isHome = data.teams_home_caption.includes("Wiedikon");
+          if (isHome && isSpecialDate(iso)) {
+            $(row).css("background-color", "#FFD700");
+          }
+        }
       });
     }
 
-    $(function() {
+    $(function(){
       loadNextGames();
       $("#block-selector").change(loadNextGames);
     });
