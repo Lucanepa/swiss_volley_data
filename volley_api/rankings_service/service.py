@@ -16,28 +16,10 @@ def get_rankings():
 
     sql = f"""
     SELECT
-      r.leagueId               AS league_id,
-      r.phaseId                AS phase_id,
-      r.groupId                AS group_id,
-      rm.ballsLost             AS balls_lost,
-      rm.ballsWon              AS balls_won,
-      rm.defeats               AS defeats,
-      rm.defeatsClear          AS defeats_clear,
-      rm.defeatsNarrow         AS defeats_narrow,
-      rm.games                 AS games_played,
-      rm.points                AS points,
-      rm.rank                  AS rank,
-      rm.setsLost              AS sets_lost,
-      rm.setsWon               AS sets_won,
-      rm.wins                  AS wins,
-      rm.winsClear             AS wins_clear,
-      rm.winsNarrow            AS wins_narrow,
-      rm.teamCaption           AS team_name,
-      r.updated_at
-    FROM `{client.project}.api_data.rankings` AS r,
-         UNNEST(r.ranking) AS rm
+      *
+    FROM `{client.project}.api_data.rankings_complete` AS r
     WHERE r.wiedikon_team_id = @team_id
-    ORDER BY rm.rank
+    ORDER BY r.rank
     """
     job = client.query(
         sql,
