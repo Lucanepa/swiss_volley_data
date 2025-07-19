@@ -94,12 +94,12 @@
       if (!resp.ok) return showError("#rankings-container","Rankings API error");
       const rankingData = await resp.json();
       $("#rankings-container").empty();
-      const rankGroups = [...new Set(rankingData.map(r=>r.group_caption||""))];
+      const rankGroups = [...new Set(rankingData.map(r=>r.group_caption||"Cup"))];
       rankGroups.forEach(group => {
-        const rows = rankingData.filter(r=>r.group_caption===group);
+        const rows = rankingData.filter(r=>(r.group_caption||"Cup")===group);
         const $sec = $(`
           <div class="sub-section">
-            <h3>Ranking — ${group||"No group"}</h3>
+            <h3>Ranking — ${group}</h3>
             <div class="table-wrapper"><table class="display"></table></div>
           </div>`);
         $("#rankings-container").append($sec);
@@ -134,12 +134,12 @@
       if (!resp.ok) return showError("#results-container","Results API error");
       const resultsData = await resp.json();
       $("#results-container").empty();
-      const resGroups = [...new Set(resultsData.map(r=>r.group_caption||""))];
+      const resGroups = [...new Set(resultsData.map(r=>r.group_caption||"Cup"))];
       resGroups.forEach(group => {
-        const rows = resultsData.filter(r=>r.group_caption===group);
+        const rows = resultsData.filter(r=>(r.group_caption||"Cup")===group);
         const $sec = $(`
           <div class="sub-section">
-            <h3>Results — ${group||"No group"}</h3>
+            <h3>Results — ${group}</h3>
             <div class="table-wrapper"><table class="display"></table></div>
           </div>`);
         $("#results-container").append($sec);
