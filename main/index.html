@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>Upcoming Volleyball Games</title>
+  <title>Wiedikon Volleyball – Rankings & Upcoming Games</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Aptos:wght@300;400;500;600;700&display=swap');
@@ -13,7 +13,7 @@
     h1 { margin:0; font-size:2.2rem; font-weight:600; }
     .block-selector { text-align:center; margin-bottom:30px; }
     .block-selector select { padding:10px 16px; font-size:16px; font-weight:500; border:2px solid #e2e8f0; border-radius:8px; background:white; cursor:pointer; min-width:180px; }
-    .content-section { background:white; border-radius:12px; padding:25px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .content-section { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
     .content-section h2 { margin:0 0 20px; font-size:1.6rem; font-weight:600; }
     .sub-section h3 { margin:1.5em 0 0.5em; font-size:1.25rem; font-weight:500; }
     .table-wrapper { overflow-x:auto; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
@@ -23,28 +23,27 @@
     table.dataTable tbody tr:last-child td { border-bottom:none; }
     table.dataTable tbody tr:nth-child(even) { background-color: #f8f9fa; }
     .error-message { color:#c53030; background:#fed7d7; padding:16px; border-radius:12px; margin:20px 0; border-left:4px solid #e53e3e; }
-
-    /* moving flag animation */
-    .cheer {
-      display: inline-block;
-      margin-left: 6px;
-      animation: wave 1s infinite;
-    }
+    .cheer { display:inline-block; margin-left:6px; animation:wave 1s infinite; }
     @keyframes wave {
-      0%, 100% { transform: translateX(0) rotate(0deg); }
-      25% { transform: translateX(-2px) rotate(-2deg); }
-      75% { transform: translateX(2px) rotate(2deg); }
+      0%,100%{transform:translateX(0) rotate(0deg);}
+      25%{transform:translateX(-2px) rotate(-2deg);}
+      75%{transform:translateX(2px) rotate(2deg);}
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>Upcoming Volleyball Games</h1>
+      <h1>Wiedikon Volleyball</h1>
     </div>
 
     <div class="content-section">
-      <h2>Upcoming</h2>
+      <h2>Overall Rankings</h2>
+      <div id="overall-rankings-container"></div>
+    </div>
+
+    <div class="content-section">
+      <h2>Next Fixtures</h2>
       <div class="block-selector">
         <label for="block-selector" style="margin-right:8px;font-weight:500;">Show next</label>
         <select id="block-selector">
@@ -60,49 +59,99 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script>
-    const RESULTS_API = "https://volley-results-n72zsqdqea-oa.a.run.app";
+    const RANKINGS_API = "https://volley-rankings-n72zsqdqea-oa.a.run.app";
+    const RESULTS_API  = "https://volley-results-n72zsqdqea-oa.a.run.app";
     const TEAM_IDS = [
       "1395","1393","4689","1394","2301",
       "14040","2743","541","12747","6023","7563"
     ];
-    // ISO yyyy-mm-dd for special Spielsamstag home dates
     const SPECIAL_DATES = [
-      "2025-09-27",
-      "2025-11-01",
-      "2026-01-31",
-      "2026-03-07"
+      "2025-09-27","2025-11-01","2026-01-31","2026-03-07"
     ];
+    const teamNames = {
+      "12747":"KSC Wiedikon H3","1394":"KSC Wiedikon D4","14040":"KSC Wiedikon DU23-2",
+      "7563":"KSC Wiedikon HU23-1","1393":"KSC Wiedikon D2","541":"KSC Wiedikon H2",
+      "6023":"KSC Wiedikon Legends","4689":"KSC Wiedikon D3","2743":"KSC Wiedikon H1",
+      "1395":"KSC Wiedikon D1","2301":"KSC Wiedikon DU23-1"
+    };
 
     function formatDate(d) {
       const dt = new Date(d);
-      if (isNaN(dt)) return d || "";
-      const pad = n => n.toString().padStart(2,"0");
+      if (isNaN(dt)) return d||"";
+      const pad = n=>n.toString().padStart(2,"0");
       return `${pad(dt.getDate())}.${pad(dt.getMonth()+1)}.${dt.getFullYear().toString().slice(-2)}`;
     }
-
     function formatTime(d) {
       const dt = new Date(d);
-      if (isNaN(dt)) return d || "";
-      const pad = n => n.toString().padStart(2,"0");
+      if (isNaN(dt)) return d||"";
+      const pad = n=>n.toString().padStart(2,"0");
       return `${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
     }
+    function isSpecialDate(iso) {
+      return SPECIAL_DATES.includes(iso);
+    }
 
-    function isSpecialDate(isoDate) {
-      return SPECIAL_DATES.includes(isoDate);
+    async function loadOverallRankings() {
+      // fetch each group's full ranking then pick the Wiedikon row
+      const rows = [];
+      await Promise.all(TEAM_IDS.map(id =>
+        fetch(`${RANKINGS_API}/rankings?team_id=${id}`)
+          .then(r => r.ok ? r.json() : [])
+          .then(data => {
+            const caption = teamNames[id];
+            const found = data.find(r=>r.teamCaption===caption);
+            if (found) {
+              rows.push({
+                group: found.group_caption||"",
+                rank:  found.rank,
+                teamCaption: found.teamCaption,
+                points: found.points,
+                games:  found.games,
+                wins:   found.wins,
+                defeats:found.defeats
+              });
+            }
+          })
+          .catch(()=>{})
+      ));
+      // sort by group then rank
+      rows.sort((a,b)=>(a.group>b.group?1:a.group<b.group?-1:a.rank-b.rank));
+
+      const $cont = $("#overall-rankings-container").empty();
+      if (!rows.length) {
+        $cont.html(`<div class="error-message">No rankings data available.</div>`);
+        return;
+      }
+      const $sec = $(`
+        <div class="table-wrapper"><table id="overall-rankings" class="display"></table></div>
+      `);
+      $cont.append($sec);
+      $sec.find("table").DataTable({
+        data: rows,
+        columns: [
+          { data: "rank",         title: "Rank" },
+          { data: "teamCaption",  title: "Team" },
+          { data: "points",       title: "Points" },
+          { data: "games",        title: "Matches played" },
+          { data: "wins",         title: "Matches won" },
+          { data: "defeats",      title: "Matches lost" }
+        ],
+        paging: false,
+        ordering: false,
+        info: false,
+        searching: false
+      });
     }
 
     async function loadNextGames() {
-      // fetch all teams' upcoming results
-      const all = await Promise.all(
-        TEAM_IDS.map(id =>
-          fetch(`${RESULTS_API}/results?team_id=${id}`)
-            .then(r => r.ok ? r.json() : [])
-            .catch(() => [])
-        )
-      );
-      // merge & dedupe
+      // fetch and merge all teams' fixtures
+      const all = await Promise.all(TEAM_IDS.map(id=>
+        fetch(`${RESULTS_API}/results?team_id=${id}`)
+          .then(r=>r.ok?r.json():[])
+          .catch(()=>[])
+      ));
       const map = new Map();
-      all.flat().forEach(r => {
+      all.flat().forEach(r=>{
         const key = `${r.playDate}|${r.teams_home_caption}|${r.teams_away_caption}`;
         if (!map.has(key)) map.set(key, r);
       });
@@ -110,8 +159,8 @@
 
       const now = new Date();
       const upcoming = combined
-        .filter(r => new Date(r.playDate) >= now)
-        .sort((a,b) => new Date(a.playDate) - new Date(b.playDate));
+        .filter(r => new Date(r.playDate)>=now)
+        .sort((a,b)=>new Date(a.playDate)-new Date(b.playDate));
 
       const N = parseInt($("#block-selector").val(),10) || 5;
       const seen = new Set();
@@ -120,42 +169,40 @@
         if (seen.size < N) seen.add(iso);
         else break;
       }
-      const filtered = upcoming.filter(g => seen.has(new Date(g.playDate).toISOString().slice(0,10)));
+      const filtered = upcoming.filter(g=>seen.has(new Date(g.playDate).toISOString().slice(0,10)));
 
-      $("#results-container").empty();
+      const $cont = $("#results-container").empty();
       if (!filtered.length) {
-        $("#results-container").html(`<div class="error-message">No upcoming games found.</div>`);
+        $cont.html(`<div class="error-message">No upcoming games found.</div>`);
         return;
       }
-
       const $sec = $(`
         <div class="sub-section">
           <h3>Next ${seen.size} date block(s)</h3>
-          <div class="table-wrapper"><table class="display"></table></div>
+          <div class="table-wrapper"><table id="upcoming-games" class="display"></table></div>
         </div>`);
-      $("#results-container").append($sec);
+      $cont.append($sec);
 
       $sec.find("table").DataTable({
         data: filtered,
         columns: [
-          { data: "playDate",      title: "Date",   render:(d,t)=> t==="display"? formatDate(d): d },
-          { data: "playDate",      title: "Time",   render:(d,t)=> t==="display"? formatTime(d): d },
-          { data: null,            title: "Match",  render:(_,__,r)=> `${r.teams_home_caption} – ${r.teams_away_caption}` },
+          { data: "playDate",      title: "Date",      render:(d,t)=>t==="display"?formatDate(d):d },
+          { data: "playDate",      title: "Time",      render:(d,t)=>t==="display"?formatTime(d):d },
+          { data: null,            title: "Match",     render:(_,__,r)=>`${r.teams_home_caption} – ${r.teams_away_caption}` },
           { data: "hall_caption",  title: "Halle" },
           { data: "hall_city",     title: "City" },
-          { data: "hall_plusCode", title: "Plus Code", render:d=> d?`<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>`:"" },
+          { data: "hall_plusCode", title: "Plus Code", render:d=>d?`<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>`:"" },
           { data: "referees",      title: "Referee(s)" },
-          { data: "resultSummary", title: "Result", render:d=> Array.isArray(d)? d.join(", ") : d },
-          { data: null,            title: "Event", render:(_,__,r)=>{
+          { data: null, title: "Event", render:(_,__,r)=>{
               const iso = new Date(r.playDate).toISOString().slice(0,10);
               const isHome = r.teams_home_caption.includes("Wiedikon");
-              let parts = [];
+              const flags = [];
               if (isHome && isSpecialDate(iso)) {
-                parts.push("Spielsamstag");
+                flags.push("Spielsamstag");
               } else if (isHome) {
-                parts.push(`<span class="cheer">🚩 Come and cheer!</span>`);
+                flags.push(`<span class="cheer">🚩 Come and cheer!</span>`);
               }
-              return parts.join(" • ");
+              return flags.join(" • ");
             }
           }
         ],
@@ -163,17 +210,17 @@
         ordering: false,
         info: false,
         searching: false,
-        createdRow: (row, data) => {
+        createdRow:(row,data)=>{
           const iso = new Date(data.playDate).toISOString().slice(0,10);
-          const isHome = data.teams_home_caption.includes("Wiedikon");
-          if (isHome && isSpecialDate(iso)) {
-            $(row).css("background-color", "#FFD700");
+          if (data.teams_home_caption.includes("Wiedikon") && isSpecialDate(iso)) {
+            $(row).css("background-color","#FFD700");
           }
         }
       });
     }
 
     $(function(){
+      loadOverallRankings();
       loadNextGames();
       $("#block-selector").change(loadNextGames);
     });
