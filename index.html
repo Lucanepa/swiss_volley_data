@@ -2,90 +2,303 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>KSC Wiedikon H3 Ranking and Results</title>
+  <title>KSC Wiedikon Ranking and Results</title>
 
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
 
     body {
-      font-family: 'Segoe UI', Aptos, sans-serif;
-      margin: 20px;
-      background-color: #f8f9fa;
-      color: #333;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #2d3748;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     h1 {
+      margin: 0 0 20px 0;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .team-selector {
       text-align: center;
-      margin-bottom: 40px;
-      max-width: 100%;
-      margin-left: auto;
-      margin-right: auto;
+      margin-bottom: 30px;
+    }
+
+    .team-selector select {
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: 500;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      min-width: 280px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .team-selector select:hover {
+      border-color: #667eea;
+      box-shadow: 0 6px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .team-selector select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .content-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     h2 {
-      margin-top: 40px;
-      font-size: 1.5em;
-      color: #444;
+      margin: 0 0 25px 0;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #2d3748;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
     }
 
     .table-wrapper {
-      max-width: 100%;
-      margin: 0 auto;
+      overflow-x: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
 
     table.dataTable {
       width: 100% !important;
-      font-size: 12px;
-      table-layout: auto;
-      border-collapse: collapse;
+      font-size: 14px;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
 
-    th, td {
-      padding: 6px 8px;
+    table.dataTable thead th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 600;
+      padding: 16px 12px;
       text-align: left;
-      word-break: break-word;
+      border: none;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    #rankings td:first-child {
-      font-weight: bold;
-      white-space: normal;
+    table.dataTable tbody td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      background: white;
+      transition: background-color 0.2s ease;
+    }
+
+    table.dataTable tbody tr:hover td {
+      background-color: #f7fafc;
+    }
+
+    table.dataTable tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Prevent wrapping for date and time columns */
+    table.dataTable th:nth-child(1),
+    table.dataTable th:nth-child(2),
+    table.dataTable td:nth-child(1),
+    table.dataTable td:nth-child(2) {
+      white-space: nowrap;
+      min-width: 80px;
+    }
+
+    /* Prevent wrapping for rankings table headers */
+    #rankings table.dataTable th {
+      white-space: nowrap;
+      min-width: 60px;
     }
 
     .wiedikon-team {
-      font-weight: bold;
+      font-weight: 600;
+      background: linear-gradient(135deg, #fef5e7 0%, #fed7aa 100%) !important;
+      color: #d69e2e;
+    }
+
+    .wiedikon-team:hover {
+      background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%) !important;
     }
 
     .error-message {
-      color: red;
-      background-color: #ffe6e6;
-      padding: 10px;
-      border: 1px solid #ff9999;
-      border-radius: 4px;
-      margin: 10px 0;
+      color: #c53030;
+      background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      border-left: 4px solid #e53e3e;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #667eea;
+      font-weight: 500;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #e2e8f0;
+      border-radius: 50%;
+      border-top-color: #667eea;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive design */
     @media screen and (max-width: 768px) {
-      html, body {
-        overflow-x: auto;
+      .container {
+        padding: 15px;
+      }
+
+      .header {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .content-section {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .team-selector select {
+        min-width: 250px;
+        font-size: 14px;
+      }
+
+      table.dataTable {
+        font-size: 12px;
+      }
+
+      table.dataTable thead th,
+      table.dataTable tbody td {
+        padding: 10px 8px;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .team-selector select {
+        min-width: 200px;
+        font-size: 13px;
       }
     }
   </style>
 </head>
 <body>
-  <h1>KSC Wiedikon H3 Ranking and Results</h1>
+  <div class="container">
+    <div class="header">
+      <h1 id="page-title">KSC Wiedikon Ranking and Results</h1>
+      
+      <div class="team-selector">
+        <select id="team-selector">
+          <option value="12747">KSC Wiedikon H3</option>
+          <option value="1394">KSC Wiedikon D4</option>
+          <option value="14040">KSC Wiedikon DU23-2</option>
+          <option value="7563">KSC Wiedikon HU23-1</option>
+          <option value="1393">KSC Wiedikon D2</option>
+          <option value="541">KSC Wiedikon H2</option>
+          <option value="6023">KSC Wiedikon Legends</option>
+          <option value="4689">KSC Wiedikon D3</option>
+          <option value="2743">KSC Wiedikon H1</option>
+          <option value="1395">KSC Wiedikon D1</option>
+          <option value="2301">KSC Wiedikon DU23-1</option>
+        </select>
+      </div>
+    </div>
 
-  <h2>Rankings</h2>
-  <div class="table-wrapper">
-    <table id="rankings" class="display"></table>
-  </div>
+    <div class="content-section">
+      <h2>Rankings</h2>
+      <div class="table-wrapper">
+        <table id="rankings" class="display"></table>
+      </div>
+    </div>
 
-  <h2>Results</h2>
-  <div class="table-wrapper">
-    <div id="results-error" style="display: none;" class="error-message"></div>
-    <table id="results" class="display"></table>
+    <div class="content-section">
+      <h2>Results</h2>
+      <div class="table-wrapper">
+        <div id="results-error" style="display: none;" class="error-message"></div>
+        <table id="results" class="display"></table>
+      </div>
+    </div>
   </div>
 
   <!-- jQuery & DataTables JS -->
@@ -131,22 +344,48 @@
       }
     }
 
-    $(async function () {
-      const RANKINGS_API = "https://volley-rankings-849246684371.europe-west6.run.app";
-      const RESULTS_API = "https://volley-results-849246684371.europe-west6.run.app";
-      const TEAM_ID = 12747;
+    let rankingsTable, resultsTable;
+    const RANKINGS_API = "https://volley-rankings-849246684371.europe-west6.run.app";
+    const RESULTS_API = "https://volley-results-849246684371.europe-west6.run.app";
+    
+    const teamNames = {
+      "12747": "KSC Wiedikon H3",
+      "1394": "KSC Wiedikon D4",
+      "14040": "KSC Wiedikon DU23-2",
+      "7563": "KSC Wiedikon HU23-1",
+      "1393": "KSC Wiedikon D2",
+      "541": "KSC Wiedikon H2",
+      "6023": "KSC Wiedikon Legends",
+      "4689": "KSC Wiedikon D3",
+      "2743": "KSC Wiedikon H1",
+      "1395": "KSC Wiedikon D1",
+      "2301": "KSC Wiedikon DU23-1"
+    };
 
+    async function loadData(teamId) {
       try {
+        const teamName = teamNames[teamId];
+        $("#page-title").text(`${teamName} Ranking and Results`);
+        $("#results-error").hide();
+        
+        // Show loading state
+        $("#rankings").html('<div class="loading"><div class="spinner"></div>Loading rankings...</div>');
+        $("#results").html('<div class="loading"><div class="spinner"></div>Loading results...</div>');
+
         // Rankings
         console.log("Fetching rankings...");
-        const r = await fetch(`${RANKINGS_API}/rankings?team_id=${TEAM_ID}`);
+        const r = await fetch(`${RANKINGS_API}/rankings?team_id=${teamId}`);
         if (!r.ok) {
           throw new Error(`Rankings API error: ${r.status} ${r.statusText}`);
         }
         const rankingData = await r.json();
         console.log("Rankings data:", rankingData);
 
-        $("#rankings").DataTable({
+        if (rankingsTable) {
+          rankingsTable.destroy();
+        }
+
+        rankingsTable = $("#rankings").DataTable({
           data: rankingData,
           columns: [
             { data: "rank",         title: "Rank", width: "8%" },
@@ -173,24 +412,29 @@
 
         // Results
         console.log("Fetching results...");
-        const q = await fetch(`${RESULTS_API}/results?team_id=${TEAM_ID}`);
+        const q = await fetch(`${RESULTS_API}/results?team_id=${teamId}`);
         if (!q.ok) {
           throw new Error(`Results API error: ${q.status} ${q.statusText}`);
         }
         const resultsData = await q.json();
         console.log("Results data:", resultsData);
 
+        if (resultsTable) {
+          resultsTable.destroy();
+        }
+
         if (!Array.isArray(resultsData) || resultsData.length === 0) {
           $("#results-error").text("No results data available").show();
           return;
         }
 
-        const resultsTable = $("#results").DataTable({
+        resultsTable = $("#results").DataTable({
           data: resultsData,
           columns: [
             {
               data: "play_date",
               title: "Date",
+              width: "auto",
               render: function(data, type, row) {
                 if (type === 'display') {
                   return formatDate(data);
@@ -201,6 +445,7 @@
             {
               data: "play_date",
               title: "Time",
+              width: "auto",
               render: function(data, type, row) {
                 if (type === 'display') {
                   return formatTime(data);
@@ -211,6 +456,7 @@
             {
               title: "Match",
               data: null,
+              width: "auto",
               render: function(data, type, row) {
                 const result = row.result || "";
                 let home = row.home || "";
@@ -232,15 +478,17 @@
             {
               title: "Home/Away",
               data: null,
+              width: "auto",
               render: function(data, type, row) {
                 return (row.home && row.home.includes("Wiedikon")) ? "Home" : "Away";
               }
             },
-            { data: "halle",     title: "Halle"     },
-            { data: "city",      title: "City"      },
+            { data: "halle",     title: "Halle", width: "auto" },
+            { data: "city",      title: "City", width: "auto" },
             { 
               data: "plus_code", 
               title: "Plus Code",
+              width: "auto",
               render: function(data, type, row) {
                 if (type === 'display' && data) {
                   return `<a href="https://maps.google.com/?q=${encodeURIComponent(data)}" target="_blank">${data}</a>`;
@@ -248,8 +496,8 @@
                 return data;
               }
             },
-            { data: "referees",  title: "Referee(s)" },
-            { data: "result",    title: "Result" }
+            { data: "referees",  title: "Referee(s)", width: "auto" },
+            { data: "result",    title: "Result", width: "auto" }
           ],
           createdRow: function (row, data) {
             const isHome = data.home && data.home.includes("Wiedikon");
@@ -276,6 +524,17 @@
         console.error("Error loading data:", error);
         $("#results-error").text(`Error loading data: ${error.message}`).show();
       }
+    }
+
+    $(async function () {
+      // Load initial data for H3 team
+      await loadData("12747");
+
+      // Set up team selector change handler
+      $("#team-selector").on("change", function() {
+        const selectedTeamId = $(this).val();
+        loadData(selectedTeamId);
+      });
     });
   </script>
 </body>
