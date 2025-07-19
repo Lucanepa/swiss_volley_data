@@ -96,13 +96,13 @@
       console.log("Ranking data:", rankingData);
       console.log("Group captions:", rankingData.map(r => r.group_caption));
       $("#rankings-container").empty();
-      const rankGroups = [...new Set(rankingData.map(r=>r.group_caption||"Cup"))];
+      const rankGroups = [...new Set(rankingData.map(r=>r.group_caption))];
       console.log("Unique groups:", rankGroups);
       rankGroups.forEach(groupName => {
-        const rows = rankingData.filter(r=>(r.group_caption||"Cup")===groupName);
+        const rows = rankingData.filter(r=>r.group_caption===groupName);
         const $sec = $(`
           <div class="sub-section">
-            <h3>Ranking — ${groupName}</h3>
+            <h3>Ranking — ${groupName || "Error: no group name"}</h3>
             <div class="table-wrapper"><table class="display"></table></div>
           </div>`);
         $("#rankings-container").append($sec);
@@ -139,13 +139,13 @@
       console.log("Results data:", resultsData);
       console.log("Results group captions:", resultsData.map(r => r.group_caption));
       $("#results-container").empty();
-      const resGroups = [...new Set(resultsData.map(r=>r.group_caption||"Cup"))];
+      const resGroups = [...new Set(resultsData.map(r=>r.group_caption))];
       console.log("Unique result groups:", resGroups);
       resGroups.forEach(groupName => {
-        const rows = resultsData.filter(r=>(r.group_caption||"Cup")===groupName);
+        const rows = resultsData.filter(r=>r.group_caption===groupName);
         const $sec = $(`
           <div class="sub-section">
-            <h3>Results — ${groupName}</h3>
+            <h3>Results — ${groupName || "Error: no group name"}</h3>
             <div class="table-wrapper"><table class="display"></table></div>
           </div>`);
         $("#results-container").append($sec);
