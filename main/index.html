@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>KSC Wiedikon Rankings and Results</title>
+  <title>KSC Wiedikon D1 Rankings and Results</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Aptos:wght@300;400;500;600;700&display=swap');
@@ -11,8 +11,8 @@
     .container { max-width:1400px; margin:0 auto; padding:20px; }
     .header { text-align:center; margin-bottom:40px; background:white; border-radius:12px; padding:30px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
     h1 { margin:0 0 20px; font-size:2.2rem; font-weight:600; }
-    .team-selector { text-align:center; margin-bottom:30px; }
-    .team-selector select { padding:10px 16px; font-size:16px; font-weight:500; border:2px solid #e2e8f0; border-radius:8px; background:white; cursor:pointer; min-width:280px; }
+    .block-selector { text-align:center; margin-bottom:30px; }
+    .block-selector select { padding:10px 16px; font-size:16px; font-weight:500; border:2px solid #e2e8f0; border-radius:8px; background:white; cursor:pointer; min-width:180px; }
     .content-section { background:white; border-radius:12px; padding:25px; margin-bottom:25px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
     .content-section h2 { margin:0 0 20px; font-size:1.6rem; font-weight:600; }
     .sub-section h3 { margin:1.5em 0 0.5em; font-size:1.25rem; font-weight:500; }
@@ -28,22 +28,7 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1 id="page-title">KSC Wiedikon Rankings and Results</h1>
-      <div class="team-selector">
-        <select id="team-selector">
-          <option value="1395" selected>KSC Wiedikon D1</option>
-          <option value="1393">KSC Wiedikon D2</option>
-          <option value="4689">KSC Wiedikon D3</option>
-          <option value="1394">KSC Wiedikon D4</option>
-          <option value="2301">KSC Wiedikon DU23-1</option>
-          <option value="14040">KSC Wiedikon DU23-2</option>
-          <option value="2743">KSC Wiedikon H1</option>
-          <option value="541">KSC Wiedikon H2</option>
-          <option value="12747">KSC Wiedikon H3</option>
-          <option value="6023">KSC Wiedikon Legends</option>
-          <option value="7563">KSC Wiedikon HU23-1</option>
-        </select>
-      </div>
+      <h1 id="page-title">KSC Wiedikon D1 Rankings and Results</h1>
     </div>
 
     <div class="content-section">
@@ -53,7 +38,7 @@
 
     <div class="content-section">
       <h2>Upcoming Games</h2>
-      <div class="team-selector">
+      <div class="block-selector">
         <label for="block-selector" style="margin-right:8px;font-weight:500;">Show next</label>
         <select id="block-selector">
           <option value="5" selected>5 dates</option>
@@ -69,8 +54,23 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script>
+    const DEFAULT_TEAM_ID = "1395"; // KSC Wiedikon D1
     const RANKINGS_API = "https://volley-rankings-n72zsqdqea-oa.a.run.app";
     const RESULTS_API  = "https://volley-results-n72zsqdqea-oa.a.run.app";
+
+    const teamNames = {
+      "12747": "KSC Wiedikon H3",
+      "1394":  "KSC Wiedikon D4",
+      "14040": "KSC Wiedikon DU23-2",
+      "7563":  "KSC Wiedikon HU23-1",
+      "1393":  "KSC Wiedikon D2",
+      "541":   "KSC Wiedikon H2",
+      "6023":  "KSC Wiedikon Legends",
+      "4689":  "KSC Wiedikon D3",
+      "2743":  "KSC Wiedikon H1",
+      "1395":  "KSC Wiedikon D1",
+      "2301":  "KSC Wiedikon DU23-1"
+    };
 
     function formatDate(d) {
       if (!d) return "";
@@ -88,24 +88,11 @@
       return `${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
     }
 
-    const teamNames = {
-      "12747": "KSC Wiedikon H3",
-      "1394":  "KSC Wiedikon D4",
-      "14040": "KSC Wiedikon DU23-2",
-      "7563":  "KSC Wiedikon HU23-1",
-      "1393":  "KSC Wiedikon D2",
-      "541":   "KSC Wiedikon H2",
-      "6023":  "KSC Wiedikon Legends",
-      "4689":  "KSC Wiedikon D3",
-      "2743":  "KSC Wiedikon H1",
-      "1395":  "KSC Wiedikon D1",
-      "2301":  "KSC Wiedikon DU23-1"
-    };
-
     async function loadData(teamId) {
+      // Update page title (if you ever change DEFAULT_TEAM_ID)
       $("#page-title").text(`${teamNames[teamId]} Rankings and Results`);
 
-      // — RANKINGS: only Wiedikon teams, grouped by group_caption —
+      // — RANKINGS: only Wiedikon teams in that group —
       let resp = await fetch(`${RANKINGS_API}/rankings?team_id=${teamId}`);
       if (!resp.ok) return showError("#rankings-container","Rankings API error");
       const rankingData = await resp.json();
@@ -205,11 +192,9 @@
 
     $(function() {
       // initial load
-      loadData($("#team-selector").val());
-      // reload on team or date‑block change
-      $("#team-selector, #block-selector").change(function() {
-        loadData($("#team-selector").val());
-      });
+      loadData(DEFAULT_TEAM_ID);
+      // reload when date‑block count changes
+      $("#block-selector").change(() => loadData(DEFAULT_TEAM_ID));
     });
   </script>
 </body>
