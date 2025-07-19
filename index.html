@@ -384,95 +384,55 @@
         }
 
         resultsTable = $("#results").DataTable({
-          data: resultsData,
-          columns: [
-            {
-              data: "playDate",
-              title: "Date",
-              width: "auto",
-              render: function(data, type, row) {
-                if (type === 'display') {
-                  return formatDate(data);
-                }
-                return data;
-              }
-            },
-            {
-              data: "playDate",
-              title: "Time",
-              width: "auto",
-              render: function(data, type, row) {
-                if (type === 'display') {
-                  return formatTime(data);
-                }
-                return data;
-              }
-            },
-            {
-              title: "Match",
-              data: null,
-              width: "auto",
-              render: function(data, type, row) {
-                const result = row.result || "";
-                let home = row.home || "";
-                let away = row.away || "";
-                
-                // Only try to split if result is a string
-                if (typeof result === 'string' && result.includes(":")) {
-                  const [homeSets, awaySets] = result.split(":").map(n => parseInt(n));
-                  
-                  if (!isNaN(homeSets) && !isNaN(awaySets)) {
-                    if (homeSets > awaySets) home += " 🏆";
-                    else if (awaySets > homeSets) away += " 🏆";
-                  }
-                }
-
-                return `${home} - ${away}`;
-              }
-            },
-            {
-              title: "Home/Away",
-              data: null,
-              width: "auto",
-              render: function(data, type, row) {
-                return (row.home && row.home.includes("Wiedikon")) ? "Home" : "Away";
-              }
-            },
-            { data: "group_caption",     title: "Group", width: "auto", defaultContent: "" },
-            { data: "hall_caption",     title: "Halle", width: "auto" },
-            { data: "hall_city",      title: "City", width: "auto" },
-            { 
-              data: "hall_plusCode", 
-              title: "Plus Code",
-              width: "auto",
-              render: function(data, type, row) {
-                if (type === 'display' && data) {
-                  return `<a href="https://maps.google.com/?q=${encodeURIComponent(data)}" target="_blank">${data}</a>`;
-                }
-                return data;
-              }
-            },
-            { data: "referees",  title: "Referee(s)", width: "auto" },
-            { data: "result",    title: "Result", width: "auto" }
-          ],
-          createdRow: function (row, data) {
-            const isHome = data.home && data.home.includes("Wiedikon");
-            const wiedikonInvolved = (data.home && data.home.includes("Wiedikon")) || 
-                                   (data.away && data.away.includes("Wiedikon"));
-
-            if (wiedikonInvolved) {
-              if (isHome) {
-                // Full row bold for home games
-                $(row).addClass("wiedikon-team");
-              }
-              // For away games, only the team name is bold (handled in the render function)
-            }
-          },
-          paging: false,
-          ordering: false,
-          info: false,
-          searching: false
-        });
+  data: resultsData,
+  columns: [
+    {
+      data: "playDate",
+      title: "Date",
+      render: (data, type) => type === "display" ? formatDate(data) : data
+    },
+    {
+      data: "playDate",
+      title: "Time",
+      render: (data, type) => type === "display" ? formatTime(data) : data
+    },
+    {
+      title: "Match",
+      data: null,
+      render: (data, type, row) => {
+        const home = row.teams_home_caption;
+        const away = row.teams_away_caption;
+        // optionally add trophies based on resultSummary or setResults
+        return `${home} – ${away}`;
+      }
+    },
+    {
+      title: "Home/Away",
+      data: null,
+      render: (_, __, row) => row.teams_home_caption.includes("Wiedikon") ? "Home" : "Away"
+    },
+    { data: "group_caption", title: "Group" },
+    { data: "hall_caption",  title: "Halle" },
+    { data: "hall_city",     title: "City" },
+    { 
+      data: "hall_plusCode", 
+      title: "Plus Code",
+      render: (data, type) => type === "display" && data
+        ? `<a href="https://maps.google.com/?q=${encodeURIComponent(data)}" target="_blank">${data}</a>`
+        : data
+    },
+    { data: "referees",      title: "Referee(s)" },
+    { 
+      data: "resultSummary", 
+      title: "Result",
+      render: data => Array.isArray(data) ? data.join(", ") : data 
+    }
+  ],
+  paging: false,
+  ordering: false,
+  info: false,
+  searching: false
+});
 
         console.log("Results table initialized successfully");
 
