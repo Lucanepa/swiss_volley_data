@@ -261,10 +261,15 @@
           { data: "hall_city",    title: "City" },
           {
             data: "hall_plusCode", title: "Plus Code",
-            render: d=>{
-              if (!d) return "";
-              const clean = d.replace(/\s+/g, "");
-              return `<a href="https://maps.google.com/?q=${clean}" target="_blank">${d}</a>`;
+            render: d => {
+    if (!d) return "";
+    // 1) insert the '+' between halves
+    const code = d.trim().replace(/\s+/g, "+");
+    // 2) percent‑encode it so '+' → '%2B'
+    const url = "https://www.google.com/maps/search/?api=1&query="
+                + encodeURIComponent(code);
+    return `<a href="${url}" target="_blank">${d}</a>`;
+  }
             }
           },
           { data: "referees", title: "Referee(s)" },
