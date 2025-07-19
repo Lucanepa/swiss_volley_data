@@ -103,24 +103,29 @@
           </div>`);
         $("#rankings-container").append($sec);
         $sec.find("table").DataTable({
-          data: rows,
-          columns: [
-            {data:"rank",title:"Rank"},
-            {data:"team_name",title:"Team"},
-            {data:"group_caption",title:"Group"},
-            {data:"points",title:"Pts"},
-            {data:"games_played",title:"# Matches"},
-            {data:"wins",title:"Matches won"},
-            {data:"defeats",title:"Matches lost"},
-            {data:"sets_won",title:"Sets won"},
-            {data:"sets_lost",title:"Sets lost"},
-            {data:"balls_won",title:"Balls won"},
-            {data:"balls_lost",title:"Balls lost"}
-          ],
-          paging:false,ordering:false,info:false,searching:false,
-          createdRow:(row,data)=>data.team_name.includes("Wiedikon")&&$(row).addClass("wiedikon-team")
-        });
-      });
+  data: rows,
+  columns: [
+    { data: "rank",           title: "Rank" },
+    { data: "team_name",      title: "Team" },
+    { data: "points",         title: "Pts" },
+    { data: "games",          title: "# Matches" },     // was games_played
+    { data: "wins",           title: "Matches won" },
+    { data: "defeats",        title: "Matches lost" },
+    { data: "setsWon",        title: "Sets won" },       // was sets_won
+    { data: "setsLost",       title: "Sets lost" },      // was sets_lost
+    { data: "ballsWon",       title: "Balls won" },      // was balls_won
+    { data: "ballsLost",      title: "Balls lost" }      // was balls_lost
+  ],
+  paging:    false,
+  ordering:  false,
+  info:      false,
+  searching: false,
+  createdRow: (row, data) => {
+    if (data.team_name.includes("Wiedikon")) {
+      $(row).addClass("wiedikon-team");
+    }
+  }
+});
 
       // — Results —
       resp = await fetch(`${RESULTS_API}/results?team_id=${teamId}`);
@@ -143,7 +148,6 @@
             {data:"playDate",title:"Time",render:(d,t)=>t==="display"?formatTime(d):d},
             {data:null,title:"Match",render:(_,__,r)=>`${r.teams_home_caption} – ${r.teams_away_caption}`},
             {data:null,title:"Home/Away",render:(_,__,r)=>r.teams_home_caption.includes("Wiedikon")?"Home":"Away"},
-            {data:"group_caption",title:"Group"},
             {data:"hall_caption",title:"Halle"},
             {data:"hall_city",title:"City"},
             {data:"hall_plusCode",title:"Plus Code",render:d=>d?`<a href="https://maps.google.com/?q=${d}" target="_blank">${d}</a>`:""},
