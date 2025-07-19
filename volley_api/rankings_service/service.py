@@ -18,7 +18,7 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #f8f9fa;
       min-height: 100vh;
       color: #2d3748;
       line-height: 1.6;
@@ -33,23 +33,17 @@
     .header {
       text-align: center;
       margin-bottom: 40px;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
+      background: white;
+      border-radius: 12px;
       padding: 30px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
       margin: 0 0 20px 0;
-      font-size: 2.5rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: #2d3748;
     }
 
     .team-selector {
@@ -58,57 +52,39 @@
     }
 
     .team-selector select {
-      padding: 12px 20px;
+      padding: 10px 16px;
       font-size: 16px;
       font-weight: 500;
       border: 2px solid #e2e8f0;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      background: white;
       cursor: pointer;
       min-width: 280px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: border-color 0.2s ease;
     }
 
     .team-selector select:hover {
       border-color: #667eea;
-      box-shadow: 0 6px 12px rgba(102, 126, 234, 0.15);
     }
 
     .team-selector select:focus {
       outline: none;
       border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
     .content-section {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     h2 {
-      margin: 0 0 25px 0;
-      font-size: 1.8rem;
+      margin: 0 0 20px 0;
+      font-size: 1.6rem;
       font-weight: 600;
       color: #2d3748;
-      position: relative;
-      padding-bottom: 10px;
-    }
-
-    h2::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 60px;
-      height: 3px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 2px;
     }
 
     .table-wrapper {
@@ -128,7 +104,7 @@
     }
 
     table.dataTable thead th {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #667eea;
       color: white;
       font-weight: 600;
       padding: 12px 8px;
@@ -171,12 +147,12 @@
 
     .wiedikon-team {
       font-weight: 600;
-      background: linear-gradient(135deg, #fef5e7 0%, #fed7aa 100%) !important;
+      background: #fef5e7 !important;
       color: #d69e2e;
     }
 
     .wiedikon-team:hover {
-      background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%) !important;
+      background: #fef3c7 !important;
     }
 
     .error-message {
@@ -190,27 +166,7 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: #667eea;
-      font-weight: 500;
-    }
 
-    .spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid #e2e8f0;
-      border-radius: 50%;
-      border-top-color: #667eea;
-      animation: spin 1s ease-in-out infinite;
-      margin-right: 10px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
 
     /* Responsive design */
     @media screen and (max-width: 768px) {
@@ -368,9 +324,7 @@
         $("#page-title").text(`${teamName} Ranking and Results`);
         $("#results-error").hide();
         
-        // Show loading state
-        $("#rankings").empty().append('<div class="loading"><div class="spinner"></div>Loading rankings...</div>');
-        $("#results").empty().append('<div class="loading"><div class="spinner"></div>Loading results...</div>');
+
 
         // Rankings
         console.log("Fetching rankings...");
