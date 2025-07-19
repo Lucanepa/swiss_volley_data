@@ -18,7 +18,7 @@
       font-family: 'Aptos', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f8f9fa;
+      background: #f0f4f8;
       min-height: 100vh;
       color: #2d3748;
       line-height: 1.6;
@@ -64,12 +64,12 @@
     }
 
     .team-selector select:hover {
-      border-color: #4a5568;
+      border-color: #1e40af;
     }
 
     .team-selector select:focus {
       outline: none;
-      border-color: #4a5568;
+      border-color: #1e40af;
     }
 
     .content-section {
@@ -104,7 +104,7 @@
     }
 
     table.dataTable thead th {
-      background: #4a5568;
+      background: #1e40af;
       color: white;
       font-weight: 600;
       padding: 12px 8px;
@@ -147,12 +147,12 @@
 
     .wiedikon-team {
       font-weight: 600;
-      background: #f7fafc !important;
-      color: #2d3748;
+      background: #fef3c7 !important;
+      color: #92400e;
     }
 
     .wiedikon-team:hover {
-      background: #edf2f7 !important;
+      background: #fde68a !important;
     }
 
     .error-message {
