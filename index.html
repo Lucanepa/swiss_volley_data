@@ -21,7 +21,7 @@
     table.dataTable thead th { background:#1e40af; color:white; font-weight:600; padding:12px 8px; text-align:left; font-size:11px; text-transform:uppercase; }
     table.dataTable tbody td { padding:10px 8px; border-bottom:1px solid #e2e8f0; transition:background-color .2s; }
     table.dataTable tbody tr:last-child td { border-bottom:none; }
-    .wiedikon-team { font-weight:600; background:#fef3c7!important; color:#92400e; }
+    table.dataTable tbody tr:nth-child(even) { background-color: #f8f9fa; }
     .error-message { color:#c53030; background:#fed7d7; padding:16px; border-radius:12px; margin:20px 0; border-left:4px solid #e53e3e; }
   </style>
 </head>
@@ -70,6 +70,7 @@
       const pad = n => n.toString().padStart(2,"0");
       return `${pad(dt.getDate())}.${pad(dt.getMonth()+1)}.${dt.getFullYear().toString().slice(-2)}`;
     }
+    
     function formatTime(d) {
       if (!d) return "";
       const dt = new Date(d);
@@ -98,34 +99,35 @@
         const rows = rankingData.filter(r=>r.group_caption===group);
         const $sec = $(`
           <div class="sub-section">
-            <h3>Ranking — ${group||"No group"}</h3>
+            <h3>Ranking — ${group||"No group"}</h3>
             <div class="table-wrapper"><table class="display"></table></div>
           </div>`);
         $("#rankings-container").append($sec);
         $sec.find("table").DataTable({
-  data: rows,
-  columns: [
-    { data: "rank",           title: "Rank" },
-    { data: "team_name",      title: "Team" },
-    { data: "points",         title: "Pts" },
-    { data: "games",          title: "# Matches" },     // was games_played
-    { data: "wins",           title: "Matches won" },
-    { data: "defeats",        title: "Matches lost" },
-    { data: "setsWon",        title: "Sets won" },       // was sets_won
-    { data: "setsLost",       title: "Sets lost" },      // was sets_lost
-    { data: "ballsWon",       title: "Balls won" },      // was balls_won
-    { data: "ballsLost",      title: "Balls lost" }      // was balls_lost
-  ],
-  paging:    false,
-  ordering:  false,
-  info:      false,
-  searching: false,
-  createdRow: (row, data) => {
-    if (data.team_name.includes("Wiedikon")) {
-      $(row).addClass("wiedikon-team");
-    }
-  }
-});
+          data: rows,
+          columns: [
+            { data: "rank",           title: "Rank" },
+            { data: "team_name",      title: "Team" },
+            { data: "points",         title: "Pts" },
+            { data: "games",          title: "# Matches" },
+            { data: "wins",           title: "Matches won" },
+            { data: "defeats",        title: "Matches lost" },
+            { data: "setsWon",        title: "Sets won" },
+            { data: "setsLost",       title: "Sets lost" },
+            { data: "ballsWon",       title: "Balls won" },
+            { data: "ballsLost",      title: "Balls lost" }
+          ],
+          paging:    false,
+          ordering:  false,
+          info:      false,
+          searching: false,
+          createdRow: (row, data) => {
+            if (data.team_name.includes("Wiedikon")) {
+              $(row).find("td").css("font-weight", "600");
+            }
+          }
+        });
+      });
 
       // — Results —
       resp = await fetch(`${RESULTS_API}/results?team_id=${teamId}`);
@@ -137,7 +139,7 @@
         const rows = resultsData.filter(r=>r.group_caption===group);
         const $sec = $(`
           <div class="sub-section">
-            <h3>Results — ${group||"No group"}</h3>
+            <h3>Results — ${group||"No group"}</h3>
             <div class="table-wrapper"><table class="display"></table></div>
           </div>`);
         $("#results-container").append($sec);
@@ -156,7 +158,7 @@
           ],
           paging:false,ordering:false,info:false,searching:false,
           createdRow:(row,d)=> {
-            if ((d.teams_home_caption||"").includes("Wiedikon")) $(row).addClass("wiedikon-team");
+            if ((d.teams_home_caption||"").includes("Wiedikon")) $(row).find("td").css("font-weight", "600");
           }
         });
       });
@@ -166,9 +168,11 @@
       $(selector).html(`<div class="error-message">${msg}</div>`);
     }
 
-    $(async()=>{
+    $(async function() {
       await loadData("1395");
-      $("#team-selector").change(()=>loadData($("#team-selector").val()));
+      $("#team-selector").change(function() {
+        loadData($("#team-selector").val());
+      });
     });
   </script>
 </body>
