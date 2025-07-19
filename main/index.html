@@ -38,11 +38,6 @@
     </div>
 
     <div class="content-section">
-      <h2>Overall Rankings</h2>
-      <div id="overall-rankings-container"></div>
-    </div>
-
-    <div class="content-section">
       <h2>Next Fixtures</h2>
       <div class="block-selector">
         <label for="block-selector" style="margin-right:8px;font-weight:500;">Show next</label>
@@ -53,6 +48,11 @@
         </select>
       </div>
       <div id="results-container"></div>
+    </div>
+
+    <div class="content-section" style="margin-top: 40px;">
+      <h2>Overall Rankings</h2>
+      <div id="overall-rankings-container"></div>
     </div>
   </div>
 
@@ -236,8 +236,8 @@
     }
 
     $(function(){
-      loadOverallRankings();
       loadNextGames();
+      loadOverallRankings();
       $("#block-selector").change(loadNextGames);
     });
   </script>
