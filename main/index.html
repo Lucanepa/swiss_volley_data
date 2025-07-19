@@ -50,6 +50,11 @@
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script>
     const RESULTS_API = "https://volley-results-n72zsqdqea-oa.a.run.app";
+    // List all your team IDs here if you want a league‑wide feed
+    const TEAM_IDS = [
+      "1395","1393","4689","1394","2301",
+      "14040","2743","541","12747","6023","7563"
+    ];
 
     function formatDate(d) {
       const dt = new Date(d);
@@ -66,19 +71,30 @@
     }
 
     async function loadNextGames() {
-      let resp = await fetch(`${RESULTS_API}/results`);
-      if (!resp.ok) {
-        $("#results-container").html(`<div class="error-message">Failed to load upcoming games</div>`);
-        return;
-      }
-      const resultsData = await resp.json();
+      // fetch results for each team, merge into one array
+      const allArrays = await Promise.all(
+        TEAM_IDS.map(id =>
+          fetch(`${RESULTS_API}/results?team_id=${id}`)
+            .then(r => r.ok ? r.json() : [])
+            .catch(() => [])
+        )
+      );
+      let combined = allArrays.flat();
+
+      // dedupe by date + matchup
+      const uniq = new Map();
+      combined.forEach(r => {
+        const key = `${r.playDate}|${r.teams_home_caption}|${r.teams_away_caption}`;
+        if (!uniq.has(key)) uniq.set(key, r);
+      });
+      const resultsData = Array.from(uniq.values());
+
       const now = new Date();
-      // filter out past games & sort
       const upcoming = resultsData
         .filter(r => new Date(r.playDate) >= now)
         .sort((a, b) => new Date(a.playDate) - new Date(b.playDate));
 
-      // determine first N distinct dates
+      // pick first N distinct dates
       const N = parseInt($("#block-selector").val(), 10) || 5;
       const seenDates = new Set();
       for (const game of upcoming) {
@@ -87,13 +103,16 @@
         else break;
       }
 
-      // keep all games on those dates
       const filtered = upcoming.filter(game =>
         seenDates.has(new Date(game.playDate).toISOString().split("T")[0])
       );
 
-      // render table
+      // render
       $("#results-container").empty();
+      if (filtered.length === 0) {
+        $("#results-container").html(`<div class="error-message">No upcoming games found.</div>`);
+        return;
+      }
       const $sec = $(`
         <div class="sub-section">
           <h3>Next ${seenDates.size} date block(s)</h3>
