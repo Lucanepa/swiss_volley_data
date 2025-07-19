@@ -1,52 +1,541 @@
-from flask import Flask, request, jsonify, make_response
-from google.cloud import bigquery
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>KSC Wiedikon Ranking and Results</title>
 
-app = Flask(__name__)
-client = bigquery.Client()
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
 
-def cors(resp):
-    resp.headers["Access-Control-Allow-Origin"] = "*"
-    return resp
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-@app.route("/rankings")
-def get_rankings():
-    team_id = request.args.get("team_id", type=int)
-    if not team_id:
-        return cors(make_response("team_id is required", 400))
+    * {
+      box-sizing: border-box;
+    }
 
-    sql = f"""
-    SELECT
-      r.leagueId               AS league_id,
-      r.phaseId                AS phase_id,
-      r.groupId                AS group_id,
-      rm.ballsLost             AS balls_lost,
-      rm.ballsWon              AS balls_won,
-      rm.defeats               AS defeats,
-      rm.defeatsClear          AS defeats_clear,
-      rm.defeatsNarrow         AS defeats_narrow,
-      rm.games                 AS games_played,
-      rm.points                AS points,
-      rm.rank                  AS rank,
-      rm.setsLost              AS sets_lost,
-      rm.setsWon               AS sets_won,
-      rm.wins                  AS wins,
-      rm.winsClear             AS wins_clear,
-      rm.winsNarrow            AS wins_narrow,
-      rm.teamCaption           AS team_name,
-      r.updated_at
-    FROM `{client.project}.api_data.rankings` AS r,
-         UNNEST(r.ranking) AS rm
-    WHERE r.wiedikon_team_id = @team_id
-    ORDER BY rm.rank
-    """
-    job = client.query(
-        sql,
-        job_config=bigquery.QueryJobConfig(
-            query_parameters=[bigquery.ScalarQueryParameter("team_id","INT64",team_id)]
-        ),
-    )
-    rows = [dict(r) for r in job.result()]
-    return cors(jsonify(rows))
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #2d3748;
+      line-height: 1.6;
+    }
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    h1 {
+      margin: 0 0 20px 0;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .team-selector {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .team-selector select {
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: 500;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      min-width: 280px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .team-selector select:hover {
+      border-color: #667eea;
+      box-shadow: 0 6px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .team-selector select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .content-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    h2 {
+      margin: 0 0 25px 0;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #2d3748;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    table.dataTable {
+      width: 100% !important;
+      font-size: 12px;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    table.dataTable thead th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 600;
+      padding: 12px 8px;
+      text-align: left;
+      border: none;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    table.dataTable tbody td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #e2e8f0;
+      background: white;
+      transition: background-color 0.2s ease;
+    }
+
+    table.dataTable tbody tr:hover td {
+      background-color: #f7fafc;
+    }
+
+    table.dataTable tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Prevent wrapping for date and time columns */
+    table.dataTable th:nth-child(1),
+    table.dataTable th:nth-child(2),
+    table.dataTable td:nth-child(1),
+    table.dataTable td:nth-child(2) {
+      white-space: nowrap;
+      min-width: 80px;
+    }
+
+    /* Prevent wrapping for rankings table headers */
+    #rankings table.dataTable th {
+      white-space: nowrap;
+      min-width: 60px;
+    }
+
+    .wiedikon-team {
+      font-weight: 600;
+      background: linear-gradient(135deg, #fef5e7 0%, #fed7aa 100%) !important;
+      color: #d69e2e;
+    }
+
+    .wiedikon-team:hover {
+      background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%) !important;
+    }
+
+    .error-message {
+      color: #c53030;
+      background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      border-left: 4px solid #e53e3e;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #667eea;
+      font-weight: 500;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #e2e8f0;
+      border-radius: 50%;
+      border-top-color: #667eea;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive design */
+    @media screen and (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      .header {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .content-section {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .team-selector select {
+        min-width: 250px;
+        font-size: 14px;
+      }
+
+      table.dataTable {
+        font-size: 11px;
+      }
+
+      table.dataTable thead th,
+      table.dataTable tbody td {
+        padding: 8px 6px;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .team-selector select {
+        min-width: 200px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 id="page-title">KSC Wiedikon Ranking and Results</h1>
+      
+      <div class="team-selector">
+        <select id="team-selector">
+          <option value="12747">KSC Wiedikon H3</option>
+          <option value="1394">KSC Wiedikon D4</option>
+          <option value="14040">KSC Wiedikon DU23-2</option>
+          <option value="7563">KSC Wiedikon HU23-1</option>
+          <option value="1393">KSC Wiedikon D2</option>
+          <option value="541">KSC Wiedikon H2</option>
+          <option value="6023">KSC Wiedikon Legends</option>
+          <option value="4689">KSC Wiedikon D3</option>
+          <option value="2743">KSC Wiedikon H1</option>
+          <option value="1395">KSC Wiedikon D1</option>
+          <option value="2301">KSC Wiedikon DU23-1</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <h2>Rankings</h2>
+      <div class="table-wrapper">
+        <table id="rankings" class="display"></table>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <h2>Results</h2>
+      <div class="table-wrapper">
+        <div id="results-error" style="display: none;" class="error-message"></div>
+        <table id="results" class="display"></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery & DataTables JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script>
+    function formatDate(dateStr) {
+      if (!dateStr) return "";
+      
+      try {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return dateStr; // Return original if invalid date
+        
+        const pad = (n) => n.toString().padStart(2, "0");
+
+        const day = pad(date.getDate());
+        const month = pad(date.getMonth() + 1);
+        const year = date.getFullYear().toString().slice(-2); // Get last 2 digits
+
+        return `${day}.${month}.${year}`;
+      } catch (error) {
+        console.error("Error formatting date:", dateStr, error);
+        return dateStr;
+      }
+    }
+
+    function formatTime(dateStr) {
+      if (!dateStr) return "";
+      
+      try {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return dateStr; // Return original if invalid date
+        
+        const pad = (n) => n.toString().padStart(2, "0");
+
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
+
+        return `${hours}:${minutes}`;
+      } catch (error) {
+        console.error("Error formatting time:", dateStr, error);
+        return dateStr;
+      }
+    }
+
+    let rankingsTable, resultsTable;
+    const RANKINGS_API = "https://volley-rankings-849246684371.europe-west6.run.app";
+    const RESULTS_API = "https://volley-results-849246684371.europe-west6.run.app";
+    
+    const teamNames = {
+      "12747": "KSC Wiedikon H3",
+      "1394": "KSC Wiedikon D4",
+      "14040": "KSC Wiedikon DU23-2",
+      "7563": "KSC Wiedikon HU23-1",
+      "1393": "KSC Wiedikon D2",
+      "541": "KSC Wiedikon H2",
+      "6023": "KSC Wiedikon Legends",
+      "4689": "KSC Wiedikon D3",
+      "2743": "KSC Wiedikon H1",
+      "1395": "KSC Wiedikon D1",
+      "2301": "KSC Wiedikon DU23-1"
+    };
+
+    async function loadData(teamId) {
+      try {
+        const teamName = teamNames[teamId];
+        $("#page-title").text(`${teamName} Ranking and Results`);
+        $("#results-error").hide();
+        
+        // Show loading state
+        $("#rankings").empty().append('<div class="loading"><div class="spinner"></div>Loading rankings...</div>');
+        $("#results").empty().append('<div class="loading"><div class="spinner"></div>Loading results...</div>');
+
+        // Rankings
+        console.log("Fetching rankings...");
+        const r = await fetch(`${RANKINGS_API}/rankings?team_id=${teamId}`);
+        if (!r.ok) {
+          throw new Error(`Rankings API error: ${r.status} ${r.statusText}`);
+        }
+        const rankingData = await r.json();
+        console.log("Rankings data:", rankingData);
+
+        if (rankingsTable) {
+          rankingsTable.destroy();
+        }
+
+        rankingsTable = $("#rankings").DataTable({
+          data: rankingData,
+          columns: [
+            { data: "rank",         title: "Rank", width: "8%" },
+            { data: "team_name",    title: "Team", width: "auto" },
+            { data: "points",       title: "Pts", width: "8%" },
+            { data: "games_played", title: "# Matches", width: "8%" },
+            { data: "wins",         title: "Matches won", width: "8%" },
+            { data: "defeats",      title: "Matches lost", width: "8%" },
+            { data: "sets_won",     title: "Sets won", width: "8%" },
+            { data: "sets_lost",    title: "Sets lost", width: "8%" },
+            { data: "balls_won",    title: "Balls won", width: "8%" },
+            { data: "balls_lost",   title: "Balls lost", width: "8%" }
+          ],
+          createdRow: function (row, data) {
+            if (data.team_name && data.team_name.includes("Wiedikon")) {
+              $(row).addClass("wiedikon-team");
+            }
+          },
+          paging: false,
+          ordering: false,
+          info: false,
+          searching: false
+        });
+
+        // Results
+        console.log("Fetching results...");
+        const q = await fetch(`${RESULTS_API}/results?team_id=${teamId}`);
+        if (!q.ok) {
+          throw new Error(`Results API error: ${q.status} ${q.statusText}`);
+        }
+        const resultsData = await q.json();
+        console.log("Results data:", resultsData);
+
+        if (resultsTable) {
+          resultsTable.destroy();
+        }
+
+        if (!Array.isArray(resultsData) || resultsData.length === 0) {
+          $("#results-error").text("No results data available").show();
+          return;
+        }
+
+        resultsTable = $("#results").DataTable({
+          data: resultsData,
+          columns: [
+            {
+              data: "play_date",
+              title: "Date",
+              width: "auto",
+              render: function(data, type, row) {
+                if (type === 'display') {
+                  return formatDate(data);
+                }
+                return data;
+              }
+            },
+            {
+              data: "play_date",
+              title: "Time",
+              width: "auto",
+              render: function(data, type, row) {
+                if (type === 'display') {
+                  return formatTime(data);
+                }
+                return data;
+              }
+            },
+            {
+              title: "Match",
+              data: null,
+              width: "auto",
+              render: function(data, type, row) {
+                const result = row.result || "";
+                let home = row.home || "";
+                let away = row.away || "";
+                
+                // Only try to split if result is a string
+                if (typeof result === 'string' && result.includes(":")) {
+                  const [homeSets, awaySets] = result.split(":").map(n => parseInt(n));
+                  
+                  if (!isNaN(homeSets) && !isNaN(awaySets)) {
+                    if (homeSets > awaySets) home += " 🏆";
+                    else if (awaySets > homeSets) away += " 🏆";
+                  }
+                }
+
+                return `${home} - ${away}`;
+              }
+            },
+            {
+              title: "Home/Away",
+              data: null,
+              width: "auto",
+              render: function(data, type, row) {
+                return (row.home && row.home.includes("Wiedikon")) ? "Home" : "Away";
+              }
+            },
+            { data: "halle",     title: "Halle", width: "auto" },
+            { data: "city",      title: "City", width: "auto" },
+            { 
+              data: "plus_code", 
+              title: "Plus Code",
+              width: "auto",
+              render: function(data, type, row) {
+                if (type === 'display' && data) {
+                  return `<a href="https://maps.google.com/?q=${encodeURIComponent(data)}" target="_blank">${data}</a>`;
+                }
+                return data;
+              }
+            },
+            { data: "referees",  title: "Referee(s)", width: "auto" },
+            { data: "result",    title: "Result", width: "auto" }
+          ],
+          createdRow: function (row, data) {
+            const isHome = data.home && data.home.includes("Wiedikon");
+            const wiedikonInvolved = (data.home && data.home.includes("Wiedikon")) || 
+                                   (data.away && data.away.includes("Wiedikon"));
+
+            if (wiedikonInvolved) {
+              if (isHome) {
+                // Full row bold for home games
+                $(row).addClass("wiedikon-team");
+              }
+              // For away games, only the team name is bold (handled in the render function)
+            }
+          },
+          paging: false,
+          ordering: false,
+          info: false,
+          searching: false
+        });
+
+        console.log("Results table initialized successfully");
+
+      } catch (error) {
+        console.error("Error loading data:", error);
+        $("#results-error").text(`Error loading data: ${error.message}`).show();
+      }
+    }
+
+    $(async function () {
+      // Load initial data for H3 team
+      await loadData("12747");
+
+      // Set up team selector change handler
+      $("#team-selector").on("change", function() {
+        const selectedTeamId = $(this).val();
+        loadData(selectedTeamId);
+      });
+    });
+  </script>
+</body>
+</html>
