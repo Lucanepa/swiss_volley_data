@@ -1,317 +1,726 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <title>Wiedikon Volleyball – Rankings & Upcoming Games</title>
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
-  <link rel="stylesheet" href="https://cdn.datatables.net/rowgroup/1.3.1/css/rowGroup.dataTables.min.css"/>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Aptos:wght@300;400;500;600;700&display=swap');
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Aptos', sans-serif;
-      margin: 0; padding: 0;
-      background: #f0f4f8; color: #2d3748; line-height: 1.6;
-    }
-    .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-    .header {
-      text-align: center; margin-bottom: 40px;
-      background: white; border-radius: 12px;
-      padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    h1 { margin: 0; font-size: 2.2rem; font-weight: 600; }
-    .content-section {
-      background: white; border-radius: 12px;
-      padding: 25px; margin-bottom: 25px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .content-section h2 {
-      margin: 0 0 20px; font-size: 1.6rem; font-weight: 600;
-    }
-    .sub-section h3 {
-      margin: 1.5em 0 0.5em; font-size: 1.25rem; font-weight: 500;
-    }
-    .table-wrapper {
-      overflow-x: auto; border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    }
+<meta charset="UTF-8" />
 
-    /* DataTables layout & spacing */
-    table.dataTable {
-      width: 100% !important; font-size: 12px;
-      border-collapse: separate; border-spacing: 0 0.75rem;
-    }
-    table.dataTable thead th {
-      background: #1e40af; color: white; font-weight: 600;
-      padding: 12px 8px; font-size: 11px; text-transform: uppercase;
-    }
-    table.dataTable tbody td {
-      padding: 10px 8px; border-bottom: 1px solid #e2e8f0;
-      transition: background-color .2s;
-    }
-    table.dataTable tbody tr:last-child td { border-bottom: none; }
-    table.dataTable tbody tr:nth-child(even) { background: #f8f9fa; }
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    /* Group‐row divider styling */
-    table.dataTable tbody tr.group {
-      background: transparent !important;
-    }
-    table.dataTable tbody tr.group td {
-      padding: .5rem 0; font-weight: 600; color: #1e40af;
-      border-top: 2px solid #1e40af; border-bottom: none;
-    }
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
 
-    /* Team column no‑wrap */
-    table.dataTable th:nth-child(3),
-    table.dataTable td:nth-child(3) {
-      white-space: nowrap;
-    }
+<style>
+/* ============ ORIGINAL STYLES (unchanged)… ============ */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1a202c;line-height:1.6}
+.container{max-width:100%;margin:0 auto;padding:2px;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center}
+.content-section{background:#fff;border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,.1);margin-bottom:20px;width:100%;overflow:hidden}
+.content-section h2{background:linear-gradient(135deg,#0066CC 0%,#FFD700 100%);color:#fff;padding:12px 16px;font-size:1.25rem;font-weight:600;margin:0}
+.sub-section{margin:5px}
+.sub-section h3{background:linear-gradient(135deg,#0066CC 0%,#FFD700 100%);color:#fff;padding:10px 14px;margin:0 0 10px;border-radius:8px;font-size:1rem;font-weight:600}
+.table-wrapper{width:100%;overflow-x:hidden}
+.table-wrapper table{width:100%!important;table-layout:fixed!important;word-break:normal}
+.table-wrapper table td, .table-wrapper table th{padding:2px 5px!important}
+     @media (max-width: 768px) {
+            .table-wrapper table {
+                table-layout: auto !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            
+            /* Rankings table specific mobile styling */
+            #rankings-container .table-wrapper {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
+            
+            #rankings-container .table-wrapper table {
+                table-layout: auto !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: auto !important;
+            }
+            
+            /* Ensure rankings table doesn't overflow */
+            #rankings-container .dataTables_wrapper {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
+            
+            #rankings-container .dataTables_wrapper .dataTables_scroll {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
+            
+            #rankings-container .dataTables_wrapper .dataTables_scrollBody {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
+            
+            /* Force DataTables to respect mobile constraints */
+            #rankings-container .dataTables_wrapper .dataTables_scrollHead {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
+            
+            #rankings-container .dataTables_wrapper .dataTables_scrollHead table {
+                width: 100% !important;
+                max-width: 100% !important;
+                table-layout: auto !important;
+            }
+            
+            #rankings-container .dataTables_wrapper .dataTables_scrollBody table {
+                width: 100% !important;
+                max-width: 100% !important;
+                table-layout: auto !important;
+            }
+            
+            /* Additional mobile constraints */
+            #rankings-container {
+                max-width: 100vw !important;
+                overflow-x: hidden !important;
+            }
+            
+            #rankings-container * {
+                max-width: 100vw !important;
+            }
+            
+            /* Force DataTables to behave on mobile */
+            #rankings-container .dataTables_wrapper {
+                width: 100% !important;
+                max-width: 100vw !important;
+                overflow-x: hidden !important;
+            }
+            
+            #rankings-container .dataTables_wrapper .dataTables_scroll {
+                width: 100% !important;
+                max-width: 100vw !important;
+                overflow-x: hidden !important;
+            }
+            
+            #rankings-container .dataTables_wrapper .dataTables_scrollBody {
+                width: 100% !important;
+                max-width: 100vw !important;
+                overflow-x: hidden !important;
+            }
+            
+            #rankings-container .dataTables_wrapper .dataTables_scrollHead {
+                width: 100% !important;
+                max-width: 100vw !important;
+                overflow-x: hidden !important;
+            }
+            
+            /* Force table cells to wrap and not overflow */
+            #rankings-container .dataTables_wrapper .dataTables_scrollBody td {
+                max-width: 0 !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+            }
+            
+            /* Allow team names to wrap on mobile */
+            #rankings-container .dataTables_wrapper .dataTables_scrollBody td:nth-child(2) {
+                white-space: normal !important;
+                word-break: break-word !important;
+                overflow-wrap: break-word !important;
+            }
+            
+            /* Nuclear option - force everything to fit */
+            #rankings-container .dataTables_wrapper,
+            #rankings-container .dataTables_wrapper *,
+            #rankings-container .table-wrapper,
+            #rankings-container .table-wrapper * {
+                max-width: 100vw !important;
+                box-sizing: border-box !important;
+            }
+            
+            /* Ensure table doesn't exceed viewport */
+            #rankings-container table {
+                width: 100% !important;
+                max-width: 100vw !important;
+                table-layout: auto !important;
+            }
+        }
 
-    .error-message {
-      color: #c53030; background: #fed7d7;
-      padding: 16px; border-radius: 12px;
-      margin: 20px 0; border-left: 4px solid #e53e3e;
-    }
-    .cheer { display: inline-block; margin-left: 6px; animation: wave 1s infinite; }
-    @keyframes wave {
-      0%,100%{transform:translateX(0) rotate(0deg);}
-      25%{transform:translateX(-2px) rotate(-2deg);}
-      75%{transform:translateX(2px) rotate(2deg);}
-    }
+        .dataTables_wrapper .dataTables_scroll {
+            overflow-x: hidden !important;
+        }
 
-    /* Mobile adjustments */
-    @media (max-width: 768px) {
-      body { font-size: 14px; }
-      h1 { font-size: 1.8rem; }
-      .content-section h2 { font-size: 1.4rem; }
-      .sub-section h3 { font-size: 1.1rem; }
-      table.dataTable { font-size: 10px; }
-      table.dataTable thead th { padding: 8px 6px; font-size: 9px; }
-      table.dataTable tbody td { padding: 6px 4px; }
+        .dataTables_wrapper .dataTables_scrollBody {
+            overflow-x: hidden !important;
+            padding: 1px 2px !important;
+            font-size: 12px;
+        }
+
+        /* Mobile font size adjustments */
+        @media (max-width: 768px) {
+            .dataTables_wrapper .dataTables_scrollBody {
+                font-size: 11px !important;
+            }
+            
+            .dataTables_wrapper .dataTables_scrollHead th {
+                font-size: 11px !important;
+            }
+            
+            .dataTables_wrapper .dataTables_scrollBody td {
+                font-size: 11px !important;
+            }
+            
+            .sub-section h3 {
+                font-size: 0.9rem;
+            }
+            
+            .content-section h2 {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Results table specific styling - automatic height */
+        #results-container .table-wrapper {
+            height: auto;
+            overflow-y: visible;
+        }
+
+        #results-container .dataTables_wrapper .dataTables_scrollBody {
+            height: auto;
+            overflow-y: visible !important;
+        }
+
+        /* Freeze headers when scrolling */
+        .dataTables_wrapper .dataTables_scrollHead {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 10 !important;
+            background: white !important;
+        }
+
+        /* Ensure sticky headers work in results table */
+        #results-container .dataTables_wrapper .dataTables_scrollHead {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 10 !important;
+            background: white !important;
+        }
+
+        /* Center emojis in headers */
+        .dataTables_wrapper .dataTables_scrollHead th {
+            text-align: center !important;
+        }
+
+        .dataTables_wrapper .dataTables_scrollHead th {
+            font-size: 12px !important;
+            padding: 4px 2px !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dataTables_wrapper .dataTables_scrollBody td {
+            padding: 2px 2px !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+.dataTables_wrapper .dataTables_scrollBody td:nth-child(3) {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word;
+    min-width: 150px;
+}
+
+/* Results table specific styling - match column wrapping */
+@media (max-width: 768px) {
+    /* Only apply to results table */
+    #results-container .dataTables_wrapper .dataTables_scrollBody td:nth-child(3) {
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        min-width: 120px !important;
+        max-width: 180px !important;
+        padding: 4px 2px !important;
+        font-size: 10px !important;
+        line-height: 1.2 !important;
     }
-  </style>
-</head>
-<body>
-  <div class="container">
+    
+    /* Ensure results table doesn't overflow */
+    #results-container .table-wrapper {
+        overflow-x: hidden !important;
+    }
+    
+    /* Allow results table to be responsive */
+    #results-container .table-wrapper table {
+        table-layout: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_processing,
+        .dataTables_wrapper .dataTables_paginate {
+            display: none !important;
+        }
+
+        /* Detail view styles */
+        .detail-view {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .detail-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 120px auto 20px auto;
+            padding: 24px;
+            width: 90%;
+            max-width: 800px;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+        }
+
+        .detail-content h2 {
+            background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+            color: white;
+            padding: 20px 24px;
+            margin: -24px -24px 24px -24px;
+            border-radius: 12px 12px 0 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .detail-table th,
+        .detail-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .detail-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+            width: 30%;
+        }
+
+        .detail-close {
+            background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .detail-close:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 20px auto;
+            padding: 24px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        .modal-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .modal-table th,
+        .modal-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        /* Error message styles */
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Loading styles */
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #374151;
+            font-size: 16px;
+        }
+
+        /* Loading progress styles */
+        .loading-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .loading-text {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* Clickable row styles */
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .clickable-row:hover {
+            background-color: #f0f9ff !important;
+        }
+
+        .last-updated,
+        .updated-at {
+            text-align: center;
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 20px;
+            font-style: italic;
+        }
+.next-game-grid{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  font-size:.9rem;
+  padding:2px 10px;
+}
+.next-game-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 16px;
+  align-items:center;
+}
+.next-game-row div{white-space:nowrap}
+.next-game-grid strong{margin-right:4px}
+@media(max-width:768px){.next-game-grid{font-size:.8rem}}
+
+
+
+
+
+
+
+
+
+
+</style>
+<div id="results" class="container">
+	<!-- ===== NEXT GAME (with loader) ===== -->
+	<div id="next-game-section" class="content-section">
+		<h2>Next Game</h2>
+		<div id="next-game-container">
+			<div class="loading-container">
+				<div class="loading-text">Loading next game&hellip;</div>
+				<div class="progress-bar">
+					<div class="progress-fill" id="next-game-progress-fill"></div>
+				</div>
+				<div class="progress-text" id="next-game-progress-text">0%</div>
+			</div>
+		</div>
+	</div>
+	<!-- ===== RANKINGS ===== -->
+	<div class="content-section">
+		<h2>Rankings</h2>
+		<div id="rankings-container">
+			<div class="loading-container">
+				<div class="loading-text">Loading rankings data&hellip;</div>
+				<div class="progress-bar">
+					<div class="progress-fill" id="rankings-progress-fill"></div>
+				</div>
+				<div class="progress-text" id="rankings-progress-text">0%</div>
+			</div>
+		</div>
+	</div>
+	<!-- ===== RESULTS ===== -->
+	<div class="content-section">
+		<h2>Results</h2>
+		<div id="results-container">
+			<div class="loading-container">
+				<div class="loading-text">Loading results data&hellip;</div>
+				<div class="progress-bar">
+					<div class="progress-fill" id="results-progress-fill"></div>
+				</div>
+				<div class="progress-text" id="results-progress-text">0%</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /.container -->
+<!-- Detail view + modal markup are unchanged … -->
+<div id="detail-view" class="detail-view">
+	<div id="detail-content" class="detail-content"></div>
+</div>
+<div id="dataModal" class="modal">
+	<div class="modal-content">
+		<div id="modalContent"></div>
+	</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script>
+/* ---------- CONFIG ---------- */
+const RANKINGS_API="https://volley-rankings-n72zsqdqea-oa.a.run.app";
+const RESULTS_API ="https://volley-results-n72zsqdqea-oa.a.run.app";
+
+/* ---------- HELPERS ---------- */
+function pad(n){return n.toString().padStart(2,"0")}
+function formatDate(d){const t=new Date(d);return isNaN(t)?"":`${pad(t.getDate())}.${pad(t.getMonth()+1)}.${String(t.getFullYear()).slice(-2)}`}
+function formatTime(d){const t=new Date(d);return isNaN(t)?"":`${pad(t.getHours())}:${pad(t.getMinutes())}`}
+function formatDateWithDay(d){const t=new Date(d);const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];return isNaN(t)?"":`${days[t.getDay()]} ${formatDate(d)}`}
+function cleanTeamName(n,r=false){if(!n)return"";let c=n.replace(/KSC\s+Wiedikon/g,"KSCW");if(r)c=c.replace(/KSCW\s+/g,"");return c.replace(/^(VBC|VC|Volley|Volleyball)\s+/i,"").replace(/\s+(VBC|VC|Volley|Volleyball)$/i,"").trim()}
+function leagueOrGroup(row){return row.league_caption&&row.league_caption.toLowerCase().includes("cup")?row.league_caption:(row.group_caption||"Unknown League");}
+
+/* ---------- RENDER NEXT GAME ---------- */
+function renderNextGame(g){
+  const date=formatDateWithDay(g.playDate),
+        time=formatTime(g.playDate),
+        home=cleanTeamName(g.teams_home_caption,true),
+        away=cleanTeamName(g.teams_away_caption,true),
+        hall=g.hall_caption||"n/a",
+        addr=[g.hall_street,g.hall_number,g.hall_city,g.hall_zip].filter(Boolean).join(" "),
+        Maps=g.hall_plusCode?`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(g.hall_plusCode.trim().replace(/\s+/g,"+"))}" target="_blank">Maps</a>`:"n/a";
+  return `<div class="next-game-grid">
+            <div class="next-game-row">
+              <div><strong>📅</strong>${date}</div>
+              <div><strong>🕒</strong>${time}</div>
+              <div><strong>🎖️</strong>${g.league_caption||"n/a"}</div>
+            </div>
+            <div class="next-game-row">
+              <div><strong>🏐</strong>${home} – ${away}</div>
+            </div>
+            <div class="next-game-row">
+              <div><strong>📍</strong>${addr}</div>
+              <div><strong>🗺️</strong>${Maps}</div>
+            </div>
+          </div>`;
+}
+
+/* ---------- TEAM MAPS (unchanged) ---------- */
+const teamNames={"12747":"KSC Wiedikon H3","1394":"KSC Wiedikon D4","14040":"KSC Wiedikon DU23-2","7563":"KSC Wiedikon HU23-1","1393":"KSC Wiedikon D2","541":"KSC Wiedikon H2","6023":"KSC Wiedikon Legends","4689":"KSC Wiedikon D3","2743":"KSC Wiedikon H1","1395":"KSC Wiedikon D1","2301":"KSC Wiedikon DU23-1"};
+const slugToId ={"h3":"12747","d4":"1394","du23-2":"14040","hu23-1":"7563","d2":"1393","h2":"541","legends":"6023","d3":"4689","h1":"2743","d1":"1395","du23-1":"2301"};
+
+/* ---------- DataTables cleanup ---------- */
+function destroyTables(sel){$(sel).find("table.dataTable").each(function(){if($.fn.DataTable.isDataTable(this))$(this).DataTable().destroy();});}
+
+/* ---------- MAIN LOADER ---------- */
+async function loadData(teamId){
+  /* Loader progress */
+  let done=0,total=2;
+  const prog=p=>{done++;const pct=Math.round(done/total*100);
+     if(p==="rank"){ $("#rankings-progress-fill").css("width",pct+"%");$("#rankings-progress-text").text(pct+"%"); }
+     if(p==="results"){
+        $("#results-progress-fill").css("width",pct+"%");$("#results-progress-text").text(pct+"%");
+        $("#next-game-progress-fill").css("width",pct+"%");$("#next-game-progress-text").text(pct+"%");
+     }
+  };
+
+  const rankP=fetch(`${RANKINGS_API}/rankings?team_id=${teamId}`).then(r=>{prog("rank");return r});
+  const resP =fetch(`${RESULTS_API}/results?team_id=${teamId}`).then(r=>{prog("results");return r});
+  const [rankR,resR]=await Promise.all([rankP,resP]);
+  if(!rankR.ok){$("#rankings-container").html('<div class="error-message">Rankings API error</div>');return}
+  if(!resR.ok){$("#results-container").html('<div class="error-message">Results API error</div>');return}
+  const [rankData,resData]=await Promise.all([rankR.json(),resR.json()]);
+
+  /* ---------- NEXT GAME ----------- */
+  const next=resData.filter(g=>new Date(g.playDate)>new Date())
+                    .sort((a,b)=>new Date(a.playDate)-new Date(b.playDate))[0];
+  if(next){
+    $("#next-game-container").html(renderNextGame(next));
+  }else{
+    $("#next-game-container").html('<div class="error-message">No upcoming games found.</div>');
+  }
+
+  /* ---------- RENDER RANKINGS (unchanged grouping, but uses leagueOrGroup) ---------- */
+  destroyTables("#rankings-container");$("#rankings-container").empty();
+  const rBy={};rankData.forEach(r=>(rBy[leagueOrGroup(r)]??=[]).push(r));
+     for(const lg in rBy){
+     $("#rankings-container").append(`<div class="sub-section"><h3>${lg}</h3></div>`);
+     const $w=$(`<div class="table-wrapper"><table class="display"></table></div>`).appendTo("#rankings-container");
+     $w.find("table").DataTable({
+       data:rBy[lg],
+       columns:[
+         {data:"rank",title:"🎖️",width:"8%"},
+         {data:"teamCaption",title:"Team",width:"42%",render:(d,t)=>t==="display"?cleanTeamName(d):d},
+         {data:"points",title:"Pts",width:"12%"},
+         {data:"games",title:"#️⃣",width:"12%"},
+         {data:"wins",title:"🏆",width:"13%"},
+         {data:"defeats",title:"💔",width:"13%"}
+       ],
+       paging:false,searching:false,ordering:false,info:false,autoWidth:false,deferRender:true
+     });
+     
+     // Add click handlers for modal
+     $w.find("table tbody tr").addClass("clickable-row").click(function() {
+       const data = $w.find("table").DataTable().row(this).data();
+       showRankingModal(data);
+     });
+   }
+
+  /* ---------- RENDER RESULTS ---------- */
+  destroyTables("#results-container");$("#results-container").empty();
+  const resBy={};resData.forEach(r=>(resBy[leagueOrGroup(r)]??=[]).push(r));
   
-    <div class="content-section">
-      <h2>Next games</h2>
-      <div id="results-container"></div>
-    </div>
+  // Sort leagues: cup first, then normal leagues
+  const sortedLeagues = Object.keys(resBy).sort((a, b) => {
+    const aIsCup = a.toLowerCase().includes("cup");
+    const bIsCup = b.toLowerCase().includes("cup");
+    if (aIsCup && !bIsCup) return -1;
+    if (!aIsCup && bIsCup) return 1;
+    return a.localeCompare(b);
+  });
+  
+  for(const lg of sortedLeagues){
+    $("#results-container").append(`<div class="sub-section"><h3>${lg}</h3></div>`);
+    const $w=$(`<div class="table-wrapper"><table class="display"></table></div>`).appendTo("#results-container");
+    $w.find("table").DataTable({
+      data:resBy[lg],
+      columns:[
+        {data:"playDate",title:"📆",width:"18%",render:(d,t)=>t==="display"?formatDate(d):d},
+        {data:"playDate",title:"🕒",width:"15%",render:(d,t)=>t==="display"?formatTime(d):d},
+        {data:null,title:"Match",width:"40%",render:(_,__,r)=>{
+           const h=r.teams_home_caption,a=r.teams_away_caption;
+           const hd=h&&h.includes("Wiedikon")?'<img src="https://www.kscw.ch/clubdesk/fileservlet?type=file&id=1000716&s=djEt3z7ABYLi8hd4sWeb8Qisb2m20xnaKr4H9W6HvJnKgDU=" style="height:16px">':cleanTeamName(h,true);
+           const ad=a&&a.includes("Wiedikon")?'<img src="https://www.kscw.ch/clubdesk/fileservlet?type=file&id=1000716&s=djEt3z7ABYLi8hd4sWeb8Qisb2m20xnaKr4H9W6HvJnKgDU=" style="height:16px">':cleanTeamName(a,true);
+           return `${hd} – ${ad}`;}},
+        {data:"resultSummary",title:"🎯",width:"10%",render:d=>(!d||d.length===0)?"0-0":Array.isArray(d)?d.join(", "):d}
+             ],
+       paging:false,searching:false,ordering:false,info:false,autoWidth:false,deferRender:true
+     });
+     
+     // Add click handlers for modal
+     $w.find("table tbody tr").addClass("clickable-row").click(function() {
+       const data = $w.find("table").DataTable().row(this).data();
+       showDetailModal(data);
+     });
+   }
+}
 
-    <div class="content-section" style="margin-top: 40px;">
-      <h2>Overall Rankings</h2>
-      <div id="overall-rankings-container"></div>
-    </div>
-  </div>
+/* ---------- MODAL FUNCTIONS ---------- */
+function showDetailModal(data) {
+  const modalContent = `
+    <h2>Game Details</h2>
+    <table class="modal-table">
+      <tr><th>Date</th><td>${formatDateWithDay(data.playDate)} ${formatTime(data.playDate)}</td></tr>
+      <tr><th>Home Team</th><td>${data.teams_home_caption || 'N/A'}</td></tr>
+      <tr><th>Away Team</th><td>${data.teams_away_caption || 'N/A'}</td></tr>
+      <tr><th>Result</th><td>${data.resultSummary || 'N/A'}</td></tr>
+      <tr><th>League</th><td>${data.league_caption || 'N/A'}</td></tr>
+      <tr><th>Group</th><td>${data.group_caption || 'N/A'}</td></tr>
+      <tr><th>Referees</th><td>${data.referees || 'N/A'}</td></tr>
+      <tr><th>Hall</th><td>${data.hall_caption || 'N/A'}</td></tr>
+      <tr><th>Address</th><td>${[data.hall_street, data.hall_number, data.hall_city, data.hall_zip].filter(Boolean).join(' ') || 'N/A'}</td></tr>
+      <tr><th>Game ID</th><td>${data.gameId || 'N/A'}</td></tr>
+    </table>
+    <button class="detail-close" onclick="closeModal()">Close</button>
+  `;
+  
+  $("#modalContent").html(modalContent);
+  $("#dataModal").show();
+}
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/rowgroup/1.3.1/js/dataTables.rowGroup.min.js"></script>
-  <script>
-    const RANKINGS_API = "https://volley-rankings-n72zsqdqea-oa.a.run.app";
-    const RESULTS_API  = "https://volley-results-n72zsqdqea-oa.a.run.app";
-    const TEAM_IDS     = ["1395","1393","4689","1394","2301","14040","2743","541","12747","6023","7563"];
-    const SPECIAL_DATES = ["2025-09-27","2025-11-01","2026-01-31","2026-03-07"];
-    const teamNames = {
-      "12747":"KSC Wiedikon H3","1394":"KSC Wiedikon D4","14040":"KSC Wiedikon DU23-2",
-      "7563":"KSC Wiedikon HU23-1","1393":"KSC Wiedikon D2","541":"KSC Wiedikon H2",
-      "6023":"KSC Wiedikon Legends","4689":"KSC Wiedikon D3","2743":"KSC Wiedikon H1",
-      "1395":"KSC Wiedikon D1","2301":"KSC Wiedikon DU23-1"
-    };
+function showRankingModal(data) {
+  const modalContent = `
+    <h2>Team Ranking Details</h2>
+    <table class="modal-table">
+      <tr><th>Rank</th><td>${data.rank || 'N/A'}</td></tr>
+      <tr><th>Team</th><td>${data.teamCaption || 'N/A'}</td></tr>
+      <tr><th>Points</th><td>${data.points || 'N/A'}</td></tr>
+      <tr><th>Games Played</th><td>${data.games || 'N/A'}</td></tr>
+      <tr><th>Wins</th><td>${data.wins || 'N/A'}</td></tr>
+      <tr><th>Defeats</th><td>${data.defeats || 'N/A'}</td></tr>
+      <tr><th>League</th><td>${data.league_caption || 'N/A'}</td></tr>
+      <tr><th>Group</th><td>${data.group_caption || 'N/A'}</td></tr>
+    </table>
+    <button class="detail-close" onclick="closeModal()">Close</button>
+  `;
+  
+  $("#modalContent").html(modalContent);
+  $("#dataModal").show();
+}
 
-    // helper to format as "Weekday, dd.mm.yy"
-    function formatDateWithDay(d) {
-      const dt = new Date(d);
-      if (isNaN(dt)) return d || "";
-      const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-      const dayName = weekdays[dt.getDay()];
-      const p = n => n.toString().padStart(2, "0");
-      const shortYear = dt.getFullYear().toString().slice(-2);
-      return `${dayName}, ${p(dt.getDate())}.${p(dt.getMonth()+1)}.${shortYear}`;
-    }
+function closeModal() {
+  $("#dataModal").hide();
+}
 
-    function formatTime(d) {
-      const dt = new Date(d);
-      if (isNaN(dt)) return d||"";
-      const p = n=>n.toString().padStart(2,"0");
-      return `${p(dt.getHours())}:${p(dt.getMinutes())}`;
-    }
-    function isSpecialDate(iso) {
-      return SPECIAL_DATES.includes(iso);
-    }
+// Close modal when clicking outside
+$(document).on('click', '#dataModal', function(e) {
+  if (e.target === this) {
+    closeModal();
+  }
+});
 
-    async function loadOverallRankings() {
-      const rows = [];
-      await Promise.all(TEAM_IDS.map(id =>
-        fetch(`${RANKINGS_API}/rankings?team_id=${id}`)
-          .then(r=>r.ok?r.json():[]).then(data=>{
-            const cap = teamNames[id];
-            const e = data.find(r=>
-              r.teamCaption===cap &&
-              r.group_caption &&
-              !r.group_caption.toLowerCase().includes("cup")
-            );
-            if (e) rows.push({
-              group:       e.group_caption,
-              rank:        e.rank,
-              teamCaption: e.teamCaption,
-              points:      e.points,
-              games:       e.games,
-              wins:        e.wins,
-              defeats:     e.defeats
-            });
-          }).catch(()=>{})
-      ));
-      rows.sort((a,b)=>a.group.localeCompare(b.group)||a.rank-b.rank);
+/* ---------- BOOT ---------- */
+$(function(){
+  const slug=window.location.pathname.split('/').filter(Boolean).pop().toLowerCase();
+  const team=slugToId[slug];
+  if(!team){$("#rankings-container").html('<div class="error-message">Unknown team in URL</div>');}
+  else{loadData(team);}
+})
 
-      const $cont = $("#overall-rankings-container").empty();
-      if (!rows.length) {
-        return $cont.html(`<div class="error-message">No rankings data available.</div>`);
-      }
 
-      const $tbl = $(`
-        <div class="table-wrapper">
-          <table id="overall-rankings" class="display"></table>
-        </div>
-      `);
-      $cont.append($tbl);
-
-      $tbl.find("table").DataTable({
-        data: rows,
-        autoWidth: true,
-        columns: [
-          { data: "group", visible: false },
-          { data: "rank",        title: "Rank" },
-          { data: "teamCaption", title: "Team" },
-          { data: "points",      title: "Points" },
-          { data: "games",       title: "Matches played" },
-          { data: "wins",        title: "Matches won" },
-          { data: "defeats",     title: "Matches lost" }
-        ],
-        columnDefs: [
-          { width: '16.6667%', targets: [1,3,4,5,6] }
-        ],
-        rowGroup: { dataSrc: "group" },
-        paging: false, ordering: false, info: false, searching: false,
-        createdRow: (row) => {
-          $(row).css({
-            border: "2px solid #e2e8f0",
-            "border-radius": "8px",
-            "background-color": "#f8fafc"
-          }).find("td").css({ padding: "16px 12px", border: "none" });
-        }
-      });
-    }
-
-    async function loadNextGames() {
-      const all = await Promise.all(TEAM_IDS.map(id=>
-        fetch(`${RESULTS_API}/results?team_id=${id}`)
-          .then(r=>r.ok?r.json():[]).catch(()=>[])
-      ));
-      const map = new Map();
-      all.flat().forEach(r=>{
-        const key = `${r.playDate}|${r.teams_home_caption}|${r.teams_away_caption}`;
-        if (!map.has(key)) map.set(key, r);
-      });
-      const combined = Array.from(map.values());
-      const now = new Date();
-      const upcoming = combined
-        .filter(r=>new Date(r.playDate)>=now)
-        .sort((a,b)=>new Date(a.playDate)-new Date(b.playDate));
-
-      // Always show up to 10 date‑blocks
-      const seen = new Set();
-      for (const g of upcoming) {
-        const iso = new Date(g.playDate).toISOString().slice(0,10);
-        if (seen.size < 10) seen.add(iso);
-        else break;
-      }
-      const filtered = upcoming.filter(g=>
-        seen.has(new Date(g.playDate).toISOString().slice(0,10))
-      );
-
-      const $cont = $("#results-container").empty();
-      if (!filtered.length) {
-        return $cont.html(`<div class="error-message">No upcoming games found.</div>`);
-      }
-
-      const $tbl = $(`
-        <div class="sub-section">
-          <div class="table-wrapper">
-            <table id="upcoming-games" class="display"></table>
-          </div>
-        </div>
-      `);
-      $cont.append($tbl);
-
-      $tbl.find("table").DataTable({
-        data: filtered,
-        columns: [
-          {
-            data: "playDate",
-            title: "Date",
-            render: (d, type) =>
-              type === "display"
-                ? formatDateWithDay(d)
-                : d
-          },
-          {
-            data: "playDate",
-            title: "Time",
-            render: (d,t)=> t==="display" ? formatTime(d) : d
-          },
-          {
-            data: null,
-            title: "Match",
-            render: (_,__,r)=>`${r.teams_home_caption} – ${r.teams_away_caption}`
-          },
-          { data: "hall_caption", title: "Halle" },
-          { data: "hall_city",    title: "City" },
-          {
-            data: "hall_plusCode",
-            title: "Plus Code",
-            render: d => {
-              if (!d) return "";
-              const code = d.trim().replace(/\s+/g, "+");
-              const url = "https://www.google.com/maps/search/?api=1&query="
-                          + encodeURIComponent(code);
-              return `<a href="${url}" target="_blank">${d}</a>`;
-            }
-          },
-          {
-            data: null,
-            title: "Event",
-            render: (_,__,r)=>{
-              const iso = new Date(r.playDate).toISOString().slice(0,10);
-              const isHome = r.teams_home_caption.includes("Wiedikon");
-              const flags = [];
-              if (isHome && isSpecialDate(iso)) {
-                flags.push("Spielsamstag");
-              } else if (isHome) {
-                flags.push(`<span class="cheer">🚩 Come and cheer!</span>`);
-              }
-              return flags.join(" • ");
-            }
-          }
-        ],
-        paging: false, ordering: false, info: false, searching: false,
-        createdRow: (row,data)=>{
-          const iso = new Date(data.playDate).toISOString().slice(0,10);
-          if (data.teams_home_caption.includes("Wiedikon")) {
-            $(row).find("td").css("font-weight","600");
-            if (isSpecialDate(iso)) {
-              $(row).css("background-color","#FDDC29");
-            }
-          }
-        }
-      });
-    }
-
-    $(function(){
-      loadNextGames();
-      loadOverallRankings();
-    });
-  </script>
-</body>
-</html>
+</script>
