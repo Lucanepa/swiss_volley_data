@@ -957,7 +957,15 @@ $(function(){
     showTeamSelector();
   } else {
     console.log('Loading data for team:', team);
-    loadData(team);
+    
+    // Convert slug to ID if needed
+    let teamId = team;
+    if (slugToId[team]) {
+      teamId = slugToId[team];
+      console.log('Converted slug to ID:', team, '->', teamId);
+    }
+    
+    loadData(teamId);
   }
 });
 
