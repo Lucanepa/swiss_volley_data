@@ -652,6 +652,13 @@ function destroyTables(sel){$(sel).find("table.dataTable").each(function(){if($.
 
 /* ---------- MAIN LOADER ---------- */
 async function loadData(teamId){
+  console.log('loadData called with teamId:', teamId, 'type:', typeof teamId);
+  
+  // Ensure teamId is a string (Supabase expects string for .eq())
+  if (typeof teamId === 'number') {
+    teamId = teamId.toString();
+  }
+  
   /* Loader progress */
   let done=0,total=2;
   const prog=p=>{done++;const pct=Math.round(done/total*100);
