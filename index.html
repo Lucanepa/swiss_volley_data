@@ -433,12 +433,12 @@
 
     .modal-content {
         background: white;
-        margin: 50px auto;
+        margin: 30px auto;
         padding: 0;
-        border-radius: 20px;
+        border-radius: 18px;
       width: 90%;
-        max-width: 700px;
-      max-height: 80vh;
+        max-width: 650px;
+      max-height: 75vh;
       overflow-y: auto;
         box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         animation: slideIn 0.3s ease-in-out;
@@ -452,8 +452,8 @@
     .modal-header {
         background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
         color: white;
-        padding: 25px 30px;
-        border-radius: 20px 20px 0 0;
+        padding: 15px 20px;
+        border-radius: 18px 18px 0 0;
         text-align: center;
     }
     
@@ -465,21 +465,21 @@
     }
     
     .modal-body {
-        padding: 30px;
+        padding: 20px;
     }
 
     .modal-table {
       width: 100%;
       border-collapse: collapse;
-        margin-top: 20px;
-        border-radius: 12px;
+        margin-top: 15px;
+        border-radius: 10px;
         overflow: hidden;
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
 
     .modal-table th,
     .modal-table td {
-        padding: 15px 20px;
+        padding: 10px 15px;
       text-align: left;
       border-bottom: 1px solid #e2e8f0;
     }
@@ -490,11 +490,11 @@
       font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        font-size: 14px;
+        font-size: 12px;
     }
     
     .modal-table td {
-        font-size: 14px;
+        font-size: 12px;
         color: #2d3748;
     }
     
@@ -502,15 +502,15 @@
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        padding: 15px 30px;
-        border-radius: 10px;
+        padding: 12px 25px;
+        border-radius: 8px;
         cursor: pointer;
-      font-size: 16px;
+      font-size: 14px;
         font-weight: 600;
         transition: all 0.3s ease;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        margin-top: 20px;
+        margin-top: 15px;
         width: 100%;
     }
     
@@ -654,17 +654,7 @@
         <div class="controls-row">
             <select id="team-selector" class="team-selector">
                 <option value="all">All Teams</option>
-                <option value="12747">KSC Wiedikon H3</option>
-                <option value="1394">KSC Wiedikon D4</option>
-                <option value="14040">KSC Wiedikon DU23-2</option>
-                <option value="7563">KSC Wiedikon HU23-1</option>
-                <option value="1393">KSC Wiedikon D2</option>
-                <option value="541">KSC Wiedikon H2</option>
-                <option value="6023">KSC Wiedikon Legends</option>
-                <option value="4689">KSC Wiedikon D3</option>
-                <option value="2743">KSC Wiedikon H1</option>
-                <option value="1395">KSC Wiedikon D1</option>
-                <option value="2301">KSC Wiedikon DU23-1</option>
+                <!-- Team options will be populated dynamically -->
             </select>
             
             <div class="chip-container">
@@ -712,12 +702,8 @@
 <!-- ===== MODAL ===== -->
 <div id="dataModal" class="modal">
   <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modalTitle">Game Details</h2>
-        </div>
         <div class="modal-body">
     <div id="modalContent"></div>
-            <button class="modal-close" onclick="closeModal()">Close</button>
         </div>
   </div>
 </div>
@@ -1167,6 +1153,117 @@ async function loadData(teamId) {
     }
 }
 
+/* ---------- POPULATE TEAM DROPDOWN ---------- */
+async function populateTeamDropdown() {
+    try {
+        // Fetch all rankings data to get team names and group captions
+        const { data: rankingsData, error } = await supabaseClient
+            .from('rankings_complete')
+            .select('wiedikon_team_id, teamcaption, group_caption')
+            .not('wiedikon_team_id', 'is', null);
+        
+        if (error) throw error;
+        
+        // Create a map of team ID to team info
+        const teamMap = {};
+        rankingsData.forEach(rank => {
+            if (rank.wiedikon_team_id && rank.teamcaption && rank.group_caption) {
+                teamMap[rank.wiedikon_team_id] = {
+                    name: rank.teamcaption,
+                    group: rank.group_caption
+                };
+            }
+        });
+        
+        // Sort teams alphabetically by name
+        const sortedTeams = Object.entries(teamMap).sort((a, b) => 
+            a[1].name.localeCompare(b[1].name)
+        );
+        
+        // Populate dropdown
+        const selector = $('#team-selector');
+        selector.find('option:not(:first)').remove(); // Remove old options except "All Teams"
+        
+        sortedTeams.forEach(([teamId, teamInfo]) => {
+            const option = `<option value="${teamId}">${teamInfo.name} - ${teamInfo.group}</option>`;
+            selector.append(option);
+        });
+        
+    } catch (error) {
+        console.error('Error populating team dropdown:', error);
+    }
+}
+
+/* ---------- POPULATE TEAM DROPDOWN ---------- */
+async function populateTeamDropdown() {
+    try {
+        // Fetch all rankings data to get league captions for Wiedikon teams
+        const { data: rankingsData, error } = await supabaseClient
+            .from('rankings_complete')
+            .select('*');
+        
+        if (error) throw error;
+        
+        // Filter for Wiedikon teams and get unique team data
+        const wiedikonTeams = [];
+        const seenTeams = new Set();
+        
+        rankingsData.forEach(ranking => {
+            if (ranking.teamcaption && ranking.teamcaption.includes('Wiedikon') && !seenTeams.has(ranking.wiedikon_team_id)) {
+                seenTeams.add(ranking.wiedikon_team_id);
+                wiedikonTeams.push({
+                    id: ranking.wiedikon_team_id,
+                    name: ranking.teamcaption,
+                    league: ranking.league_caption || 'Unknown League',
+                    group: ranking.group_caption || 'Unknown Group'
+                });
+            }
+        });
+        
+        // Sort teams alphabetically by name
+        wiedikonTeams.sort((a, b) => a.name.localeCompare(b.name));
+        
+        // Populate dropdown
+        const teamSelector = $('#team-selector');
+        teamSelector.find('option:not(:first)').remove(); // Remove old options except "All Teams"
+        
+        wiedikonTeams.forEach(team => {
+            // Extract team identifier (H1, D2, etc.) from team name
+            const teamMatch = team.name.match(/KSC Wiedikon\s+(.+)/);
+            const teamId = teamMatch ? teamMatch[1] : team.name;
+            
+            // Extract group letter (A, B, C, etc.) from group caption
+            let groupLetter = '';
+            if (team.group && team.group.length > 0) {
+                // Only show groups for actual A, B, C groups, not for other identifiers like "M"
+                const groupMatch = team.group.match(/\b([ABC])\b/);
+                if (groupMatch) {
+                    groupLetter = groupMatch[1];
+                }
+            }
+            
+            // Create option text: "KSCW H1 - 3L M Group A" format
+            let optionText = `KSCW ${teamId}`;
+            if (team.league) {
+                optionText += ` - ${team.league}`;
+                if (groupLetter) {
+                    optionText += ` Group ${groupLetter}`;
+                }
+            }
+            
+            // Add sex (M or D) if available
+            if (team.sex) {
+                optionText += ` (${team.sex})`;
+            }
+            
+            teamSelector.append(`<option value="${team.id}">${optionText}</option>`);
+        });
+        
+    } catch (error) {
+        console.error('Error populating team dropdown:', error);
+    }
+}
+
 /* ---------- INITIALIZATION ---------- */
 $(function() {
     // Set up chip click handlers
@@ -1188,23 +1285,26 @@ $(function() {
         }
     });
     
-    // Auto-select "All Teams" on load
-    $('#team-selector').val('all');
-    loadData('all');
-    
-    // Try to auto-select team from URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const teamParam = urlParams.get('team');
-    
-    if (teamParam) {
-        let teamId = teamParam;
-        if (slugToId[teamParam.toLowerCase()]) {
-            teamId = slugToId[teamParam.toLowerCase()];
-        }
+    // Populate team dropdown first, then load data
+    populateTeamDropdown().then(() => {
+        // Auto-select "All Teams" on load
+        $('#team-selector').val('all');
+        loadData('all');
         
-        $('#team-selector').val(teamId);
-    loadData(teamId);
-  }
+        // Try to auto-select team from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const teamParam = urlParams.get('team');
+        
+        if (teamParam) {
+            let teamId = teamParam;
+            if (slugToId[teamParam.toLowerCase()]) {
+                teamId = slugToId[teamParam.toLowerCase()];
+            }
+            
+            $('#team-selector').val(teamId);
+            loadData(teamId);
+        }
+    });
 });
 </script>
 
