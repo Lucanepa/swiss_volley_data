@@ -1,233 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="UTF-8" />
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+<title>KSC Wiedikon Volleyball</title>
 
 <style>
-/* ============ ORIGINAL STYLES (unchanged)… ============ */
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1a202c;line-height:1.6}
-.container{max-width:100%;margin:0 auto;padding:2px;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center}
-.content-section{background:#fff;border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,.1);margin-bottom:20px;width:100%;overflow:hidden}
-.content-section h2{background:linear-gradient(135deg,#0066CC 0%,#FFD700 100%);color:#fff;padding:12px 16px;font-size:1.25rem;font-weight:600;margin:0}
-.sub-section{margin:5px}
-.sub-section h3{background:linear-gradient(135deg,#0066CC 0%,#FFD700 100%);color:#fff;padding:10px 14px;margin:0 0 10px;border-radius:8px;font-size:1rem;font-weight:600}
-.table-wrapper{width:100%;overflow-x:hidden}
-.table-wrapper table{width:100%!important;table-layout:fixed!important;word-break:normal}
-.table-wrapper table td, .table-wrapper table th{padding:2px 5px!important}
-     @media (max-width: 768px) {
-            .table-wrapper table {
-                table-layout: auto !important;
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-            
-            /* Rankings table specific mobile styling */
-            #rankings-container .table-wrapper {
-                overflow-x: hidden !important;
-                max-width: 100vw !important;
-            }
-            
-            #rankings-container .table-wrapper table {
-                table-layout: auto !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                min-width: auto !important;
-            }
-            
-            /* Ensure rankings table doesn't overflow */
-            #rankings-container .dataTables_wrapper {
-                overflow-x: hidden !important;
-                max-width: 100vw !important;
-            }
-            
-            #rankings-container .dataTables_wrapper .dataTables_scroll {
-                overflow-x: hidden !important;
-                max-width: 100vw !important;
-            }
-            
-            #rankings-container .dataTables_wrapper .dataTables_scrollBody {
-                overflow-x: hidden !important;
-                max-width: 100vw !important;
-            }
-            
-            /* Force DataTables to respect mobile constraints */
-            #rankings-container .dataTables_wrapper .dataTables_scrollHead {
-                overflow-x: hidden !important;
-                max-width: 100vw !important;
-            }
-            
-            #rankings-container .dataTables_wrapper .dataTables_scrollHead table {
-                width: 100% !important;
-                max-width: 100% !important;
-                table-layout: auto !important;
-            }
-            
-            #rankings-container .dataTables_wrapper .dataTables_scrollBody table {
-                width: 100% !important;
-                max-width: 100% !important;
-                table-layout: auto !important;
-            }
-            
-            /* Additional mobile constraints */
-            #rankings-container {
-                max-width: 100vw !important;
-                overflow-x: hidden !important;
-            }
-            
-            #rankings-container * {
-                max-width: 100vw !important;
-            }
-            
-            /* Force DataTables to behave on mobile */
-            #rankings-container .dataTables_wrapper {
-                width: 100% !important;
-                max-width: 100vw !important;
-                overflow-x: hidden !important;
-            }
-            
-            #rankings-container .dataTables_wrapper .dataTables_scroll {
-                width: 100% !important;
-                max-width: 100vw !important;
-                overflow-x: hidden !important;
-            }
-            
-            #rankings-container .dataTables_wrapper .dataTables_scrollBody {
-                width: 100% !important;
-                max-width: 100vw !important;
-                overflow-x: hidden !important;
-            }
-            
-            #rankings-container .dataTables_wrapper .dataTables_scrollHead {
-                width: 100% !important;
-                max-width: 100vw !important;
-                overflow-x: hidden !important;
-            }
-            
-            /* Force table cells to wrap and not overflow */
-            #rankings-container .dataTables_wrapper .dataTables_scrollBody td {
-                max-width: 0 !important;
-                overflow: hidden !important;
-                text-overflow: ellipsis !important;
-                white-space: nowrap !important;
-            }
-            
-            /* Allow team names to wrap on mobile */
-            #rankings-container .dataTables_wrapper .dataTables_scrollBody td:nth-child(2) {
-                white-space: normal !important;
-                word-break: break-word !important;
-                overflow-wrap: break-word !important;
-            }
-            
-            /* Nuclear option - force everything to fit */
-            #rankings-container .dataTables_wrapper,
-            #rankings-container .dataTables_wrapper *,
-            #rankings-container .table-wrapper,
-            #rankings-container .table-wrapper * {
-                max-width: 100vw !important;
-                box-sizing: border-box !important;
-            }
-            
-            /* Ensure table doesn't exceed viewport */
-            #rankings-container table {
-                width: 100% !important;
-                max-width: 100vw !important;
-                table-layout: auto !important;
-            }
-        }
+    /* ============ ORIGINAL STYLES (unchanged) ============ */
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1a202c;line-height:1.6}
+    .container{max-width:100%;margin:0 auto;padding:2px;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center}
+    .content-section{background:#fff;border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,.1);margin-bottom:20px;width:100%;overflow:hidden}
+    .content-section h2{background:linear-gradient(135deg,#0066CC 0%,#FFD700 100%);color:#fff;padding:12px 16px;font-size:1.25rem;font-weight:600;margin:0}
+    .sub-section{margin:5px}
+    .sub-section h3{background:linear-gradient(135deg,#0066CC 0%,#FFD700 100%);color:#fff;padding:10px 14px;margin:0 0 10px;border-radius:8px;font-size:1rem;font-weight:600}
+    .table-wrapper{width:100%;overflow-x:hidden}
+    .table-wrapper table{width:100%!important;table-layout:fixed!important;word-break:normal}
+    .table-wrapper table td, .table-wrapper table th{padding:2px 5px!important}
+    
+    @media (max-width: 768px) {
+      .table-wrapper table {
+        table-layout: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      
+      /* Rankings table specific mobile styling */
+      #rankings-container .table-wrapper {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+      }
+      
+      #rankings-container .table-wrapper table {
+        table-layout: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: auto !important;
+      }
+      
+      /* Ensure rankings table doesn't overflow */
+      #rankings-container .dataTables_wrapper {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+      }
+      
+      #rankings-container .dataTables_wrapper .dataTables_scroll {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+      }
+      
+      #rankings-container .dataTables_wrapper .dataTables_scrollBody {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+      }
+      
+      /* Force DataTables to respect mobile constraints */
+      #rankings-container .dataTables_wrapper .dataTables_scrollHead {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+      }
+      
+      #rankings-container .dataTables_wrapper .dataTables_scrollHead table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: auto !important;
+      }
+      
+      #rankings-container .dataTables_wrapper .dataTables_scrollBody table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: auto !important;
+      }
+      
+      /* Additional mobile constraints */
+      #rankings-container {
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+      }
+      
+      #rankings-container * {
+        max-width: 100vw !important;
+      }
+      
+      /* Force DataTables to behave on mobile */
+      #rankings-container .dataTables_wrapper {
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+      }
+      
+      #rankings-container .dataTables_wrapper .dataTables_scroll {
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+      }
+      
+      #rankings-container .dataTables_wrapper .dataTables_scrollBody {
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+      }
+      
+      #rankings-container .dataTables_wrapper .dataTables_scrollHead {
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+      }
+      
+      /* Force table cells to wrap and not overflow */
+      #rankings-container .dataTables_wrapper .dataTables_scrollBody td {
+        max-width: 0 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+      }
+      
+      /* Allow team names to wrap on mobile */
+      #rankings-container .dataTables_wrapper .dataTables_scrollBody td:nth-child(2) {
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+      }
+      
+      /* Nuclear option - force everything to fit */
+      #rankings-container .dataTables_wrapper,
+      #rankings-container .dataTables_wrapper *,
+      #rankings-container .table-wrapper,
+      #rankings-container .table-wrapper * {
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* Ensure table doesn't exceed viewport */
+      #rankings-container table {
+        width: 100% !important;
+        max-width: 100vw !important;
+        table-layout: auto !important;
+      }
+    }
 
-        .dataTables_wrapper .dataTables_scroll {
-            overflow-x: hidden !important;
-        }
+    .dataTables_wrapper .dataTables_scroll {
+      overflow-x: hidden !important;
+    }
 
-        .dataTables_wrapper .dataTables_scrollBody {
-            overflow-x: hidden !important;
-            padding: 1px 2px !important;
-            font-size: 12px;
-        }
+    .dataTables_wrapper .dataTables_scrollBody {
+      overflow-x: hidden !important;
+      padding: 1px 2px !important;
+      font-size: 12px;
+    }
 
-        /* Mobile font size adjustments */
-        @media (max-width: 768px) {
-            .dataTables_wrapper .dataTables_scrollBody {
-                font-size: 11px !important;
-            }
-            
-            .dataTables_wrapper .dataTables_scrollHead th {
-                font-size: 11px !important;
-            }
-            
-            .dataTables_wrapper .dataTables_scrollBody td {
-                font-size: 11px !important;
-            }
-            
-            .sub-section h3 {
-                font-size: 0.9rem;
-            }
-            
-            .content-section h2 {
-                font-size: 1.1rem;
-            }
-        }
+    /* Mobile font size adjustments */
+    @media (max-width: 768px) {
+      .dataTables_wrapper .dataTables_scrollBody {
+        font-size: 11px !important;
+      }
+      
+      .dataTables_wrapper .dataTables_scrollHead th {
+        font-size: 11px !important;
+      }
+      
+      .dataTables_wrapper .dataTables_scrollBody td {
+        font-size: 11px !important;
+      }
+      
+      .sub-section h3 {
+        font-size: 0.9rem;
+      }
+      
+      .content-section h2 {
+        font-size: 1.1rem;
+      }
+    }
 
-        /* Results table specific styling - automatic height */
-        #results-container .table-wrapper {
-            height: auto;
-            overflow-y: visible;
-        }
+    /* Results table specific styling - automatic height */
+    #results-container .table-wrapper {
+      height: auto;
+      overflow-y: visible;
+    }
 
-        #results-container .dataTables_wrapper .dataTables_scrollBody {
-            height: auto;
-            overflow-y: visible !important;
-        }
+    #results-container .dataTables_wrapper .dataTables_scrollBody {
+      height: auto;
+      overflow-y: visible !important;
+    }
 
-        /* Freeze headers when scrolling */
-        .dataTables_wrapper .dataTables_scrollHead {
-            position: sticky !important;
-            top: 0 !important;
-            z-index: 10 !important;
-            background: white !important;
-        }
+    /* Freeze headers when scrolling */
+    .dataTables_wrapper .dataTables_scrollHead {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 10 !important;
+      background: white !important;
+    }
 
-        /* Ensure sticky headers work in results table */
-        #results-container .dataTables_wrapper .dataTables_scrollHead {
-            position: sticky !important;
-            top: 0 !important;
-            z-index: 10 !important;
-            background: white !important;
-        }
+    /* Ensure sticky headers work in results table */
+    #results-container .dataTables_wrapper .dataTables_scrollHead {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 10 !important;
+      background: white !important;
+    }
 
-        /* Center emojis in headers */
-        .dataTables_wrapper .dataTables_scrollHead th {
-            text-align: center !important;
-        }
+    /* Center emojis in headers */
+    .dataTables_wrapper .dataTables_scrollHead th {
+      text-align: center !important;
+    }
 
-        .dataTables_wrapper .dataTables_scrollHead th {
-            font-size: 12px !important;
-            padding: 4px 2px !important;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    .dataTables_wrapper .dataTables_scrollHead th {
+      font-size: 12px !important;
+      padding: 4px 2px !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-        .dataTables_wrapper .dataTables_scrollBody td {
-            padding: 2px 2px !important;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    .dataTables_wrapper .dataTables_scrollBody td {
+      padding: 2px 2px !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.dataTables_wrapper .dataTables_scrollBody td:nth-child(3) {
-    white-space: normal !important;
-    word-break: break-word !important;
-    overflow-wrap: break-word;
-    min-width: 150px;
-}
+    .dataTables_wrapper .dataTables_scrollBody td:nth-child(3) {
+      white-space: normal !important;
+      word-break: break-word !important;
+      overflow-wrap: break-word;
+      min-width: 150px;
+    }
 
-/* Results table specific styling - match column wrapping */
-@media (max-width: 768px) {
-    /* Only apply to results table */
-    #results-container .dataTables_wrapper .dataTables_scrollBody td:nth-child(3) {
+    /* Results table specific styling - match column wrapping */
+    @media (max-width: 768px) {
+      /* Only apply to results table */
+      #results-container .dataTables_wrapper .dataTables_scrollBody td:nth-child(3) {
         white-space: normal !important;
         word-break: break-word !important;
         overflow-wrap: break-word !important;
@@ -236,296 +239,351 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         padding: 4px 2px !important;
         font-size: 10px !important;
         line-height: 1.2 !important;
-    }
-    
-    /* Ensure results table doesn't overflow */
-    #results-container .table-wrapper {
+      }
+      
+      /* Ensure results table doesn't overflow */
+      #results-container .table-wrapper {
         overflow-x: hidden !important;
-    }
-    
-    /* Allow results table to be responsive */
-    #results-container .table-wrapper table {
+      }
+      
+      /* Allow results table to be responsive */
+      #results-container .table-wrapper table {
         table-layout: auto !important;
         width: 100% !important;
         max-width: 100% !important;
+      }
     }
-}
-        .dataTables_wrapper .dataTables_length,
-        .dataTables_wrapper .dataTables_filter,
-        .dataTables_wrapper .dataTables_info,
-        .dataTables_wrapper .dataTables_processing,
-        .dataTables_wrapper .dataTables_paginate {
-            display: none !important;
-        }
+    
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_processing,
+    .dataTables_wrapper .dataTables_paginate {
+      display: none !important;
+    }
 
-        /* Detail view styles */
-        .detail-view {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
+    /* Detail view styles */
+    .detail-view {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
 
-        .detail-content {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin: 120px auto 20px auto;
-            padding: 24px;
-            width: 90%;
-            max-width: 800px;
-            max-height: calc(100vh - 140px);
-            overflow-y: auto;
-        }
+    .detail-content {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      margin: 120px auto 20px auto;
+      padding: 24px;
+      width: 90%;
+      max-width: 800px;
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+    }
 
-        .detail-content h2 {
-            background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
-            color: white;
-            padding: 20px 24px;
-            margin: -24px -24px 24px -24px;
-            border-radius: 12px 12px 0 0;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
+    .detail-content h2 {
+      background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+      color: white;
+      padding: 20px 24px;
+      margin: -24px -24px 24px -24px;
+      border-radius: 12px 12px 0 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
 
-        .detail-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+    .detail-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
 
-        .detail-table th,
-        .detail-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
+    .detail-table th,
+    .detail-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
 
-        .detail-table th {
-            background-color: #f8fafc;
-            font-weight: 600;
-            color: #374151;
-            width: 30%;
-        }
+    .detail-table th {
+      background-color: #f8fafc;
+      font-weight: 600;
+      color: #374151;
+      width: 30%;
+    }
 
-        .detail-close {
-            background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
+    .detail-close {
+      background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
 
-        .detail-close:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
+    .detail-close:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
 
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
+    /* Modal styles - CENTERED */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        .modal-content {
-            background-color: white;
-            margin: 20px auto;
-            padding: 24px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            max-height: calc(100vh - 40px);
-            overflow-y: auto;
-        }
+    .modal-content {
+      background-color: white;
+      margin: 0 auto;
+      padding: 24px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+      top: 0;
+      transform: none;
+    }
 
-        .modal-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 16px;
-        }
+    .modal-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
 
-        .modal-table th,
-        .modal-table td {
-            padding: 8px 12px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
+    .modal-table th,
+    .modal-table td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
 
-        .modal-table th {
-            background-color: #f8fafc;
-            font-weight: 600;
-            color: #374151;
-        }
+    .modal-table th {
+      background-color: #f8fafc;
+      font-weight: 600;
+      color: #374151;
+    }
 
-        /* Error message styles */
-        .error-message {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
-            padding: 16px;
-            border-radius: 8px;
-            text-align: center;
-            margin: 20px 0;
-        }
+    /* Error message styles */
+    .error-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+      margin: 20px 0;
+    }
 
-        /* Loading styles */
-        .loading {
-            text-align: center;
-            padding: 40px 20px;
-            color: #374151;
-            font-size: 16px;
-        }
+    /* Loading styles */
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #374151;
+      font-size: 16px;
+    }
 
-        /* Loading progress styles */
-        .loading-container {
-            text-align: center;
-            padding: 40px 20px;
-        }
+    /* Loading progress styles */
+    .loading-container {
+      text-align: center;
+      padding: 40px 20px;
+    }
 
-        .loading-text {
-            font-size: 16px;
-            color: #374151;
-            margin-bottom: 20px;
-        }
+    .loading-text {
+      font-size: 16px;
+      color: #374151;
+      margin-bottom: 20px;
+    }
 
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background-color: #e5e7eb;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background-color: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
 
-        .progress-text {
-            font-size: 14px;
-            color: #6b7280;
-            font-weight: 500;
-        }
+    .progress-text {
+      font-size: 14px;
+      color: #6b7280;
+      font-weight: 500;
+    }
 
-        /* Clickable row styles */
-        .clickable-row {
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
+    /* Clickable row styles */
+    .clickable-row {
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
 
-        .clickable-row:hover {
-            background-color: #f0f9ff !important;
-        }
+    .clickable-row:hover {
+      background-color: #f0f9ff !important;
+    }
 
-        .last-updated,
-        .updated-at {
-            text-align: center;
-            color: #6b7280;
-            font-size: 12px;
-            margin-top: 20px;
-            font-style: italic;
-        }
-.next-game-grid{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  font-size:.9rem;
-  padding:2px 10px;
-}
-.next-game-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px 16px;
-  align-items:center;
-}
-.next-game-row div{white-space:nowrap}
-.next-game-grid strong{margin-right:4px}
-@media(max-width:768px){.next-game-grid{font-size:.8rem}}
+    .last-updated,
+    .updated-at {
+      text-align: center;
+      color: #6b7280;
+      font-size: 12px;
+      margin-top: 20px;
+      font-style: italic;
+    }
 
+    /* Next Game three-row layout styles */
+    .next-game-simple {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
 
+    .next-game-row {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
 
+    .next-game-row > div {
+      padding: 12px 20px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      font-size: 16px;
+      font-weight: 500;
+      text-align: center;
+      min-width: 200px;
+    }
 
+    .next-game-details-btn {
+      background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      align-self: center;
+      margin-top: 10px;
+    }
 
+    .next-game-details-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
 
-
-
-
-
+    /* Responsive design for next game */
+    @media (max-width: 768px) {
+      .next-game-row {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .next-game-row > div {
+        min-width: auto;
+        width: 100%;
+      }
+    }
 </style>
+</head>
+<body>
+
 <div id="results" class="container">
-	<!-- ===== NEXT GAME (with loader) ===== -->
-	<div id="next-game-section" class="content-section">
-		<h2>Next Game</h2>
-		<div id="next-game-container">
-			<div class="loading-container">
-				<div class="loading-text">Loading next game&hellip;</div>
-				<div class="progress-bar">
-					<div class="progress-fill" id="next-game-progress-fill"></div>
-				</div>
-				<div class="progress-text" id="next-game-progress-text">0%</div>
-			</div>
-		</div>
-	</div>
-	<!-- ===== RANKINGS ===== -->
-	<div class="content-section">
-		<h2>Rankings</h2>
-		<div id="rankings-container">
-			<div class="loading-container">
-				<div class="loading-text">Loading rankings data&hellip;</div>
-				<div class="progress-bar">
-					<div class="progress-fill" id="rankings-progress-fill"></div>
-				</div>
-				<div class="progress-text" id="rankings-progress-text">0%</div>
-			</div>
-		</div>
-	</div>
-	<!-- ===== RESULTS ===== -->
-	<div class="content-section">
-		<h2>Results</h2>
-		<div id="results-container">
-			<div class="loading-container">
-				<div class="loading-text">Loading results data&hellip;</div>
-				<div class="progress-bar">
-					<div class="progress-fill" id="results-progress-fill"></div>
-				</div>
-				<div class="progress-text" id="results-progress-text">0%</div>
-			</div>
-		</div>
-	</div>
+  <!-- ===== NEXT GAME (with loader) ===== -->
+  <div id="next-game-section" class="content-section">
+    <h2>Next Game</h2>
+    <div id="next-game-container">
+      <div class="loading-container">
+        <div class="loading-text">Loading next game&hellip;</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="next-game-progress-fill"></div>
+        </div>
+        <div class="progress-text" id="next-game-progress-text">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RANKINGS ===== -->
+  <div class="content-section">
+    <h2>Rankings</h2>
+    <div id="rankings-container">
+      <div class="loading-container">
+        <div class="loading-text">Loading rankings data&hellip;</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="rankings-progress-fill"></div>
+        </div>
+        <div class="progress-text" id="rankings-progress-text">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS ===== -->
+  <div class="content-section">
+    <h2>Results</h2>
+    <div id="results-container">
+      <div class="loading-container">
+        <div class="loading-text">Loading results data&hellip;</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="results-progress-fill"></div>
+        </div>
+        <div class="progress-text" id="results-progress-text">0%</div>
+      </div>
+    </div>
+  </div>
 </div>
-<!-- /.container -->
-<!-- Detail view + modal markup are unchanged … -->
+
+<!-- Detail view + modal markup -->
 <div id="detail-view" class="detail-view">
-	<div id="detail-content" class="detail-content"></div>
+  <div id="detail-content" class="detail-content"></div>
 </div>
+
 <div id="dataModal" class="modal">
-	<div class="modal-content">
-		<div id="modalContent"></div>
-	</div>
+  <div class="modal-content">
+    <div id="modalContent"></div>
+  </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 /* ---------- CONFIG ---------- */
-const RANKINGS_API="https://volley-rankings-n72zsqdqea-oa.a.run.app";
-const RESULTS_API ="https://volley-results-n72zsqdqea-oa.a.run.app";
+// Supabase configuration
+const SUPABASE_URL = 'https://wilrrlwqgvzjdhmnwmte.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_smrIIJd_DJofe68QRJmB1w_qiASLbqE';
+
+// Initialize Supabase client
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ---------- HELPERS ---------- */
 function pad(n){return n.toString().padStart(2,"0")}
@@ -535,34 +593,59 @@ function formatDateWithDay(d){const t=new Date(d);const days=['Sun','Mon','Tue',
 function cleanTeamName(n,r=false){if(!n)return"";let c=n.replace(/KSC\s+Wiedikon/g,"KSCW");if(r)c=c.replace(/KSCW\s+/g,"");return c.replace(/^(VBC|VC|Volley|Volleyball)\s+/i,"").replace(/\s+(VBC|VC|Volley|Volleyball)$/i,"").trim()}
 function leagueOrGroup(row){return row.league_caption&&row.league_caption.toLowerCase().includes("cup")?row.league_caption:(row.group_caption||"Unknown League");}
 
-/* ---------- RENDER NEXT GAME ---------- */
+/* ---------- RENDER NEXT GAME (THREE ROWS) ---------- */
 function renderNextGame(g){
-  const date=formatDateWithDay(g.playDate),
-        time=formatTime(g.playDate),
-        home=cleanTeamName(g.teams_home_caption,true),
-        away=cleanTeamName(g.teams_away_caption,true),
-        hall=g.hall_caption||"n/a",
-        addr=[g.hall_street,g.hall_number,g.hall_city,g.hall_zip].filter(Boolean).join(" "),
-        Maps=g.hall_plusCode?`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(g.hall_plusCode.trim().replace(/\s+/g,"+"))}" target="_blank">Maps</a>`:"n/a";
-  return `<div class="next-game-grid">
+  const date = formatDateWithDay(g.play_date),
+        time = formatTime(g.play_date),
+        home = cleanTeamName(g.teams_home_caption, true),
+        away = cleanTeamName(g.teams_away_caption, true),
+        league = g.league_caption || "Unknown League",
+        isCup = league.toLowerCase().includes("cup"),
+        leagueIcon = isCup ? "🏆" : "🎖️";
+  
+  return `<div class="next-game-simple">
             <div class="next-game-row">
-              <div><strong>📅</strong>${date}</div>
-              <div><strong>🕒</strong>${time}</div>
-              <div><strong>🎖️</strong>${g.league_caption||"n/a"}</div>
+              <div><strong>📅</strong>${date} <strong>🕒</strong>${time}</div>
             </div>
             <div class="next-game-row">
-              <div><strong>🏐</strong>${home} – ${away}</div>
+              <div><strong>⚔️</strong>${home} – ${away}</div>
             </div>
             <div class="next-game-row">
-              <div><strong>📍</strong>${addr}</div>
-              <div><strong>🗺️</strong>${Maps}</div>
+              <div><strong>${leagueIcon}</strong>${league}</div>
             </div>
+            <button class="next-game-details-btn" onclick="showNextGameDetails(${JSON.stringify(g).replace(/"/g, '&quot;')})">
+              Click for more details
+            </button>
           </div>`;
+}
+
+/* ---------- SHOW NEXT GAME DETAILS ---------- */
+function showNextGameDetails(game) {
+  const modalContent = `
+    <h2>Next Game Details</h2>
+    <table class="modal-table">
+      <tr><th>Date</th><td>${formatDateWithDay(game.play_date)} ${formatTime(game.play_date)}</td></tr>
+      <tr><th>Home Team</th><td>${game.teams_home_caption || 'N/A'}</td></tr>
+      <tr><th>Away Team</th><td>${game.teams_away_caption || 'N/A'}</td></tr>
+      <tr><th>League</th><td>${game.league_caption || 'N/A'}</td></tr>
+      <tr><th>Group</th><td>${game.group_caption || 'N/A'}</td></tr>
+      <tr><th>Phase</th><td>${game.phase_caption || 'N/A'}</td></tr>
+      <tr><th>Hall</th><td>${game.hall_caption || 'N/A'}</td></tr>
+      <tr><th>Address</th><td>${[game.hall_street, game.hall_number, game.hall_city, game.hall_zip].filter(Boolean).join(' ') || 'N/A'}</td></tr>
+      <tr><th>Maps</th><td>${game.hall_plus_code ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(game.hall_plus_code.trim().replace(/\s+/g, "+"))}" target="_blank">Open in Google Maps</a>` : 'N/A'}</td></tr>
+      <tr><th>Referees</th><td>${game.referee_1 || 'N/A'}${game.referee_2 ? ', ' + game.referee_2 : ''}</td></tr>
+      <tr><th>Game ID</th><td>${game.game_id || 'N/A'}</td></tr>
+    </table>
+    <button class="detail-close" onclick="closeModal()">Close</button>
+  `;
+  
+  $("#modalContent").html(modalContent);
+  $("#dataModal").show();
 }
 
 /* ---------- TEAM MAPS (unchanged) ---------- */
 const teamNames={"12747":"KSC Wiedikon H3","1394":"KSC Wiedikon D4","14040":"KSC Wiedikon DU23-2","7563":"KSC Wiedikon HU23-1","1393":"KSC Wiedikon D2","541":"KSC Wiedikon H2","6023":"KSC Wiedikon Legends","4689":"KSC Wiedikon D3","2743":"KSC Wiedikon H1","1395":"KSC Wiedikon D1","2301":"KSC Wiedikon DU23-1"};
-const slugToId ={"h3":"12747","d4":"1394","du23-2":"14040","hu23-1":"7563","d2":"1393","h2":"541","legends":"6023","d3":"4689","h1":"2743","d1":"1395","du23-1":"2301"};
+const slugToId ={"h3":"12747","d4":"1394","du20":"14040","hu23":"7563","d2":"1393","h2":"541","hl":"6023","d3":"4689","h1":"2743","d1":"1395","du23":"2301"};
 
 /* ---------- DataTables cleanup ---------- */
 function destroyTables(sel){$(sel).find("table.dataTable").each(function(){if($.fn.DataTable.isDataTable(this))$(this).DataTable().destroy();});}
@@ -579,25 +662,60 @@ async function loadData(teamId){
      }
   };
 
-  const rankP=fetch(`${RANKINGS_API}/rankings?team_id=${teamId}`).then(r=>{prog("rank");return r});
-  const resP =fetch(`${RESULTS_API}/results?team_id=${teamId}`).then(r=>{prog("results");return r});
-  const [rankR,resR]=await Promise.all([rankP,resP]);
-  if(!rankR.ok){$("#rankings-container").html('<div class="error-message">Rankings API error</div>');return}
-  if(!resR.ok){$("#results-container").html('<div class="error-message">Results API error</div>');return}
-  const [rankData,resData]=await Promise.all([rankR.json(),resR.json()]);
+  try {
+    // Query rankings_complete view directly from Supabase
+    const { data: rankData, error: rankError } = await supabaseClient
+      .from('rankings_complete')
+      .select('*')
+      .eq('wiedikon_team_id', teamId);
+    
+    if (rankError) {
+      console.error('Error fetching rankings:', rankError);
+      $("#rankings-container").html('<div class="error-message">Rankings error: ' + rankError.message + '</div>');
+      return;
+    }
+    
+    prog("rank");
+
+    // Query games_complete view directly from Supabase
+    const { data: resData, error: resError } = await supabaseClient
+      .from('games_complete')
+      .select('*')
+      .eq('wiedikon_team_id', teamId);
+    
+    if (resError) {
+      console.error('Error fetching games:', resError);
+      $("#results-container").html('<div class="error-message">Games error: ' + resError.message + '</div>');
+      return;
+    }
+    
+    prog("results");
 
   /* ---------- NEXT GAME ----------- */
-  const next=resData.filter(g=>new Date(g.playDate)>new Date())
-                    .sort((a,b)=>new Date(a.playDate)-new Date(b.playDate))[0];
+  const next=resData.filter(g=>new Date(g.play_date)>new Date())
+                    .sort((a,b)=>new Date(a.play_date)-new Date(b.play_date))[0];
   if(next){
     $("#next-game-container").html(renderNextGame(next));
   }else{
     $("#next-game-container").html('<div class="error-message">No upcoming games found.</div>');
   }
 
-  /* ---------- RENDER RANKINGS (unchanged grouping, but uses leagueOrGroup) ---------- */
+  /* ---------- RENDER RANKINGS (filter out cup competitions) ---------- */
   destroyTables("#rankings-container");$("#rankings-container").empty();
-  const rBy={};rankData.forEach(r=>(rBy[leagueOrGroup(r)]??=[]).push(r));
+  
+  // Filter out cup competitions and group by league/group
+  const rBy={};
+  rankData.forEach(r => {
+    // Skip if this is a cup competition
+    if (r.league_caption && r.league_caption.toLowerCase().includes("cup")) {
+      return; // Skip this ranking
+    }
+    
+    // Use group_caption for regular leagues
+    const groupKey = r.group_caption || "Unknown League";
+    if (!rBy[groupKey]) rBy[groupKey] = [];
+    rBy[groupKey].push(r);
+  });
      for(const lg in rBy){
      $("#rankings-container").append(`<div class="sub-section"><h3>${lg}</h3></div>`);
      const $w=$(`<div class="table-wrapper"><table class="display"></table></div>`).appendTo("#rankings-container");
@@ -605,13 +723,22 @@ async function loadData(teamId){
        data:rBy[lg],
        columns:[
          {data:"rank",title:"🎖️",width:"8%"},
-         {data:"teamCaption",title:"Team",width:"42%",render:(d,t)=>t==="display"?cleanTeamName(d):d},
+         {data:"teamcaption",title:"Team",width:"42%",render:(d,t)=>t==="display"?cleanTeamName(d):d},
          {data:"points",title:"Pts",width:"12%"},
          {data:"games",title:"#️⃣",width:"12%"},
          {data:"wins",title:"🏆",width:"13%"},
          {data:"defeats",title:"💔",width:"13%"}
        ],
-       paging:false,searching:false,ordering:false,info:false,autoWidth:false,deferRender:true
+       paging:false,searching:false,ordering:false,info:false,autoWidth:false,deferRender:true,
+       createdRow: (row, data) => {
+         // Highlight KSC Wiedikon teams in light blue and bold
+         if (data.teamcaption && data.teamcaption.toLowerCase().includes("wiedikon")) {
+           $(row).find("td").css({
+             "background-color": "#e6f3ff",
+             "font-weight": "bold"
+           });
+         }
+       }
      });
      
      // Add click handlers for modal
@@ -640,14 +767,14 @@ async function loadData(teamId){
     $w.find("table").DataTable({
       data:resBy[lg],
       columns:[
-        {data:"playDate",title:"📆",width:"18%",render:(d,t)=>t==="display"?formatDate(d):d},
-        {data:"playDate",title:"🕒",width:"15%",render:(d,t)=>t==="display"?formatTime(d):d},
+        {data:"play_date",title:"📆",width:"18%",render:(d,t)=>t==="display"?formatDate(d):d},
+        {data:"play_date",title:"🕒",width:"15%",render:(d,t)=>t==="display"?formatTime(d):d},
         {data:null,title:"Match",width:"40%",render:(_,__,r)=>{
            const h=r.teams_home_caption,a=r.teams_away_caption;
            const hd=h&&h.includes("Wiedikon")?'<img src="https://www.kscw.ch/clubdesk/fileservlet?type=file&id=1000716&s=djEt3z7ABYLi8hd4sWeb8Qisb2m20xnaKr4H9W6HvJnKgDU=" style="height:16px">':cleanTeamName(h,true);
            const ad=a&&a.includes("Wiedikon")?'<img src="https://www.kscw.ch/clubdesk/fileservlet?type=file&id=1000716&s=djEt3z7ABYLi8hd4sWeb8Qisb2m20xnaKr4H9W6HvJnKgDU=" style="height:16px">':cleanTeamName(a,true);
            return `${hd} – ${ad}`;}},
-        {data:"resultSummary",title:"🎯",width:"10%",render:d=>(!d||d.length===0)?"0-0":Array.isArray(d)?d.join(", "):d}
+        {data:"result_summary",title:"🎯",width:"10%",render:d=>(!d||d==="[]"||d.length===0)?"0-0":Array.isArray(d)?d.join(", "):d}
              ],
        paging:false,searching:false,ordering:false,info:false,autoWidth:false,deferRender:true
      });
@@ -658,6 +785,11 @@ async function loadData(teamId){
        showDetailModal(data);
      });
    }
+   
+   } catch (error) {
+     console.error('Error in loadData:', error);
+     $("#rankings-container").html('<div class="error-message">Error loading data: ' + error.message + '</div>');
+   }
 }
 
 /* ---------- MODAL FUNCTIONS ---------- */
@@ -665,7 +797,7 @@ function showDetailModal(data) {
   const modalContent = `
     <h2>Game Details</h2>
     <table class="modal-table">
-      <tr><th>Date</th><td>${formatDateWithDay(data.playDate)} ${formatTime(data.playDate)}</td></tr>
+      <tr><th>Date</th><td>${formatDateWithDay(data.play_date)} ${formatTime(data.play_date)}</td></tr>
       <tr><th>Home Team</th><td>${data.teams_home_caption || 'N/A'}</td></tr>
       <tr><th>Away Team</th><td>${data.teams_away_caption || 'N/A'}</td></tr>
       <tr><th>Result</th><td>${data.resultSummary || 'N/A'}</td></tr>
@@ -674,7 +806,7 @@ function showDetailModal(data) {
       <tr><th>Referees</th><td>${data.referees || 'N/A'}</td></tr>
       <tr><th>Hall</th><td>${data.hall_caption || 'N/A'}</td></tr>
       <tr><th>Address</th><td>${[data.hall_street, data.hall_number, data.hall_city, data.hall_zip].filter(Boolean).join(' ') || 'N/A'}</td></tr>
-      <tr><th>Game ID</th><td>${data.gameId || 'N/A'}</td></tr>
+      <tr><th>Game ID</th><td>${data.game_id || 'N/A'}</td></tr>
     </table>
     <button class="detail-close" onclick="closeModal()">Close</button>
   `;
@@ -688,7 +820,7 @@ function showRankingModal(data) {
     <h2>Team Ranking Details</h2>
     <table class="modal-table">
       <tr><th>Rank</th><td>${data.rank || 'N/A'}</td></tr>
-      <tr><th>Team</th><td>${data.teamCaption || 'N/A'}</td></tr>
+      <tr><th>Team</th><td>${data.teamcaption || 'N/A'}</td></tr>
       <tr><th>Points</th><td>${data.points || 'N/A'}</td></tr>
       <tr><th>Games Played</th><td>${data.games || 'N/A'}</td></tr>
       <tr><th>Wins</th><td>${data.wins || 'N/A'}</td></tr>
@@ -716,11 +848,46 @@ $(document).on('click', '#dataModal', function(e) {
 
 /* ---------- BOOT ---------- */
 $(function(){
-  const slug=window.location.pathname.split('/').filter(Boolean).pop().toLowerCase();
-  const team=slugToId[slug];
-  if(!team){$("#rankings-container").html('<div class="error-message">Unknown team in URL</div>');}
-  else{loadData(team);}
-})
-
-
+  let team = null;
+  
+  // Priority 1: URL parameter (most reliable for embedding)
+  const urlParams = new URLSearchParams(window.location.search);
+  team = urlParams.get('team');
+  
+  // Priority 2: Path-based detection (GitHub Pages fallback)
+  if (!team) {
+    const slug = window.location.pathname.split('/').filter(Boolean).pop().toLowerCase();
+    team = slugToId[slug];
+  }
+  
+  // Priority 3: Try to extract from Clubdesk URL if embedded
+  if (!team && window.location.href.includes('clubdesk')) {
+    const url = window.location.href;
+    const patterns = [
+      /\/(?:team|teams)\/(\d+)/,           // /team/123
+      /\/([hd][1-4]|hu23|du23|du20|hl)$/, // /h1, /d1, etc.
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) {
+        if (pattern.source.includes('[hd]')) {
+          team = slugToId[match[1].toLowerCase()];
+        } else {
+          team = match[1];
+        }
+        break;
+      }
+    }
+  }
+  
+  if (!team) {
+    $("#rankings-container").html('<div class="error-message">Could not determine team. Please use ?team=ID or ?team=slug in the URL.</div>');
+  } else {
+    loadData(team);
+  }
+});
 </script>
+
+</body>
+</html>
