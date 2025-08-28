@@ -613,7 +613,7 @@ function renderNextGame(g){
             <div class="next-game-row">
               <div><strong>${leagueIcon}</strong>${league}</div>
             </div>
-            <button class="next-game-details-btn" data-game='${JSON.stringify(g).replace(/'/g, "&apos;")}'>
+            <button class="next-game-details-btn" data-game-id="${g.wiedikon_team_id}" data-game-date="${g.play_date}">
               Click for more details
             </button>
           </div>`;
@@ -699,7 +699,17 @@ async function loadData(teamId){
     
     // Add click handler for the next game details button
     $("#next-game-container .next-game-details-btn").on('click', function() {
-      const gameData = $(this).data('game');
+      // Find the game data from the resData array using the button's data attributes
+      const button = $(this);
+      const teamId = button.data('game-id');
+      const gameDate = button.data('game-date');
+      
+      // Find the matching game in resData
+      const gameData = resData.find(g => 
+        g.wiedikon_team_id == teamId && 
+        g.play_date === gameDate
+      );
+      
       if (gameData) {
         showNextGameDetails(gameData);
       }
@@ -862,7 +872,13 @@ $(function(){
   const urlParams = new URLSearchParams(window.location.search);
   team = urlParams.get('team');
   
-  // Priority 2: Try to detect from parent window URL if embedded in iframe
+  // Priority 2: Path-based detection (GitHub Pages fallback)
+  if (!team) {
+    const slug = window.location.pathname.split('/').filter(Boolean).pop().toLowerCase();
+    team = slugToId[slug];
+  }
+  
+  // Priority 3: Try to detect from parent window URL if embedded in iframe (may fail due to CORS)
   if (!team && window.parent !== window) {
     try {
       const parentUrl = window.parent.location.href;
@@ -889,27 +905,22 @@ $(function(){
         }
       }
       
-      // Check for other common patterns
+      // Additional check for common Clubdesk URL patterns
       if (!team) {
-        const otherPatterns = [
-          /\/(\d+)(?:\/|$)/,                    // /123 or /123/
-          /\/([a-z]+)(?:\/|$)/i,                // /slug or /slug/
+        const clubdeskPatterns = [
+          /\/clubdesk\/.*?(\d+)/,              // /clubdesk/anything/123
+          /\/clubdesk\/.*?([hd][1-4])/i,       // /clubdesk/anything/h1
+          /\/clubdesk\/.*?([du]u23)/i,         // /clubdesk/anything/du23
+          /\/clubdesk\/.*?(hl)/i,              // /clubdesk/anything/hl
         ];
         
-        for (const pattern of otherPatterns) {
+        for (const pattern of clubdeskPatterns) {
           const match = parentUrl.match(pattern);
           if (match) {
             const value = match[1];
-            // Try as direct ID first
-            if (Object.values(teamNames).some(name => name.includes(value))) {
-              team = Object.keys(teamNames).find(key => teamNames[key].includes(value));
-            }
-            // Try as slug
-            if (!team && slugToId[value.toLowerCase()]) {
+            if (slugToId[value.toLowerCase()]) {
               team = slugToId[value.toLowerCase()];
-            }
-            if (team) {
-              console.log('Found team from parent URL other pattern:', value, '->', team);
+              console.log('Found team from Clubdesk pattern:', value, '->', team);
               break;
             }
           }
@@ -918,12 +929,6 @@ $(function(){
     } catch (e) {
       console.log('Could not access parent URL (cross-origin restriction):', e.message);
     }
-  }
-  
-  // Priority 3: Path-based detection (GitHub Pages fallback)
-  if (!team) {
-    const slug = window.location.pathname.split('/').filter(Boolean).pop().toLowerCase();
-    team = slugToId[slug];
   }
   
   // Priority 4: Try to extract from current URL if it contains Clubdesk patterns
@@ -948,12 +953,50 @@ $(function(){
   }
   
   if (!team) {
-    $("#rankings-container").html('<div class="error-message">Could not determine team. Please use ?team=ID or ?team=slug in the URL, or ensure the page is embedded in a context with team information.</div>');
+    // Show team selector when no team is detected
+    showTeamSelector();
   } else {
     console.log('Loading data for team:', team);
     loadData(team);
   }
 });
+
+/* ---------- TEAM SELECTOR ---------- */
+function showTeamSelector() {
+  const teamSelectorHtml = `
+    <div class="content-section">
+      <h2>Select Team</h2>
+      <div style="padding: 20px; text-align: center;">
+        <p style="margin-bottom: 20px; color: #666;">No team detected. Please select a team to view data:</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; max-width: 800px; margin: 0 auto;">
+          ${Object.entries(teamNames).map(([id, name]) => `
+            <button onclick="loadData('${id}')" style="
+              padding: 15px; 
+              border: 2px solid #0066CC; 
+              border-radius: 8px; 
+              background: white; 
+              color: #0066CC; 
+              font-weight: bold; 
+              cursor: pointer; 
+              transition: all 0.3s ease;
+              font-size: 14px;
+            " onmouseover="this.style.background='#0066CC'; this.style.color='white'" 
+               onmouseout="this.style.background='white'; this.style.color='#0066CC'">
+              ${name}
+            </button>
+          `).join('')}
+        </div>
+        <p style="margin-top: 20px; font-size: 12px; color: #999;">
+          Tip: You can also use ?team=h1, ?team=d1, etc. in the URL for direct access.
+        </p>
+      </div>
+    </div>
+  `;
+  
+  $("#rankings-container").html(teamSelectorHtml);
+  $("#results-container").html('<div class="loading">Select a team above to view data</div>');
+  $("#next-game-section").hide();
+}
 </script>
 
 </body>
