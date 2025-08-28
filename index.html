@@ -4,399 +4,420 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
-<title>KSC Wiedikon Volleyball</title>
+<title>KSC Wiedikon Results</title>
 
 <style>
-    /* ============ ORIGINAL STYLES (unchanged) ============ */
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1a202c;line-height:1.6}
-    .container{max-width:100%;margin:0 auto;padding:2px;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center}
-    .content-section{background:#fff;border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,.1);margin-bottom:20px;width:100%;overflow:hidden}
-    .content-section h2{background:linear-gradient(135deg,#0066CC 0%,#FFD700 100%);color:#fff;padding:12px 16px;font-size:1.25rem;font-weight:600;margin:0}
-    .sub-section{margin:5px}
-    .sub-section h3{background:linear-gradient(135deg,#0066CC 0%,#FFD700 100%);color:#fff;padding:10px 14px;margin:0 0 10px;border-radius:8px;font-size:1rem;font-weight:600}
-    .table-wrapper{width:100%;overflow-x:hidden}
-    .table-wrapper table{width:100%!important;table-layout:fixed!important;word-break:normal}
-    .table-wrapper table td, .table-wrapper table th{padding:2px 5px!important}
+    /* ============ RESET & BASE STYLES ============ */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
     
-    /* ============ NEW MOBILE-FRIENDLY STYLES ============ */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        color: #2d3748;
+        line-height: 1.6;
+        min-height: 100vh;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        min-height: 100vh;
+    }
+    
+    /* ============ HEADER STYLES ============ */
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+        color: white;
+    }
+    
+    .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        font-weight: 300;
+    }
+    
+    /* ============ CONTROLS SECTION ============ */
     .controls-section {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,.1);
-      margin-bottom: 20px;
-      width: 100%;
-      padding: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .controls-row {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      align-items: center;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        align-items: center;
     }
     
     .team-selector {
-      width: 100%;
-      max-width: 300px;
-      padding: 12px 16px;
-      border: 2px solid #0066CC;
-      border-radius: 8px;
-      font-size: 16px;
-      background: white;
-      color: #1a202c;
-      cursor: pointer;
-      outline: none;
-      transition: all 0.3s ease;
+        width: 100%;
+        max-width: 400px;
+        padding: 16px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 16px;
+        background: white;
+        color: #2d3748;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     
     .team-selector:focus {
-      border-color: #FFD700;
-      box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+        border-color: #0066CC;
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .team-selector:hover {
+        border-color: #0066CC;
+        transform: translateY(-1px);
     }
     
     .chip-container {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 10px;
     }
     
     .chip {
-      padding: 10px 20px;
-      border: 2px solid #e2e8f0;
-      border-radius: 25px;
-      background: white;
-      color: #64748b;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      font-size: 14px;
+        padding: 14px 24px;
+        border: 2px solid #e2e8f0;
+        border-radius: 30px;
+        background: white;
+        color: #64748b;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .chip::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: left 0.5s;
+    }
+    
+    .chip:hover::before {
+        left: 100%;
     }
     
     .chip.active {
-      background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
-      color: white;
-      border-color: transparent;
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        color: white;
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 102, 204, 0.3);
+        background-clip: padding-box;
+        -webkit-background-clip: padding-box;
     }
     
     .chip:hover:not(.active) {
-      border-color: #0066CC;
-      color: #0066CC;
+        border-color: #0066CC;
+        color: #0066CC;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(0, 102, 204, 0.15);
     }
     
+    /* ============ CONTENT SECTIONS ============ */
+    .content-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .content-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+    
+    .content-section h2 {
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        color: white;
+        padding: 20px 30px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        text-align: center;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .sub-section {
+        margin: 20px;
+    }
+    
+    .sub-section h3 {
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        color: white;
+        padding: 15px 20px;
+        margin: 0 0 20px 0;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: center;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    
+    /* ============ NEXT GAMES SECTION ============ */
     .next-games-section {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,.1);
-      margin-bottom: 20px;
-      width: 100%;
-      overflow: hidden;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .next-games-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+    
+    .next-games-section h2 {
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        color: white;
+        padding: 20px 30px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        text-align: center;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
     
     .next-games-grid {
-      display: grid;
-      gap: 15px;
-      padding: 20px;
+        display: grid;
+        gap: 20px;
+        padding: 30px;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
     
     .next-game-card {
-      background: #f8f9fa;
-      border: 1px solid #e9ecef;
-      border-radius: 8px;
-      padding: 15px;
-      transition: all 0.3s ease;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 25px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .next-game-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #0066CC, #FFD700);
     }
     
     .next-game-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        border-color: #0066CC;
     }
     
     .next-game-date {
-      font-size: 14px;
-      color: #6b7280;
-      margin-bottom: 8px;
-      text-align: center;
+        font-size: 16px;
+        color: #0066CC;
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     
     .next-game-teams {
-      font-size: 16px;
-      font-weight: 600;
-      text-align: center;
-      margin-bottom: 8px;
-      color: #1a202c;
+        font-size: 18px;
+        font-weight: 700;
+        text-align: left;
+        margin-bottom: 15px;
+        color: #2d3748;
+        line-height: 1.4;
     }
     
     .next-game-league {
-      font-size: 12px;
-      color: #6b7280;
-      text-align: center;
-      margin-bottom: 12px;
+        font-size: 14px;
+        color: #718096;
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: 500;
     }
     
     .next-game-details-btn {
-      width: 100%;
-      background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.2s ease;
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     
     .next-game-details-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 102, 204, 0.4);
     }
     
+    /* ============ CONTENT TABS ============ */
     .content-tabs {
-      display: none;
+        display: none;
+        animation: fadeIn 0.5s ease-in-out;
     }
     
     .content-tabs.active {
-      display: block;
+        display: block;
     }
     
-    @media (max-width: 768px) {
-      .controls-row {
-        gap: 12px;
-      }
-      
-      .team-selector {
-        font-size: 16px;
-        padding: 14px 16px;
-      }
-      
-      .chip {
-        padding: 12px 18px;
-        font-size: 14px;
-      }
-      
-      .next-games-grid {
-        padding: 15px;
-        gap: 12px;
-      }
-      
-      .next-game-card {
-        padding: 12px;
-      }
-      
-      .next-game-teams {
-        font-size: 15px;
-      }
-      
-      .content-section h2 {
-        font-size: 1.1rem;
-        padding: 10px 14px;
-      }
-      
-      .sub-section h3 {
-        font-size: 0.9rem;
-        padding: 8px 12px;
-      }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
-    @media (max-width: 480px) {
-      .controls-section {
-        padding: 15px;
-      }
-      
-      .next-games-grid {
-        padding: 12px;
-        gap: 10px;
-      }
-      
-      .next-game-card {
-        padding: 10px;
-      }
-      
-      .next-game-teams {
-        font-size: 14px;
-      }
+    /* ============ TABLE STYLES ============ */
+    .table-wrapper {
+      width: 100%;
+        overflow-x: auto;
+        padding: 20px;
     }
-
-    .dataTables_wrapper .dataTables_scroll {
-      overflow-x: hidden !important;
-    }
-
-    .dataTables_wrapper .dataTables_scrollBody {
-      overflow-x: hidden !important;
-      padding: 1px 2px !important;
-      font-size: 12px;
-    }
-
-    /* Mobile font size adjustments */
-    @media (max-width: 768px) {
-      .dataTables_wrapper .dataTables_scrollBody {
-        font-size: 11px !important;
-      }
-      
-      .dataTables_wrapper .dataTables_scrollHead th {
-        font-size: 11px !important;
-      }
-      
-      .dataTables_wrapper .dataTables_scrollBody td {
-        font-size: 11px !important;
-      }
-    }
-
-    /* Results table specific styling - automatic height */
-    #results-container .table-wrapper {
-      height: auto;
-      overflow-y: visible;
-    }
-
-    #results-container .dataTables_wrapper .dataTables_scrollBody {
-      height: auto;
-      overflow-y: visible !important;
-    }
-
-    /* Freeze headers when scrolling */
-    .dataTables_wrapper .dataTables_scrollHead {
-      position: sticky !important;
-      top: 0 !important;
-      z-index: 10 !important;
-      background: white !important;
-    }
-
-    /* Center emojis in headers */
-    .dataTables_wrapper .dataTables_scrollHead th {
-      text-align: center !important;
-    }
-
-    .dataTables_wrapper .dataTables_scrollHead th {
-      font-size: 12px !important;
-      padding: 4px 2px !important;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .dataTables_wrapper .dataTables_scrollBody td {
-      padding: 2px 2px !important;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .dataTables_wrapper .dataTables_scrollBody td:nth-child(3) {
-      white-space: normal !important;
-      word-break: break-word !important;
-      overflow-wrap: break-word;
-      min-width: 150px;
-    }
-
-    /* Results table specific styling - match column wrapping */
-    @media (max-width: 768px) {
-      /* Only apply to results table */
-      #results-container .dataTables_wrapper .dataTables_scrollBody td:nth-child(3) {
-        white-space: normal !important;
-        word-break: break-word !important;
-        overflow-wrap: break-word !important;
-        min-width: 120px !important;
-        max-width: 180px !important;
-        padding: 4px 2px !important;
-        font-size: 10px !important;
-        line-height: 1.2 !important;
-      }
-      
-      /* Ensure results table doesn't overflow */
-      #results-container .table-wrapper {
-        overflow-x: hidden !important;
-      }
-      
-      /* Allow results table to be responsive */
-      #results-container .table-wrapper table {
-        table-layout: auto !important;
+    
+    .table-wrapper table {
         width: 100% !important;
-        max-width: 100% !important;
-      }
+        border-collapse: separate;
+        border-spacing: 0;
+      border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     
-    .dataTables_wrapper .dataTables_length,
-    .dataTables_wrapper .dataTables_filter,
-    .dataTables_wrapper .dataTables_info,
-    .dataTables_wrapper .dataTables_processing,
-    .dataTables_wrapper .dataTables_paginate {
-      display: none !important;
-    }
-
-    /* Detail view styles */
-    .detail-view {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .detail-content {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      margin: 120px auto 20px auto;
-      padding: 24px;
-      width: 90%;
-      max-width: 800px;
-      max-height: calc(100vh - 140px);
-      overflow-y: auto;
-    }
-
-    .detail-content h2 {
+    .table-wrapper table th {
       background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
       color: white;
-      padding: 20px 24px;
-      margin: -24px -24px 24px -24px;
-      border-radius: 12px 12px 0 0;
-      font-size: 1.5rem;
+        padding: 15px 12px;
       font-weight: 600;
+        text-align: center;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
-
-    .detail-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
+    
+        .table-wrapper table td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 14px;
+        transition: background-color 0.2s ease;
     }
-
-    .detail-table th,
-    .detail-table td {
-      padding: 12px;
+    
+    /* Team names left-aligned */
+    .table-wrapper table td:nth-child(2) {
       text-align: left;
-      border-bottom: 1px solid #e2e8f0;
     }
-
-    .detail-table th {
-      background-color: #f8fafc;
-      font-weight: 600;
-      color: #374151;
-      width: 30%;
+    
+    /* Center align match column content vertically */
+    .table-wrapper table td:nth-child(3) {
+        vertical-align: middle;
     }
-
-    .detail-close {
-      background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
+    
+    .table-wrapper table tbody tr:hover {
+        background-color: #f7fafc;
+    }
+    
+    .clickable-row {
       cursor: pointer;
-      font-size: 1rem;
-      font-weight: 500;
       transition: all 0.2s ease;
     }
 
-    .detail-close:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    .clickable-row:hover {
+        background-color: #edf2f7 !important;
+        transform: scale(1.01);
     }
-
-    /* Modal styles - CENTERED */
+    
+    /* ============ LOADING STYLES ============ */
+    .loading-container {
+        text-align: center;
+        padding: 60px 20px;
+        color: #718096;
+    }
+    
+    .loading-text {
+        font-size: 18px;
+        color: #718096;
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #e2e8f0;
+        border-top: 4px solid #0066CC;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* ============ ERROR MESSAGE STYLES ============ */
+    .error-message {
+        background: #fed7d7;
+        border: 1px solid #feb2b2;
+        color: #c53030;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        margin: 20px;
+        font-weight: 500;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    
+    /* ============ MODAL STYLES ============ */
     .modal {
       display: none;
       position: fixed;
@@ -405,228 +426,299 @@
       top: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(5px);
+        animation: fadeIn 0.3s ease-in-out;
     }
 
     .modal-content {
-      background-color: white;
-      margin: 0 auto;
-      padding: 24px;
-      border-radius: 12px;
+        background: white;
+        margin: 50px auto;
+        padding: 0;
+        border-radius: 20px;
       width: 90%;
-      max-width: 600px;
+        max-width: 700px;
       max-height: 80vh;
       overflow-y: auto;
-      position: relative;
-      top: 0;
-      transform: none;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        animation: slideIn 0.3s ease-in-out;
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-header {
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        color: white;
+        padding: 25px 30px;
+        border-radius: 20px 20px 0 0;
+        text-align: center;
+    }
+    
+    .modal-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .modal-body {
+        padding: 30px;
     }
 
     .modal-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 16px;
+        margin-top: 20px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
 
     .modal-table th,
     .modal-table td {
-      padding: 8px 12px;
+        padding: 15px 20px;
       text-align: left;
       border-bottom: 1px solid #e2e8f0;
     }
 
     .modal-table th {
-      background-color: #f8fafc;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
       font-weight: 600;
-      color: #374151;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 14px;
     }
-
-    /* Error message styles */
-    .error-message {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #dc2626;
-      padding: 16px;
-      border-radius: 8px;
-      text-align: center;
-      margin: 20px 0;
+    
+    .modal-table td {
+        font-size: 14px;
+        color: #2d3748;
     }
-
-    /* Loading styles */
-    .loading {
-      text-align: center;
-      padding: 40px 20px;
-      color: #374151;
+    
+    .modal-close {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 10px;
+        cursor: pointer;
       font-size: 16px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 20px;
+        width: 100%;
     }
-
-    /* Loading progress styles */
-    .loading-container {
-      text-align: center;
-      padding: 40px 20px;
+    
+    .modal-close:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
     }
-
-    .loading-text {
-      font-size: 16px;
-      color: #374151;
+    
+    /* ============ MOBILE RESPONSIVE ============ */
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+        }
+        
+        .controls-section {
+            padding: 20px;
       margin-bottom: 20px;
     }
 
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background-color: #e5e7eb;
-      border-radius: 4px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-
-    .progress-text {
+        .controls-row {
+            gap: 20px;
+        }
+        
+        .team-selector {
+            font-size: 16px;
+            padding: 14px 16px;
+        }
+        
+        .chip {
+            padding: 12px 20px;
       font-size: 14px;
-      color: #6b7280;
-      font-weight: 500;
-    }
-
-    /* Clickable row styles */
-    .clickable-row {
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    .clickable-row:hover {
-      background-color: #f0f9ff !important;
-    }
-
-    .last-updated,
-    .updated-at {
-      text-align: center;
-      color: #6b7280;
-      font-size: 12px;
-      margin-top: 20px;
-      font-style: italic;
-    }
-
-    /* Rankings table specific mobile styling */
-    #rankings-container .table-wrapper {
-      overflow-x: hidden !important;
-      max-width: 100vw !important;
+        }
+        
+        .chip-container {
+            gap: 10px;
+        }
+        
+        .next-games-grid {
+            padding: 20px;
+            gap: 15px;
+            grid-template-columns: 1fr;
+        }
+        
+        .next-game-card {
+            padding: 20px;
+        }
+        
+        .next-game-teams {
+            font-size: 16px;
+        }
+        
+        .content-section h2 {
+            font-size: 1.3rem;
+            padding: 15px 20px;
+        }
+        
+        .sub-section h3 {
+            font-size: 1rem;
+            padding: 12px 16px;
+        }
+        
+        .table-wrapper {
+            padding: 15px;
+        }
+        
+                .table-wrapper table th,
+        .table-wrapper table td {
+            padding: 8px 6px;
+            font-size: 11px;
+        }
+        
+        .modal-content {
+            margin: 20px auto;
+            width: 95%;
+        }
+        
+        .modal-header {
+      padding: 20px;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-table th,
+        .modal-table td {
+            padding: 12px 15px;
+            font-size: 13px;
+        }
     }
     
-    #rankings-container .table-wrapper table {
-      table-layout: auto !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      min-width: auto !important;
-    }
-    
-    /* Ensure rankings table doesn't overflow */
-    #rankings-container .dataTables_wrapper {
-      overflow-x: hidden !important;
-      max-width: 100vw !important;
-    }
-    
-    /* Force DataTables to behave on mobile */
-    #rankings-container .dataTables_wrapper {
-      width: 100% !important;
-      max-width: 100vw !important;
-      overflow-x: hidden !important;
-    }
-    
-    /* Force table cells to wrap and not overflow */
-    #rankings-container .dataTables_wrapper .dataTables_scrollBody td {
-      max-width: 0 !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
-      white-space: nowrap !important;
-    }
-    
-    /* Allow team names to wrap on mobile */
-    #rankings-container .dataTables_wrapper .dataTables_scrollBody td:nth-child(2) {
-      white-space: normal !important;
-      word-break: break-word !important;
-      overflow-wrap: break-word !important;
+        @media (max-width: 480px) {
+        .controls-section {
+            padding: 15px;
+        }
+        
+        .next-games-grid {
+            padding: 15px;
+            gap: 12px;
+        }
+        
+        .next-game-card {
+            padding: 15px;
+        }
+        
+        .next-game-teams {
+            font-size: 15px;
+        }
+        
+        .chip {
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+        
+        /* Extra compact rankings for very small screens */
+        .table-wrapper table th,
+        .table-wrapper table td {
+            padding: 6px 4px;
+            font-size: 10px;
+        }
+        
+        .table-wrapper {
+            padding: 10px;
+      }
     }
 </style>
 </head>
 <body>
 
-<div id="results" class="container">
-  <!-- ===== CONTROLS SECTION ===== -->
-  <div class="controls-section">
-    <div class="controls-row">
-      <select id="team-selector" class="team-selector">
-        <option value="">Select a team...</option>
-        <option value="all">All Teams</option>
-        <option value="12747">KSC Wiedikon H3</option>
-        <option value="1394">KSC Wiedikon D4</option>
-        <option value="14040">KSC Wiedikon DU23-2</option>
-        <option value="7563">KSC Wiedikon HU23-1</option>
-        <option value="1393">KSC Wiedikon D2</option>
-        <option value="541">KSC Wiedikon H2</option>
-        <option value="6023">KSC Wiedikon Legends</option>
-        <option value="4689">KSC Wiedikon D3</option>
-        <option value="2743">KSC Wiedikon H1</option>
-        <option value="1395">KSC Wiedikon D1</option>
-        <option value="2301">KSC Wiedikon DU23-1</option>
-      </select>
-      
-      <div class="chip-container">
-        <div class="chip active" data-tab="next-games">Next Games</div>
-        <div class="chip" data-tab="results">Results</div>
-        <div class="chip" data-tab="rankings">Rankings</div>
+<div class="container">
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        </div>
+
+    <!-- ===== CONTROLS SECTION ===== -->
+    <div class="controls-section">
+        <div class="controls-row">
+            <select id="team-selector" class="team-selector">
+                <option value="all">All Teams</option>
+                <option value="12747">KSC Wiedikon H3</option>
+                <option value="1394">KSC Wiedikon D4</option>
+                <option value="14040">KSC Wiedikon DU23-2</option>
+                <option value="7563">KSC Wiedikon HU23-1</option>
+                <option value="1393">KSC Wiedikon D2</option>
+                <option value="541">KSC Wiedikon H2</option>
+                <option value="6023">KSC Wiedikon Legends</option>
+                <option value="4689">KSC Wiedikon D3</option>
+                <option value="2743">KSC Wiedikon H1</option>
+                <option value="1395">KSC Wiedikon D1</option>
+                <option value="2301">KSC Wiedikon DU23-1</option>
+            </select>
+            
+            <div class="chip-container">
+                <div class="chip active" data-tab="next-games">Next Games</div>
+                <div class="chip" data-tab="results">Results</div>
+                <div class="chip" data-tab="rankings">Rankings</div>
       </div>
     </div>
   </div>
 
-  <!-- ===== NEXT GAMES SECTION ===== -->
-  <div id="next-games-section" class="next-games-section content-tabs active">
-    <h2>Next Games</h2>
-    <div id="next-games-container">
+    <!-- ===== NEXT GAMES SECTION ===== -->
+    <div id="next-games-section" class="next-games-section content-tabs active">
+        <h2>Next Games</h2>
+        <div id="next-games-container">
       <div class="loading-container">
-        <div class="loading-text">Select a team to view next games&hellip;</div>
+                <div class="spinner"></div>
+                <div class="loading-text">Select a team to view next games</div>
       </div>
     </div>
   </div>
 
-  <!-- ===== RESULTS SECTION ===== -->
-  <div id="results-section" class="content-section content-tabs">
-    <h2>Results</h2>
+    <!-- ===== RESULTS SECTION ===== -->
+    <div id="results-section" class="content-section content-tabs">
+        <h2>📊 Results</h2>
     <div id="results-container">
       <div class="loading-container">
-        <div class="loading-text">Select a team to view results&hellip;</div>
+                <div class="spinner"></div>
+                <div class="loading-text">Select a team to view results</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ===== RANKINGS SECTION ===== -->
-  <div id="rankings-section" class="content-section content-tabs">
-    <h2>Rankings</h2>
-    <div id="rankings-container">
-      <div class="loading-container">
-        <div class="loading-text">Select a team to view rankings&hellip;</div>
-      </div>
+    <!-- ===== RANKINGS SECTION ===== -->
+    <div id="rankings-section" class="content-section content-tabs">
+        <h2>🏆 Rankings</h2>
+        <div id="rankings-container">
+            <div class="loading-container">
+                <div class="spinner"></div>
+                <div class="loading-text">Select a team to view rankings</div>
+  </div>
+</div>
     </div>
-  </div>
 </div>
 
-<!-- Detail view + modal markup -->
-<div id="detail-view" class="detail-view">
-  <div id="detail-content" class="detail-content"></div>
-</div>
-
+<!-- ===== MODAL ===== -->
 <div id="dataModal" class="modal">
   <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Game Details</h2>
+        </div>
+        <div class="modal-body">
     <div id="modalContent"></div>
+            <button class="modal-close" onclick="closeModal()">Close</button>
+        </div>
   </div>
 </div>
 
@@ -635,333 +727,340 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-/* ---------- CONFIG ---------- */
-// Supabase configuration
+/* ---------- CONFIGURATION ---------- */
 const SUPABASE_URL = 'https://wilrrlwqgvzjdhmnwmte.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_smrIIJd_DJofe68QRJmB1w_qiASLbqE';
 
 // Initialize Supabase client
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* ---------- HELPERS ---------- */
-function pad(n){return n.toString().padStart(2,"0")}
-function formatDate(d){const t=new Date(d);return isNaN(t)?"":`${pad(t.getDate())}.${pad(t.getMonth()+1)}.${String(t.getFullYear()).slice(-2)}`}
-function formatTime(d){const t=new Date(t);return isNaN(t)?"":`${pad(t.getHours())}:${pad(t.getMinutes())}`}
-function formatDateWithDay(d){const t=new Date(d);const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];return isNaN(t)?"":`${days[t.getDay()]} ${formatDate(d)}`}
-function cleanTeamName(n,r=false){if(!n)return"";let c=n.replace(/KSC\s+Wiedikon/g,"KSCW");if(r)c=c.replace(/KSCW\s+/g,"");return c.replace(/^(VBC|VC|Volley|Volleyball)\s+/i,"").replace(/\s+(VBC|VC|Volley|Volleyball)$/i,"").trim()}
-function leagueOrGroup(row){return row.league_caption&&row.league_caption.toLowerCase().includes("cup")?row.league_caption:(row.group_caption||"Unknown League");}
+/* ---------- TEAM MAPPINGS ---------- */
+const teamNames = {
+    "12747": "KSC Wiedikon H3",
+    "1394": "KSC Wiedikon D4", 
+    "14040": "KSC Wiedikon DU23-2",
+    "7563": "KSC Wiedikon HU23-1",
+    "1393": "KSC Wiedikon D2",
+    "541": "KSC Wiedikon H2",
+    "6023": "KSC Wiedikon Legends",
+    "4689": "KSC Wiedikon D3",
+    "2743": "KSC Wiedikon H1",
+    "1395": "KSC Wiedikon D1",
+    "2301": "KSC Wiedikon DU23-1"
+};
 
-/* ---------- RENDER NEXT GAMES (5 games with same-day grouping) ---------- */
+const slugToId = {
+    "h3": "12747",
+    "d4": "1394",
+    "du20": "14040",
+    "hu23": "7563",
+    "d2": "1393",
+    "h2": "541",
+    "hl": "6023",
+    "d3": "4689",
+    "h1": "2743",
+    "d1": "1395",
+    "du23": "2301"
+};
+
+/* ---------- UTILITY FUNCTIONS ---------- */
+function pad(n) {
+    return n.toString().padStart(2, "0");
+}
+
+function formatDate(d) {
+    const t = new Date(d);
+    return isNaN(t) ? "" : `${pad(t.getDate())}.${pad(t.getMonth() + 1)}.${String(t.getFullYear()).slice(-2)}`;
+}
+
+function formatTime(d) {
+    const t = new Date(d);
+    return isNaN(t) ? "" : `${pad(t.getHours())}:${pad(t.getMinutes())}`;
+}
+
+function formatDateWithDay(d) {
+    const t = new Date(d);
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return isNaN(t) ? "" : `${days[t.getDay()]} ${formatDate(d)}`;
+}
+
+function cleanTeamName(n, r = false) {
+    if (!n) return "";
+    let c = n.replace(/KSC\s+Wiedikon/g, "KSCW");
+    if (r) c = c.replace(/KSCW\s+/g, "");
+    return c.replace(/^(VBC|VC|Volley|Volleyball)\s+/i, "").replace(/\s+(VBC|VC|Volley|Volleyball)$/i, "").trim();
+}
+
+function leagueOrGroup(row) {
+    return row.league_caption && row.league_caption.toLowerCase().includes("cup") ? row.league_caption : (row.group_caption || "Unknown League");
+}
+
+/* ---------- DATA TABLE CLEANUP ---------- */
+function destroyTables(selector) {
+    $(selector).find("table.dataTable").each(function() {
+        if ($.fn.DataTable.isDataTable(this)) {
+            $(this).DataTable().destroy();
+        }
+    });
+}
+
+/* ---------- RENDER NEXT GAMES ---------- */
 function renderNextGames(games) {
-  if (!games || games.length === 0) {
-    return '<div class="error-message">No upcoming games found.</div>';
-  }
-  
-  // Group games by date
-  const gamesByDate = {};
-  games.forEach(game => {
-    const dateKey = formatDate(game.play_date);
-    if (!gamesByDate[dateKey]) {
-      gamesByDate[dateKey] = [];
+    if (!games || games.length === 0) {
+        return '<div class="error-message">No upcoming games found.</div>';
     }
-    gamesByDate[dateKey].push(game);
-  });
-  
-  // Sort dates and take first 5 dates (or more if same-day games exist)
-  const sortedDates = Object.keys(gamesByDate).sort((a, b) => new Date(a.split('.').reverse().join('-')) - new Date(b.split('.').reverse().join('-')));
-  const selectedDates = sortedDates.slice(0, 5);
-  
-  let html = '<div class="next-games-grid">';
-  
-  selectedDates.forEach(dateKey => {
-    const dateGames = gamesByDate[dateKey];
-    const firstGame = dateGames[0];
-    const dateWithDay = formatDateWithDay(firstGame.play_date);
     
-    dateGames.forEach(game => {
-      const time = formatTime(game.play_date);
-      const home = cleanTeamName(game.teams_home_caption, true);
-      const away = cleanTeamName(game.teams_away_caption, true);
-      const league = game.league_caption || "Unknown League";
-      const isCup = league.toLowerCase().includes("cup");
-      const leagueIcon = isCup ? "🏆" : "🎖️";
-      
-      html += `
-        <div class="next-game-card">
-          <div class="next-game-date">${dateWithDay} at ${time}</div>
-          <div class="next-game-teams">${home} vs ${away}</div>
-          <div class="next-game-league">${leagueIcon} ${league}</div>
-          <button class="next-game-details-btn" data-game-id="${game.wiedikon_team_id}" data-game-date="${game.play_date}">
-            View Details
-          </button>
-        </div>
-      `;
+    // Group games by date
+    const gamesByDate = {};
+    games.forEach(game => {
+        const dateKey = formatDate(game.play_date);
+        if (!gamesByDate[dateKey]) {
+            gamesByDate[dateKey] = [];
+        }
+        gamesByDate[dateKey].push(game);
     });
-  });
-  
-  html += '</div>';
-  return html;
-}
-
-/* ---------- SHOW NEXT GAME DETAILS ---------- */
-function showNextGameDetails(game) {
-  const modalContent = `
-    <h2>Game Details</h2>
-    <table class="modal-table">
-      <tr><th>Date</th><td>${formatDateWithDay(game.play_date)} ${formatTime(game.play_date)}</td></tr>
-      <tr><th>Home Team</th><td>${game.teams_home_caption || 'N/A'}</td></tr>
-      <tr><th>Away Team</th><td>${game.teams_away_caption || 'N/A'}</td></tr>
-      <tr><th>League</th><td>${game.league_caption || 'N/A'}</td></tr>
-      <tr><th>Group</th><td>${game.group_caption || 'N/A'}</td></tr>
-      <tr><th>Phase</th><td>${game.phase_caption || 'N/A'}</td></tr>
-      <tr><th>Hall</th><td>${game.hall_caption || 'N/A'}</td></tr>
-      <tr><th>Address</th><td>${[game.hall_street, game.hall_number, game.hall_city, game.hall_zip].filter(Boolean).join(' ') || 'N/A'}</td></tr>
-      <tr><th>Maps</th><td>${game.hall_plus_code ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(game.hall_plus_code.trim().replace(/\s+/g, "+"))}" target="_blank">Open in Google Maps</a>` : 'N/A'}</td></tr>
-      <tr><th>Referees</th><td>${game.referee_1 || 'N/A'}${game.referee_2 ? ', ' + game.referee_2 : ''}</td></tr>
-      <tr><th>Game ID</th><td>${game.game_id || 'N/A'}</td></tr>
-    </table>
-    <button class="detail-close" onclick="closeModal()">Close</button>
-  `;
-  
-  $("#modalContent").html(modalContent);
-  $("#dataModal").show();
-}
-
-/* ---------- TEAM MAPS (unchanged) ---------- */
-const teamNames={"12747":"KSC Wiedikon H3","1394":"KSC Wiedikon D4","14040":"KSC Wiedikon DU23-2","7563":"KSC Wiedikon HU23-1","1393":"KSC Wiedikon D2","541":"KSC Wiedikon H2","6023":"KSC Wiedikon Legends","4689":"KSC Wiedikon D3","2743":"KSC Wiedikon H1","1395":"KSC Wiedikon D1","2301":"KSC Wiedikon DU23-1"};
-const slugToId ={"h3":"12747","d4":"1394","du20":"14040","hu23":"7563","d2":"1393","h2":"541","hl":"6023","d3":"4689","h1":"2743","d1":"1395","du23":"2301"};
-
-/* ---------- DataTables cleanup ---------- */
-function destroyTables(sel){$(sel).find("table.dataTable").each(function(){if($.fn.DataTable.isDataTable(this))$(this).DataTable().destroy();});}
-
-/* ---------- MAIN LOADER ---------- */
-async function loadData(teamId){
-  console.log('loadData called with teamId:', teamId, 'type:', typeof teamId);
-  
-  // Show loading states
-  $("#next-games-container").html('<div class="loading-container"><div class="loading-text">Loading next games&hellip;</div></div>');
-  $("#results-container").html('<div class="loading-container"><div class="loading-text">Loading results data&hellip;</div></div>');
-  $("#rankings-container").html('<div class="loading-container"><div class="loading-text">Loading rankings data&hellip;</div></div>');
-  
-  try {
-    let gamesData, rankingsData;
     
-    if (teamId === 'all') {
-      // Load all teams data
-      const { data: gamesAll, error: gamesError } = await supabaseClient
-        .from('games_complete')
-        .select('*')
-        .gte('play_date', new Date().toISOString().split('T')[0])
-        .order('play_date', { ascending: true });
-      
-      if (gamesError) throw gamesError;
-      gamesData = gamesAll;
-      
-      const { data: rankingsAll, error: rankingsError } = await supabaseClient
-        .from('rankings_complete')
-        .select('*');
-      
-      if (rankingsError) throw rankingsError;
-      rankingsData = rankingsAll;
-    } else {
-      // Load specific team data
-      const { data: gamesTeam, error: gamesError } = await supabaseClient
-        .from('games_complete')
-        .select('*')
-        .eq('wiedikon_team_id', teamId)
-        .gte('play_date', new Date().toISOString().split('T')[0])
-        .order('play_date', { ascending: true });
-      
-      if (gamesError) throw gamesError;
-      gamesData = gamesTeam;
-      
-      const { data: rankingsTeam, error: rankingsError } = await supabaseClient
-        .from('rankings_complete')
-        .select('*')
-        .eq('wiedikon_team_id', teamId);
-      
-      if (rankingsError) throw rankingsError;
-      rankingsData = rankingsTeam;
-    }
-
-    // Render next games
-    $("#next-games-container").html(renderNextGames(gamesData));
-    
-    // Add click handlers for next game details buttons
-    $("#next-games-container .next-game-details-btn").on('click', function() {
-      const button = $(this);
-      const teamId = button.data('game-id');
-      const gameDate = button.data('game-date');
-      
-      const gameData = gamesData.find(g => 
-        g.wiedikon_team_id == teamId && 
-        g.play_date === gameDate
-      );
-      
-      if (gameData) {
-        showNextGameDetails(gameData);
-      }
+    // Sort dates and take first 5 dates (or more if same-day games exist)
+    const sortedDates = Object.keys(gamesByDate).sort((a, b) => {
+        const dateA = new Date(a.split('.').reverse().join('-'));
+        const dateB = new Date(b.split('.').reverse().join('-'));
+        return dateA - dateB;
     });
-
-    // Render results
-    renderResults(gamesData);
     
-    // Render rankings
-    renderRankings(rankingsData, teamId);
+    const selectedDates = sortedDates.slice(0, 5);
     
-  } catch (error) {
-    console.error('Error in loadData:', error);
-    $("#next-games-container").html('<div class="error-message">Error loading data: ' + error.message + '</div>');
-    $("#results-container").html('<div class="error-message">Error loading data: ' + error.message + '</div>');
-    $("#rankings-container").html('<div class="error-message">Error loading data: ' + error.message + '</div>');
-  }
+    let html = '<div class="table-wrapper"><table class="display"><thead><tr><th>Date & Time</th><th>Teams</th><th>League</th><th>Action</th></tr></thead><tbody>';
+    
+    selectedDates.forEach(dateKey => {
+        const dateGames = gamesByDate[dateKey];
+        const firstGame = dateGames[0];
+        const dateWithDay = formatDateWithDay(firstGame.play_date);
+        
+        dateGames.forEach(game => {
+            const time = formatTime(game.play_date);
+            const home = game.teams_home_caption || "Unknown Team";
+            const away = game.teams_away_caption || "Unknown Team";
+            const league = game.league_caption || "Unknown League";
+            const isCup = league.toLowerCase().includes("cup");
+            const leagueIcon = isCup ? "🏆" : "🎖️";
+            
+            html += `
+                <tr class="clickable-row">
+                    <td style="text-align: left;">
+                        <div>${dateWithDay}</div>
+                        <div>${time}</div>
+                    </td>
+                    <td style="text-align: left;">
+                        <div><em>Home:</em> ${home}</div>
+                        <div><em>Away:</em> ${away}</div>
+                    </td>
+                    <td>${leagueIcon} ${league}</td>
+                    <td>
+                        <button class="next-game-details-btn" data-game-id="${game.wiedikon_team_id}" data-game-date="${game.play_date}">
+                            Details
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+    
+    html += '</tbody></table></div>';
+    return html;
 }
 
 /* ---------- RENDER RESULTS ---------- */
 function renderResults(resData) {
-  destroyTables("#results-container");
-  $("#results-container").empty();
-  
-  if (!resData || resData.length === 0) {
-    $("#results-container").html('<div class="error-message">No results found.</div>');
-    return;
-  }
-  
-  const resBy = {};
-  resData.forEach(r => (resBy[leagueOrGroup(r)] ??= []).push(r));
-  
-  // Sort leagues: cup first, then normal leagues
-  const sortedLeagues = Object.keys(resBy).sort((a, b) => {
-    const aIsCup = a.toLowerCase().includes("cup");
-    const bIsCup = b.toLowerCase().includes("cup");
-    if (aIsCup && !bIsCup) return -1;
-    if (!aIsCup && bIsCup) return 1;
-    return a.localeCompare(b);
-  });
-  
-  for (const lg of sortedLeagues) {
-    $("#results-container").append(`<div class="sub-section"><h3>${lg}</h3></div>`);
-    const $w = $(`<div class="table-wrapper"><table class="display"></table></div>`).appendTo("#results-container");
-    $w.find("table").DataTable({
-      data: resBy[lg],
-      columns: [
-        {data: "play_date", title: "📆", width: "18%", render: (d, t) => t === "display" ? formatDate(d) : d},
-        {data: "play_date", title: "🕒", width: "15%", render: (d, t) => t === "display" ? formatTime(d) : d},
-        {data: null, title: "Match", width: "40%", render: (_, __, r) => {
-          const h = r.teams_home_caption, a = r.teams_away_caption;
-          const hd = h && h.includes("Wiedikon") ? '<img src="https://www.kscw.ch/clubdesk/fileservlet?type=file&id=1000716&s=djEt3z7ABYLi8hd4sWeb8Qisb2m20xnaKr4H9W6HvJnKgDU=" style="height:16px">' : cleanTeamName(h, true);
-          const ad = a && a.includes("Wiedikon") ? '<img src="https://www.kscw.ch/clubdesk/fileservlet?type=file&id=1000716&s=djEt3z7ABYLi8hd4sWeb8Qisb2m20xnaKr4H9W6HvJnKgDU=" style="height:16px">' : cleanTeamName(a, true);
-          return `${hd} – ${ad}`;
-        }},
-        {data: "result_summary", title: "🎯", width: "10%", render: d => (!d || d === "[]" || d.length === 0) ? "0-0" : Array.isArray(d) ? d.join(", ") : d}
-      ],
-      paging: false, searching: false, ordering: false, info: false, autoWidth: false, deferRender: true
+    destroyTables("#results-container");
+    $("#results-container").empty();
+    
+    if (!resData || resData.length === 0) {
+        $("#results-container").html('<div class="error-message">No results found.</div>');
+        return;
+    }
+    
+    const resBy = {};
+    resData.forEach(r => (resBy[leagueOrGroup(r)] ??= []).push(r));
+    
+    // Sort leagues: cup first, then normal leagues
+    const sortedLeagues = Object.keys(resBy).sort((a, b) => {
+        const aIsCup = a.toLowerCase().includes("cup");
+        const bIsCup = b.toLowerCase().includes("cup");
+        if (aIsCup && !bIsCup) return -1;
+        if (!aIsCup && bIsCup) return 1;
+        return a.localeCompare(b);
     });
     
-    // Add click handlers for modal
-    $w.find("table tbody tr").addClass("clickable-row").click(function() {
-      const data = $w.find("table").DataTable().row(this).data();
-      showDetailModal(data);
-    });
-  }
+    for (const lg of sortedLeagues) {
+        $("#results-container").append(`<div class="sub-section"><h3>${lg}</h3></div>`);
+        const $w = $(`<div class="table-wrapper"><table class="display"></table></div>`).appendTo("#results-container");
+        
+        $w.find("table").DataTable({
+            data: resBy[lg],
+            columns: [
+                {
+                    data: "play_date",
+                    title: "📆 Date",
+                    width: "18%",
+                    render: (d, t) => t === "display" ? formatDate(d) : d
+                },
+                {
+                    data: "play_date",
+                    title: "🕒 Time",
+                    width: "15%",
+                    render: (d, t) => t === "display" ? formatTime(d) : d
+                },
+                {
+                    data: null,
+                    title: "⚔️ Match",
+                    width: "40%",
+                    render: (_, __, r) => {
+                        const h = r.teams_home_caption, a = r.teams_away_caption;
+                        const hd = cleanTeamName(h, true);
+                        const ad = cleanTeamName(a, true);
+                        return `<div style="text-align: left;"><em>Home:</em> KSCW ${hd}</div><div style="text-align: left;"><em>Away:</em> ${ad}</div>`;
+                    }
+                },
+                {
+                    data: "result_summary",
+                    title: "🎯 Result",
+                    width: "10%",
+                    render: d => (!d || d === "[]" || d.length === 0) ? "0-0" : Array.isArray(d) ? d.join(", ") : d
+                }
+            ],
+            paging: false,
+            searching: false,
+            ordering: false,
+            info: false,
+            autoWidth: false,
+            deferRender: true
+        });
+        
+        // Add click handlers for modal
+        $w.find("table tbody tr").addClass("clickable-row").click(function() {
+            const data = $w.find("table").DataTable().row(this).data();
+            showDetailModal(data);
+        });
+    }
 }
 
 /* ---------- RENDER RANKINGS ---------- */
 function renderRankings(rankData, selectedTeamId) {
-  destroyTables("#rankings-container");
-  $("#rankings-container").empty();
-  
-  if (!rankData || rankData.length === 0) {
-    $("#rankings-container").html('<div class="error-message">No rankings found.</div>');
-    return;
-  }
+    destroyTables("#rankings-container");
+    $("#rankings-container").empty();
+    
+    if (!rankData || rankData.length === 0) {
+        $("#rankings-container").html('<div class="error-message">No rankings found.</div>');
+        return;
+    }
   
   // Filter out cup competitions and group by league/group
-  const rBy = {};
+    const rBy = {};
   rankData.forEach(r => {
-    // Skip if this is a cup competition
     if (r.league_caption && r.league_caption.toLowerCase().includes("cup")) {
-      return;
+            return;
     }
     
-    // Use group_caption for regular leagues
     const groupKey = r.group_caption || "Unknown League";
     if (!rBy[groupKey]) rBy[groupKey] = [];
     rBy[groupKey].push(r);
   });
-  
-  for (const lg in rBy) {
-    $("#rankings-container").append(`<div class="sub-section"><h3>${lg}</h3></div>`);
-    const $w = $(`<div class="table-wrapper"><table class="display"></table></div>`).appendTo("#rankings-container");
-    $w.find("table").DataTable({
-      data: rBy[lg],
-      columns: [
-        {data: "rank", title: "🎖️", width: "8%"},
-        {data: "teamcaption", title: "Team", width: "42%", render: (d, t) => t === "display" ? cleanTeamName(d) : d},
-        {data: "points", title: "Pts", width: "12%"},
-        {data: "games", title: "#️⃣", width: "12%"},
-        {data: "wins", title: "🏆", width: "13%"},
-        {data: "defeats", title: "💔", width: "13%"}
-      ],
-      paging: false, searching: false, ordering: false, info: false, autoWidth: false, deferRender: true,
-      createdRow: (row, data) => {
-        // Highlight KSC Wiedikon teams in light blue and bold
-        if (data.teamcaption && data.teamcaption.toLowerCase().includes("wiedikon")) {
-          $(row).find("td").css({
-            "background-color": "#e6f3ff",
-            "font-weight": "bold"
-          });
-        }
-      }
-    });
     
-    // Add click handlers for modal
-    $w.find("table tbody tr").addClass("clickable-row").click(function() {
-      const data = $w.find("table").DataTable().row(this).data();
-      showRankingModal(data);
-    });
-  }
+    for (const lg in rBy) {
+        // Get the team name for this league/group
+        const firstTeam = rBy[lg][0];
+        const teamName = firstTeam && firstTeam.teamcaption ? cleanTeamName(firstTeam.teamcaption) : lg;
+        const displayTitle = `${lg} - ${teamName}`;
+        
+        $("#rankings-container").append(`<div class="sub-section"><h3>${displayTitle}</h3></div>`);
+        const $w = $(`<div class="table-wrapper"><table class="display"></table></div>`).appendTo("#rankings-container");
+        
+     $w.find("table").DataTable({
+            data: rBy[lg],
+            columns: [
+                {data: "rank", title: "Rank", width: "8%"},
+                {data: "teamcaption", title: "Team", width: "42%", render: (d, t) => t === "display" ? cleanTeamName(d) : d},
+                {data: "points", title: "Pts", width: "12%"},
+                {data: "games", title: "Games", width: "12%"},
+                {data: "wins", title: "Wins", width: "13%"},
+                {data: "defeats", title: "Losses", width: "13%"}
+            ],
+            paging: false,
+            searching: false,
+            ordering: false,
+            info: false,
+            autoWidth: false,
+            deferRender: true,
+       createdRow: (row, data) => {
+         if (data.teamcaption && data.teamcaption.toLowerCase().includes("wiedikon")) {
+           $(row).find("td").css({
+             "background-color": "#e6f3ff",
+             "font-weight": "bold"
+           });
+         }
+       }
+     });
+     
+     // Add click handlers for modal
+     $w.find("table tbody tr").addClass("clickable-row").click(function() {
+       const data = $w.find("table").DataTable().row(this).data();
+       showRankingModal(data);
+     });
+    }
 }
 
 /* ---------- MODAL FUNCTIONS ---------- */
 function showDetailModal(data) {
+    // Build address for Google Maps
+    const addressParts = [data.hall_street, data.hall_number, data.hall_city, data.hall_zip].filter(Boolean);
+    const address = addressParts.join(' ');
+    const addressDisplay = address || 'N/A';
+    
+    // Build referee information
+    let refereeInfo = 'N/A';
+    if (data.referee_1) {
+        if (data.referee_2) {
+            refereeInfo = `1SR: ${data.referee_1}, 2SR: ${data.referee_2}`;
+        } else {
+            refereeInfo = `1SR: ${data.referee_1}`;
+        }
+    }
+    
   const modalContent = `
-    <h2>Game Details</h2>
     <table class="modal-table">
-      <tr><th>Date</th><td>${formatDateWithDay(data.play_date)} ${formatTime(data.play_date)}</td></tr>
-      <tr><th>Home Team</th><td>${data.teams_home_caption || 'N/A'}</td></tr>
-      <tr><th>Away Team</th><td>${data.teams_away_caption || 'N/A'}</td></tr>
-      <tr><th>Result</th><td>${data.resultSummary || 'N/A'}</td></tr>
-      <tr><th>League</th><td>${data.league_caption || 'N/A'}</td></tr>
-      <tr><th>Group</th><td>${data.group_caption || 'N/A'}</td></tr>
-      <tr><th>Referees</th><td>${data.referees || 'N/A'}</td></tr>
-      <tr><th>Hall</th><td>${data.hall_caption || 'N/A'}</td></tr>
-      <tr><th>Address</th><td>${[data.hall_street, data.hall_number, data.hall_city, data.hall_zip].filter(Boolean).join(' ') || 'N/A'}</td></tr>
-      <tr><th>Game ID</th><td>${data.game_id || 'N/A'}</td></tr>
+            <tr><th>📅 Date</th><td>${formatDateWithDay(data.play_date)} ${formatTime(data.play_date)}</td></tr>
+            <tr><th>🏠 Home Team</th><td>${data.teams_home_caption || 'N/A'}</td></tr>
+            <tr><th>✈️ Away Team</th><td>${data.teams_away_caption || 'N/A'}</td></tr>
+            <tr><th>🎯 Result</th><td>${data.result_summary && data.result_summary !== "[]" && data.result_summary.length > 0 ? data.result_summary : '0-0'}</td></tr>
+            <tr><th>🏆 League</th><td>${data.league_caption || 'N/A'}</td></tr>
+            <tr><th>👥 Group</th><td>${data.group_caption || 'N/A'}</td></tr>
+            <tr><th>🏟️ Hall</th><td>${data.hall_caption || 'N/A'}</td></tr>
+            <tr><th>📍 Address</th><td>${address !== 'N/A' ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="color: #667eea; text-decoration: none;">${addressDisplay} 🗺️</a>` : addressDisplay}</td></tr>
+            <tr><th>👨‍⚖️ Referees</th><td>${refereeInfo}</td></tr>
+            <tr><th>🆔 Game ID</th><td>${data.game_id || 'N/A'}</td></tr>
     </table>
-    <button class="detail-close" onclick="closeModal()">Close</button>
   `;
   
+    $("#modalTitle").text("Game Details");
   $("#modalContent").html(modalContent);
   $("#dataModal").show();
 }
 
 function showRankingModal(data) {
   const modalContent = `
-    <h2>Team Ranking Details</h2>
     <table class="modal-table">
-      <tr><th>Rank</th><td>${data.rank || 'N/A'}</td></tr>
-      <tr><th>Team</th><td>${data.teamcaption || 'N/A'}</td></tr>
-      <tr><th>Points</th><td>${data.points || 'N/A'}</td></tr>
-      <tr><th>Games Played</th><td>${data.games || 'N/A'}</td></tr>
-      <tr><th>Wins</th><td>${data.wins || 'N/A'}</td></tr>
-      <tr><th>Defeats</th><td>${data.defeats || 'N/A'}</td></tr>
-      <tr><th>League</th><td>${data.league_caption || 'N/A'}</td></tr>
-      <tr><th>Group</th><td>${data.group_caption || 'N/A'}</td></tr>
+            <tr><th>🎖️ Rank</th><td>${data.rank || 'N/A'}</td></tr>
+            <tr><th>🏐 Team</th><td>${data.teamcaption || 'N/A'}</td></tr>
+            <tr><th>📊 Points</th><td>${data.points || 'N/A'}</td></tr>
+            <tr><th>🎮 Games Played</th><td>${data.games || 'N/A'}</td></tr>
+            <tr><th>🏆 Wins</th><td>${data.wins || 'N/A'}</td></tr>
+            <tr><th>💔 Losses</th><td>${data.defeats || 'N/A'}</td></tr>
+            <tr><th>🏆 League</th><td>${data.league_caption || 'N/A'}</td></tr>
+            <tr><th>👥 Group</th><td>${data.group_caption || 'N/A'}</td></tr>
     </table>
-    <button class="detail-close" onclick="closeModal()">Close</button>
   `;
   
+    $("#modalTitle").text("Team Ranking Details");
   $("#modalContent").html(modalContent);
   $("#dataModal").show();
 }
@@ -979,52 +1078,131 @@ $(document).on('click', '#dataModal', function(e) {
 
 /* ---------- TAB SWITCHING ---------- */
 function switchTab(tabName) {
-  // Hide all content tabs
-  $('.content-tabs').removeClass('active');
-  
-  // Show selected tab
-  $(`#${tabName}-section`).addClass('active');
-  
-  // Update chip states
-  $('.chip').removeClass('active');
-  $(`.chip[data-tab="${tabName}"]`).addClass('active');
+    $('.content-tabs').removeClass('active');
+    $(`#${tabName}-section`).addClass('active');
+    
+    $('.chip').removeClass('active');
+    $(`.chip[data-tab="${tabName}"]`).addClass('active');
 }
 
-/* ---------- BOOT ---------- */
-$(function(){
-  // Set up chip click handlers
-  $('.chip').on('click', function() {
-    const tabName = $(this).data('tab');
-    switchTab(tabName);
-  });
-  
-  // Set up team selector change handler
-  $('#team-selector').on('change', function() {
-    const selectedTeam = $(this).val();
-    if (selectedTeam) {
-      loadData(selectedTeam);
-    } else {
-      // Reset all containers
-      $("#next-games-container").html('<div class="loading-container"><div class="loading-text">Select a team to view next games&hellip;</div></div>');
-      $("#results-container").html('<div class="loading-container"><div class="loading-text">Select a team to view results&hellip;</div></div>');
-      $("#rankings-container").html('<div class="loading-container"><div class="loading-text">Select a team to view rankings&hellip;</div></div>');
-    }
-  });
-  
-  // Try to auto-select team from URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  const teamParam = urlParams.get('team');
-  
-  if (teamParam) {
-    let teamId = teamParam;
-    if (slugToId[teamParam.toLowerCase()]) {
-      teamId = slugToId[teamParam.toLowerCase()];
-    }
+/* ---------- MAIN DATA LOADER ---------- */
+async function loadData(teamId) {
+    console.log('Loading data for team:', teamId);
     
-    // Set the selector value
-    $('#team-selector').val(teamId);
+    // Show loading states
+    $("#next-games-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading next games...</div></div>');
+    $("#results-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading results...</div></div>');
+    $("#rankings-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading rankings...</div></div>');
     
-    // Load the data
+    try {
+        let gamesData, rankingsData;
+        
+        if (teamId === 'all') {
+            // Load all teams data
+            const { data: gamesAll, error: gamesError } = await supabaseClient
+                .from('games_complete')
+                .select('*')
+                .gte('play_date', new Date().toISOString().split('T')[0])
+                .order('play_date', { ascending: true });
+            
+            if (gamesError) throw gamesError;
+            gamesData = gamesAll;
+            
+            const { data: rankingsAll, error: rankingsError } = await supabaseClient
+                .from('rankings_complete')
+                .select('*');
+            
+            if (rankingsError) throw rankingsError;
+            rankingsData = rankingsAll;
+            } else {
+            // Load specific team data
+            const { data: gamesTeam, error: gamesError } = await supabaseClient
+                .from('games_complete')
+                .select('*')
+                .eq('wiedikon_team_id', teamId)
+                .gte('play_date', new Date().toISOString().split('T')[0])
+                .order('play_date', { ascending: true });
+            
+            if (gamesError) throw gamesError;
+            gamesData = gamesTeam;
+            
+            const { data: rankingsTeam, error: rankingsError } = await supabaseClient
+                .from('rankings_complete')
+                .select('*')
+                .eq('wiedikon_team_id', teamId);
+            
+            if (rankingsError) throw rankingsError;
+            rankingsData = rankingsTeam;
+        }
+        
+        // Render next games
+        $("#next-games-container").html(renderNextGames(gamesData));
+        
+        // Add click handlers for next game details buttons
+        $("#next-games-container .next-game-details-btn").on('click', function() {
+            const button = $(this);
+            const teamId = button.data('game-id');
+            const gameDate = button.data('game-date');
+            
+            const gameData = gamesData.find(g => 
+                g.wiedikon_team_id == teamId && 
+                g.play_date === gameDate
+            );
+            
+            if (gameData) {
+                showDetailModal(gameData);
+            }
+        });
+        
+        // Render results and rankings
+        renderResults(gamesData);
+        renderRankings(rankingsData, teamId);
+        
+    } catch (error) {
+        console.error('Error in loadData:', error);
+        const errorMessage = '<div class="error-message">Error loading data: ' + error.message + '</div>';
+        $("#next-games-container").html(errorMessage);
+        $("#results-container").html(errorMessage);
+        $("#rankings-container").html(errorMessage);
+    }
+}
+
+/* ---------- INITIALIZATION ---------- */
+$(function() {
+    // Set up chip click handlers
+    $('.chip').on('click', function() {
+        const tabName = $(this).data('tab');
+        switchTab(tabName);
+    });
+    
+    // Set up team selector change handler
+    $('#team-selector').on('change', function() {
+        const selectedTeam = $(this).val();
+        if (selectedTeam) {
+            loadData(selectedTeam);
+        } else {
+            // Reset all containers
+            $("#next-games-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Select a team to view next games</div></div>');
+            $("#results-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Select a team to view results</div></div>');
+            $("#rankings-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Select a team to view rankings</div></div>');
+        }
+    });
+    
+    // Auto-select "All Teams" on load
+    $('#team-selector').val('all');
+    loadData('all');
+    
+    // Try to auto-select team from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const teamParam = urlParams.get('team');
+    
+    if (teamParam) {
+        let teamId = teamParam;
+        if (slugToId[teamParam.toLowerCase()]) {
+            teamId = slugToId[teamParam.toLowerCase()];
+        }
+        
+        $('#team-selector').val(teamId);
     loadData(teamId);
   }
 });
