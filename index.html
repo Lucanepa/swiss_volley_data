@@ -613,7 +613,7 @@ function renderNextGame(g){
             <div class="next-game-row">
               <div><strong>${leagueIcon}</strong>${league}</div>
             </div>
-            <button class="next-game-details-btn" onclick="showNextGameDetails(${JSON.stringify(g).replace(/"/g, '&quot;')})">
+            <button class="next-game-details-btn" data-game='${JSON.stringify(g).replace(/'/g, "&apos;")}'>
               Click for more details
             </button>
           </div>`;
@@ -696,6 +696,14 @@ async function loadData(teamId){
                     .sort((a,b)=>new Date(a.play_date)-new Date(b.play_date))[0];
   if(next){
     $("#next-game-container").html(renderNextGame(next));
+    
+    // Add click handler for the next game details button
+    $("#next-game-container .next-game-details-btn").on('click', function() {
+      const gameData = $(this).data('game');
+      if (gameData) {
+        showNextGameDetails(gameData);
+      }
+    });
   }else{
     $("#next-game-container").html('<div class="error-message">No upcoming games found.</div>');
   }
@@ -854,13 +862,71 @@ $(function(){
   const urlParams = new URLSearchParams(window.location.search);
   team = urlParams.get('team');
   
-  // Priority 2: Path-based detection (GitHub Pages fallback)
+  // Priority 2: Try to detect from parent window URL if embedded in iframe
+  if (!team && window.parent !== window) {
+    try {
+      const parentUrl = window.parent.location.href;
+      console.log('Detected embedded context, parent URL:', parentUrl);
+      
+      // Check for Clubdesk patterns in parent URL
+      if (parentUrl.includes('clubdesk')) {
+        const patterns = [
+          /\/(?:team|teams)\/(\d+)/,           // /team/123
+          /\/([hd][1-4]|hu23|du23|du20|hl)$/, // /h1, /d1, etc.
+        ];
+        
+        for (const pattern of patterns) {
+          const match = parentUrl.match(pattern);
+          if (match) {
+            if (pattern.source.includes('[hd]')) {
+              team = slugToId[match[1].toLowerCase()];
+            } else {
+              team = match[1];
+            }
+            console.log('Found team from parent URL pattern:', match[1], '->', team);
+            break;
+          }
+        }
+      }
+      
+      // Check for other common patterns
+      if (!team) {
+        const otherPatterns = [
+          /\/(\d+)(?:\/|$)/,                    // /123 or /123/
+          /\/([a-z]+)(?:\/|$)/i,                // /slug or /slug/
+        ];
+        
+        for (const pattern of otherPatterns) {
+          const match = parentUrl.match(pattern);
+          if (match) {
+            const value = match[1];
+            // Try as direct ID first
+            if (Object.values(teamNames).some(name => name.includes(value))) {
+              team = Object.keys(teamNames).find(key => teamNames[key].includes(value));
+            }
+            // Try as slug
+            if (!team && slugToId[value.toLowerCase()]) {
+              team = slugToId[value.toLowerCase()];
+            }
+            if (team) {
+              console.log('Found team from parent URL other pattern:', value, '->', team);
+              break;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.log('Could not access parent URL (cross-origin restriction):', e.message);
+    }
+  }
+  
+  // Priority 3: Path-based detection (GitHub Pages fallback)
   if (!team) {
     const slug = window.location.pathname.split('/').filter(Boolean).pop().toLowerCase();
     team = slugToId[slug];
   }
   
-  // Priority 3: Try to extract from Clubdesk URL if embedded
+  // Priority 4: Try to extract from current URL if it contains Clubdesk patterns
   if (!team && window.location.href.includes('clubdesk')) {
     const url = window.location.href;
     const patterns = [
@@ -882,8 +948,9 @@ $(function(){
   }
   
   if (!team) {
-    $("#rankings-container").html('<div class="error-message">Could not determine team. Please use ?team=ID or ?team=slug in the URL.</div>');
+    $("#rankings-container").html('<div class="error-message">Could not determine team. Please use ?team=ID or ?team=slug in the URL, or ensure the page is embedded in a context with team information.</div>');
   } else {
+    console.log('Loading data for team:', team);
     loadData(team);
   }
 });
