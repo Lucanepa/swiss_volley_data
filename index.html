@@ -379,6 +379,32 @@
         border-top: none !important;
     }
     
+    /* Ensure consistent column alignment */
+    .table-wrapper table {
+        table-layout: fixed;
+    }
+    
+    .table-wrapper table td {
+        word-wrap: break-word;
+        vertical-align: top;
+    }
+    
+    /* Specific column styling for consistent alignment - Teams column has priority */
+    .date-time-column {
+        min-width: 100px !important;
+        max-width: 25% !important;
+    }
+    
+    .teams-column {
+        min-width: 250px !important;
+        flex-grow: 1 !important;
+    }
+    
+    .result-column {
+        min-width: 60px !important;
+        max-width: 15% !important;
+    }
+    
     .table-wrapper table th {
         padding: 15px 12px;
         font-weight: 600;
@@ -987,18 +1013,20 @@ function renderResults(resData) {
                 {
                     data: "play_date",
                     width: "25%",
+                    className: "date-time-column",
                     render: (d, t) => {
                         if (t === "display") {
                             const dateWithDay = formatDateWithDay(d);
                             const time = formatTime(d);
-                            return `<div style="text-align: left;">${dateWithDay}</div><div style="text-align: left;">${time}</div>`;
+                            return `<div style="text-align: left; min-width: 100px;">${dateWithDay}</div><div style="text-align: left; min-width: 100px;">${time}</div>`;
                         }
                         return d;
                     }
                 },
                 {
                     data: null,
-                    width: "50%",
+                    width: "60%",
+                    className: "teams-column",
                     render: (_, __, r) => {
                         const h = r.teams_home_caption, a = r.teams_away_caption;
                         
@@ -1010,15 +1038,16 @@ function renderResults(resData) {
                             return `<em>${label}</em> ${teamName}`;
                         };
                         
-                        return `<div style="text-align: left;">${formatTeamDisplay("Home:", h)}</div><div style="text-align: left;">${formatTeamDisplay("Away:", a)}</div>`;
+                        return `<div style="text-align: left; min-width: 250px;">${formatTeamDisplay("Home:", h)}</div><div style="text-align: left; min-width: 250px;">${formatTeamDisplay("Away:", a)}</div>`;
                     }
                 },
                 {
                     data: "result_summary",
-                    width: "25%",
+                    width: "15%",
+                    className: "result-column",
                     render: d => {
                         const result = (!d || d === "[]" || d.length === 0) ? "0-0" : Array.isArray(d) ? d.join(", ") : d;
-                        return `<div style="text-align: left;">${result}</div>`;
+                        return `<div style="text-align: left; min-width: 60px;">${result}</div>`;
                     }
                 }
             ],
