@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
 <title>KSC Wiedikon Results</title>
 
@@ -652,16 +655,33 @@
     <!-- ===== CONTROLS SECTION ===== -->
     <div class="controls-section">
         <div class="controls-row">
-            <select id="team-selector" class="team-selector">
-                <option value="all">All Teams</option>
-                <!-- Team options will be populated dynamically -->
-            </select>
+            <div style="display: flex; gap: 15px; align-items: center; justify-content: center; width: 100%; max-width: 500px;">
+                <select id="team-selector" class="team-selector">
+                    <option value="all">All Teams</option>
+                    <!-- Team options will be populated dynamically -->
+                </select>
+                
+                <button onclick="forceReload()" style="
+                    background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 14px;
+                    transition: all 0.3s ease;
+                    white-space: nowrap;
+                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                    🔄 Refresh
+                </button>
+            </div>
             
             <div class="chip-container">
                 <div class="chip active" data-tab="next-games">Next Games</div>
                 <div class="chip" data-tab="results">Results</div>
                 <div class="chip" data-tab="rankings">Rankings</div>
-      </div>
+            </div>
     </div>
   </div>
 
@@ -849,6 +869,25 @@ function renderNextGames(games) {
             const isCup = league.toLowerCase().includes("cup");
             const leagueIcon = isCup ? "🏆" : "🎖️";
             
+            // Determine gender from team names (H = male, D = female)
+            const isMale = home.includes(" H") || away.includes(" H");
+            const isFemale = home.includes(" D") || away.includes(" D");
+            
+            // Debug logging
+            console.log('Team names:', home, away, 'Male:', isMale, 'Female:', isFemale);
+            
+            // Set color and gender indicator
+            let leagueColor = "";
+            let genderIndicator = "";
+            
+            if (isMale) {
+                leagueColor = "color: #0066CC; font-weight: bold;"; // Blue for male
+                genderIndicator = " (M)";
+            } else if (isFemale) {
+                leagueColor = "color: #E91E63; font-weight: bold;"; // Pink for female
+                genderIndicator = " (F)";
+            }
+            
             html += `
                 <tr class="clickable-row">
                     <td style="text-align: left;">
@@ -859,7 +898,7 @@ function renderNextGames(games) {
                         <div><em>Home:</em> ${home}</div>
                         <div><em>Away:</em> ${away}</div>
                     </td>
-                    <td>${leagueIcon} ${league}</td>
+                    <td style="${leagueColor}">${leagueIcon} ${league}${genderIndicator}</td>
                     <td>
                         <button class="next-game-details-btn" data-game-id="${game.wiedikon_team_id}" data-game-date="${game.play_date}">
                             Details
@@ -1283,8 +1322,28 @@ async function populateTeamDropdown() {
     }
 }
 
+/* ---------- CACHE BUSTING ---------- */
+function forceReload() {
+    // Clear any cached data
+    if (window.caches) {
+        caches.keys().then(function(names) {
+            for (let name of names) caches.delete(name);
+        });
+    }
+    
+    // Force reload the page
+    window.location.reload(true);
+}
+
 /* ---------- INITIALIZATION ---------- */
 $(function() {
+    // Automatically clear cache and force reload on page load
+    if (window.caches) {
+        caches.keys().then(function(names) {
+            for (let name of names) caches.delete(name);
+        });
+    }
+    
     // Set up chip click handlers
     $('.chip').on('click', function() {
         const tabName = $(this).data('tab');
