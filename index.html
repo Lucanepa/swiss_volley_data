@@ -188,7 +188,7 @@
         background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
         color: white;
         padding: 15px 20px;
-        margin: 0 0 20px 0;
+        margin: 0 0 10px 0;
         border-radius: 12px;
         font-size: 1.1rem;
         font-weight: 600;
@@ -226,6 +226,16 @@
     
     .next-games-section h2::after {
         content: "Click any row for details";
+        display: block;
+        font-size: 14px;
+        font-weight: 400;
+        font-style: italic;
+        margin-top: 8px;
+        opacity: 0.9;
+    }
+    
+    .content-section h2::after {
+        content: "Click on a game to see details";
         display: block;
         font-size: 14px;
         font-weight: 400;
@@ -333,27 +343,50 @@
     .table-wrapper {
       width: 100%;
         overflow-x: auto;
-        padding: 20px;
+        padding: 10px 20px;
     }
     
     .table-wrapper table {
         width: 100% !important;
         border-collapse: separate;
         border-spacing: 0;
-      border-radius: 12px;
+        border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     
+    .table-wrapper table tbody tr:first-child td {
+        border-top: none;
+    }
+    
+    .table-wrapper table tbody tr:first-child td:first-child {
+        border-top-left-radius: 12px;
+    }
+    
+    .table-wrapper table tbody tr:first-child td:last-child {
+        border-top-right-radius: 12px;
+    }
+    
+    /* Hide any DataTables header elements */
+    .table-wrapper table thead,
+    .table-wrapper table .dataTables_header,
+    .table-wrapper table .dataTables_wrapper .dataTables_header {
+        display: none !important;
+    }
+    
+    /* Remove any top borders from DataTables wrapper */
+    .table-wrapper .dataTables_wrapper {
+        border-top: none !important;
+    }
+    
     .table-wrapper table th {
-      background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
-      color: white;
         padding: 15px 12px;
-      font-weight: 600;
+        font-weight: 600;
         text-align: center;
         font-size: 14px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        color: #2d3748;
     }
     
         .table-wrapper table td {
@@ -708,7 +741,7 @@
     <!-- ===== RESULTS SECTION ===== -->
     <div id="results-section" class="content-section content-tabs">
         <h2>📊 Results</h2>
-    <div id="results-container">
+        <div id="results-container">
       <div class="loading-container">
                 <div class="spinner"></div>
                 <div class="loading-text">Select a team to view results</div>
@@ -863,7 +896,7 @@ function renderNextGames(games) {
     
     const selectedDates = sortedDates.slice(0, 5);
     
-    let html = '<div class="table-wrapper"><table class="display"><thead><tr><th>Date & Time</th><th>Teams</th><th>League</th></tr></thead><tbody>';
+    let html = '<div class="table-wrapper"><table class="display"><tbody>';
     
     selectedDates.forEach(dateKey => {
         const dateGames = gamesByDate[dateKey];
@@ -953,32 +986,40 @@ function renderResults(resData) {
             columns: [
                 {
                     data: "play_date",
-                    title: "📆 Date",
-                    width: "18%",
-                    render: (d, t) => t === "display" ? formatDate(d) : d
-                },
-                {
-                    data: "play_date",
-                    title: "🕒 Time",
-                    width: "15%",
-                    render: (d, t) => t === "display" ? formatTime(d) : d
+                    width: "25%",
+                    render: (d, t) => {
+                        if (t === "display") {
+                            const dateWithDay = formatDateWithDay(d);
+                            const time = formatTime(d);
+                            return `<div style="text-align: left;">${dateWithDay}</div><div style="text-align: left;">${time}</div>`;
+                        }
+                        return d;
+                    }
                 },
                 {
                     data: null,
-                    title: "⚔️ Match",
-                    width: "40%",
+                    width: "50%",
                     render: (_, __, r) => {
                         const h = r.teams_home_caption, a = r.teams_away_caption;
-                        const hd = cleanTeamName(h, true);
-                        const ad = cleanTeamName(a, true);
-                        return `<div style="text-align: left;"><em>Home:</em> KSCW ${hd}</div><div style="text-align: left;"><em>Away:</em> ${ad}</div>`;
+                        
+                        // Make KSC Wiedikon team names bold (including Home:/Away: label)
+                        const formatTeamDisplay = (label, teamName) => {
+                            if (teamName.includes("KSC Wiedikon")) {
+                                return `<strong><em>${label}</em> ${teamName}</strong>`;
+                            }
+                            return `<em>${label}</em> ${teamName}`;
+                        };
+                        
+                        return `<div style="text-align: left;">${formatTeamDisplay("Home:", h)}</div><div style="text-align: left;">${formatTeamDisplay("Away:", a)}</div>`;
                     }
                 },
                 {
                     data: "result_summary",
-                    title: "🎯 Result",
-                    width: "10%",
-                    render: d => (!d || d === "[]" || d.length === 0) ? "0-0" : Array.isArray(d) ? d.join(", ") : d
+                    width: "25%",
+                    render: d => {
+                        const result = (!d || d === "[]" || d.length === 0) ? "0-0" : Array.isArray(d) ? d.join(", ") : d;
+                        return `<div style="text-align: left;">${result}</div>`;
+                    }
                 }
             ],
             paging: false,
