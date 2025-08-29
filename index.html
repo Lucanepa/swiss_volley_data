@@ -760,6 +760,23 @@ function formatDate(d) {
 }
 
 function formatTime(d) {
+    // Try to extract time directly from the string first
+    if (typeof d === 'string') {
+        // Look for time pattern HH:MM or HH:MM:SS
+        const timeMatch = d.match(/(\d{1,2}):(\d{2})(?::\d{2})?/);
+        if (timeMatch) {
+            const hours = parseInt(timeMatch[1]);
+            const minutes = parseInt(timeMatch[2]);
+            return `${pad(hours)}:${pad(minutes)}`;
+        }
+    }
+    
+    // Fallback to Date object method
+    const t = new Date(d);
+    return isNaN(t) ? "" : `${pad(t.getHours())}:${pad(t.getMinutes())}`;
+}
+
+function formatDateWithDay(d) {
     // Handle timezone conversion - if the date string doesn't have timezone info, 
     // treat it as UTC and convert to local time
     let dateString = d;
@@ -768,11 +785,6 @@ function formatTime(d) {
         dateString = d + 'Z';
     }
     const t = new Date(dateString);
-    return isNaN(t) ? "" : `${pad(t.getHours())}:${pad(t.getMinutes())}`;
-}
-
-function formatDateWithDay(d) {
-    const t = new Date(d);
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     return isNaN(t) ? "" : `${days[t.getDay()]} ${formatDate(d)}`;
 }
@@ -1024,7 +1036,7 @@ function showDetailModal(data) {
             <tr><th>📅 Date</th><td>${formatDateWithDay(data.play_date)} ${formatTime(data.play_date)}</td></tr>
             <tr><th>🏠 Home Team</th><td>${data.teams_home_caption || 'N/A'}</td></tr>
             <tr><th>✈️ Away Team</th><td>${data.teams_away_caption || 'N/A'}</td></tr>
-            <tr><th>🎯 Result</th><td>${data.result_summary && data.result_summary !== "[]" && data.result_summary.length > 0 ? data.result_summary : '0-0'}</td></tr>
+
             <tr><th>🏆 League</th><td>${data.league_caption || 'N/A'}</td></tr>
             <tr><th>👥 Group</th><td>${data.group_caption || 'N/A'}</td></tr>
             <tr><th>🏟️ Hall</th><td>${data.hall_caption || 'N/A'}</td></tr>
