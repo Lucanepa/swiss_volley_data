@@ -389,20 +389,33 @@
         vertical-align: top;
     }
     
-    /* Specific column styling for consistent alignment - Teams column has priority */
+    /* Specific column styling for auto-sizing */
     .date-time-column {
-        min-width: 100px !important;
-        max-width: 25% !important;
+        width: auto !important;
     }
     
     .teams-column {
-        min-width: 250px !important;
-        flex-grow: 1 !important;
+        width: auto !important;
     }
     
     .result-column {
-        min-width: 60px !important;
-        max-width: 15% !important;
+        width: auto !important;
+        text-align: left !important;
+    }
+    
+    /* Next Games table - all columns auto-size naturally */
+    
+    /* Ensure table doesn't wrap on mobile */
+    .table-wrapper table {
+        table-layout: fixed;
+        min-width: 100%;
+        white-space: nowrap;
+    }
+    
+    .table-wrapper table td {
+        word-wrap: break-word;
+        vertical-align: top;
+        white-space: normal;
     }
     
     .table-wrapper table th {
@@ -1012,20 +1025,18 @@ function renderResults(resData) {
             columns: [
                 {
                     data: "play_date",
-                    width: "25%",
                     className: "date-time-column",
                     render: (d, t) => {
                         if (t === "display") {
                             const dateWithDay = formatDateWithDay(d);
                             const time = formatTime(d);
-                            return `<div style="text-align: left; min-width: 100px;">${dateWithDay}</div><div style="text-align: left; min-width: 100px;">${time}</div>`;
+                            return `<div style="text-align: left;">${dateWithDay}</div><div style="text-align: left;">${time}</div>`;
                         }
                         return d;
                     }
                 },
                 {
                     data: null,
-                    width: "60%",
                     className: "teams-column",
                     render: (_, __, r) => {
                         const h = r.teams_home_caption, a = r.teams_away_caption;
@@ -1038,16 +1049,15 @@ function renderResults(resData) {
                             return `<em>${label}</em> ${teamName}`;
                         };
                         
-                        return `<div style="text-align: left; min-width: 250px;">${formatTeamDisplay("Home:", h)}</div><div style="text-align: left; min-width: 250px;">${formatTeamDisplay("Away:", a)}</div>`;
+                        return `<div style="text-align: left;">${formatTeamDisplay("Home:", h)}</div><div style="text-align: left;">${formatTeamDisplay("Away:", a)}</div>`;
                     }
                 },
                 {
                     data: "result_summary",
-                    width: "15%",
                     className: "result-column",
                     render: d => {
                         const result = (!d || d === "[]" || d.length === 0) ? "0-0" : Array.isArray(d) ? d.join(", ") : d;
-                        return `<div style="text-align: left; min-width: 60px;">${result}</div>`;
+                        return `<div style="text-align: left;">${result}</div>`;
                     }
                 }
             ],
