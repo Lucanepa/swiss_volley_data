@@ -216,12 +216,22 @@
     .next-games-section h2 {
         background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
         color: white;
-        padding: 20px 30px;
+        padding: 20px 30px 15px 30px;
         font-size: 1.5rem;
         font-weight: 700;
         margin: 0;
         text-align: center;
         text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .next-games-section h2::after {
+        content: "Click any row for details";
+        display: block;
+        font-size: 14px;
+        font-weight: 400;
+        font-style: italic;
+        margin-top: 8px;
+        opacity: 0.9;
     }
     
     .next-games-grid {
@@ -375,7 +385,6 @@
 
     .clickable-row:hover {
         background-color: #edf2f7 !important;
-        transform: scale(1.01);
     }
     
     /* ============ LOADING STYLES ============ */
@@ -854,7 +863,7 @@ function renderNextGames(games) {
     
     const selectedDates = sortedDates.slice(0, 5);
     
-    let html = '<div class="table-wrapper"><table class="display"><thead><tr><th>Date & Time</th><th>Teams</th><th>League</th><th>Action</th></tr></thead><tbody>';
+    let html = '<div class="table-wrapper"><table class="display"><thead><tr><th>Date & Time</th><th>Teams</th><th>League</th></tr></thead><tbody>';
     
     selectedDates.forEach(dateKey => {
         const dateGames = gamesByDate[dateKey];
@@ -873,9 +882,6 @@ function renderNextGames(games) {
             const isMale = home.includes(" H") || away.includes(" H");
             const isFemale = home.includes(" D") || away.includes(" D");
             
-            // Debug logging
-            console.log('Team names:', home, away, 'Male:', isMale, 'Female:', isFemale);
-            
             // Set color and gender indicator
             let leagueColor = "";
             let genderIndicator = "";
@@ -888,22 +894,25 @@ function renderNextGames(games) {
                 genderIndicator = " (F)";
             }
             
+            // Make KSC Wiedikon team names bold (including Home:/Away: label)
+            const formatTeamDisplay = (label, teamName) => {
+                if (teamName.includes("KSC Wiedikon")) {
+                    return `<strong><em>${label}</em> ${teamName}</strong>`;
+                }
+                return `<em>${label}</em> ${teamName}`;
+            };
+            
             html += `
-                <tr class="clickable-row">
+                <tr class="clickable-row" data-game-id="${game.wiedikon_team_id}" data-game-date="${game.play_date}">
                     <td style="text-align: left;">
                         <div>${dateWithDay}</div>
                         <div>${time}</div>
                     </td>
                     <td style="text-align: left;">
-                        <div><em>Home:</em> ${home}</div>
-                        <div><em>Away:</em> ${away}</div>
+                        <div>${formatTeamDisplay("Home:", home)}</div>
+                        <div>${formatTeamDisplay("Away:", away)}</div>
                     </td>
                     <td style="${leagueColor}">${leagueIcon} ${league}${genderIndicator}</td>
-                    <td>
-                        <button class="next-game-details-btn" data-game-id="${game.wiedikon_team_id}" data-game-date="${game.play_date}">
-                            Details
-                        </button>
-                    </td>
                 </tr>
             `;
         });
@@ -1182,11 +1191,11 @@ async function loadData(teamId) {
         // Render next games
         $("#next-games-container").html(renderNextGames(gamesData));
         
-        // Add click handlers for next game details buttons
-        $("#next-games-container .next-game-details-btn").on('click', function() {
-            const button = $(this);
-            const teamId = button.data('game-id');
-            const gameDate = button.data('game-date');
+        // Add click handlers for next game rows
+        $("#next-games-container .clickable-row").on('click', function() {
+            const row = $(this);
+            const teamId = row.data('game-id');
+            const gameDate = row.data('game-date');
             
             const gameData = gamesData.find(g => 
                 g.wiedikon_team_id == teamId && 
