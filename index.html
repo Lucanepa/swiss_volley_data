@@ -760,7 +760,14 @@ function formatDate(d) {
 }
 
 function formatTime(d) {
-    const t = new Date(d);
+    // Handle timezone conversion - if the date string doesn't have timezone info, 
+    // treat it as UTC and convert to local time
+    let dateString = d;
+    if (typeof d === 'string' && !d.includes('Z') && !d.includes('+')) {
+        // If no timezone info, assume UTC and add Z
+        dateString = d + 'Z';
+    }
+    const t = new Date(dateString);
     return isNaN(t) ? "" : `${pad(t.getHours())}:${pad(t.getMinutes())}`;
 }
 
