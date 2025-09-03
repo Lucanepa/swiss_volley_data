@@ -59,7 +59,7 @@
         border-radius: 20px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         margin-bottom: 30px;
-        padding: 30px;
+        padding: 20px;
         border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
@@ -625,6 +625,36 @@
         box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
     }
     
+    /* ============ LAST UPDATED SECTION ============ */
+    .last-updated-section {
+        margin-top: 8px;
+        text-align: center;
+    }
+    
+    .last-updated-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+    
+    .last-updated-label {
+        font-size: 0.80rem;
+        color: #718096;
+        font-weight: 500;
+    }
+    
+    #last-updated-time {
+        font-size: 0.80rem;
+        color: #2d3748;
+        font-weight: 600;
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
     /* ============ MOBILE RESPONSIVE ============ */
     @media (max-width: 768px) {
         .container {
@@ -636,7 +666,7 @@
         }
         
         .controls-section {
-            padding: 20px;
+            padding: 15px;
       margin-bottom: 20px;
     }
 
@@ -710,11 +740,25 @@
             padding: 12px 15px;
             font-size: 13px;
         }
+        
+        .last-updated-section {
+            margin-top: 5px;
+        }
+        
+        .last-updated-content {
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .last-updated-label,
+        #last-updated-time {
+            font-size: 0.70rem;
+        }
     }
     
         @media (max-width: 480px) {
         .controls-section {
-            padding: 15px;
+            padding: 12px;
         }
         
         .next-games-grid {
@@ -784,6 +828,14 @@
                 <div class="chip active" data-tab="next-games">Next Games</div>
                 <div class="chip" data-tab="results">Results</div>
                 <div class="chip" data-tab="rankings">Rankings</div>
+            </div>
+            
+            <!-- ===== LAST UPDATED SECTION ===== -->
+            <div id="last-updated-section" class="last-updated-section">
+                <div class="last-updated-content">
+                    <span class="last-updated-label">Last updated:</span>
+                    <span id="last-updated-time">Loading...</span>
+                </div>
             </div>
     </div>
   </div>
@@ -910,6 +962,30 @@ function formatDateWithDay(d) {
     const t = new Date(dateString);
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     return isNaN(t) ? "" : `${days[t.getDay()]} ${formatDate(d)}`;
+}
+
+function formatLastUpdated(d) {
+    if (!d) return "Unknown";
+    
+    // Handle timezone conversion - if the date string doesn't have timezone info, 
+    // treat it as UTC and convert to local time
+    let dateString = d;
+    if (typeof d === 'string' && !d.includes('Z') && !d.includes('+')) {
+        // If no timezone info, assume UTC and add Z
+        dateString = d + 'Z';
+    }
+    
+    const t = new Date(dateString);
+    if (isNaN(t)) return "Unknown";
+    
+    // Format as dd.mm.yy hh:mm
+    const day = pad(t.getDate());
+    const month = pad(t.getMonth() + 1);
+    const year = String(t.getFullYear()).slice(-2);
+    const hours = pad(t.getHours());
+    const minutes = pad(t.getMinutes());
+    
+    return `${day}.${month}.${year} ${hours}:${minutes}`;
 }
 
 function cleanTeamName(n, r = false) {
@@ -1254,7 +1330,7 @@ async function loadData(teamId) {
     $("#rankings-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading rankings...</div></div>');
     
     try {
-        let gamesData, rankingsData;
+        let gamesData, rankingsData, lastUpdated;
         
         if (teamId === 'all') {
             // Load all teams data
@@ -1273,6 +1349,13 @@ async function loadData(teamId) {
             
             if (rankingsError) throw rankingsError;
             rankingsData = rankingsAll;
+            
+            // Get the updated_at value from the first record (all records have the same value)
+            if (rankingsData && rankingsData.length > 0) {
+                lastUpdated = rankingsData[0].updated_at;
+            } else if (gamesData && gamesData.length > 0) {
+                lastUpdated = gamesData[0].updated_at;
+            }
             } else {
             // Load specific team data
             const { data: gamesTeam, error: gamesError } = await supabaseClient
@@ -1292,6 +1375,13 @@ async function loadData(teamId) {
             
             if (rankingsError) throw rankingsError;
             rankingsData = rankingsTeam;
+            
+            // Get the updated_at value from the first record (all records have the same value)
+            if (rankingsData && rankingsData.length > 0) {
+                lastUpdated = rankingsData[0].updated_at;
+            } else if (gamesData && gamesData.length > 0) {
+                lastUpdated = gamesData[0].updated_at;
+            }
         }
         
         // Render next games
@@ -1316,6 +1406,13 @@ async function loadData(teamId) {
         // Render results and rankings
         renderResults(gamesData);
         renderRankings(rankingsData, teamId);
+        
+        // Update the last updated time
+        if (lastUpdated) {
+            $("#last-updated-time").text(formatLastUpdated(lastUpdated));
+        } else {
+            $("#last-updated-time").text("Unknown");
+        }
         
     } catch (error) {
         console.error('Error in loadData:', error);
