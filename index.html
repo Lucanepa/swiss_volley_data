@@ -367,10 +367,13 @@
         border-top-right-radius: 12px;
     }
     
-    /* Hide any DataTables header elements */
-    .table-wrapper table thead,
-    .table-wrapper table .dataTables_header,
-    .table-wrapper table .dataTables_wrapper .dataTables_header {
+    /* Hide any DataTables header elements for Results and Next Games */
+    #results-container .table-wrapper table thead,
+    #results-container .table-wrapper table .dataTables_header,
+    #results-container .table-wrapper table .dataTables_wrapper .dataTables_header,
+    #next-games-container .table-wrapper table thead,
+    #next-games-container .table-wrapper table .dataTables_header,
+    #next-games-container .table-wrapper table .dataTables_wrapper .dataTables_header {
         display: none !important;
     }
     
@@ -427,6 +430,24 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
         color: #2d3748;
+    }
+    
+    /* Rankings table specific header alignment */
+    #rankings-container .table-wrapper table th.text-center {
+        text-align: center;
+    }
+    
+    #rankings-container .table-wrapper table th.text-left {
+        text-align: left;
+    }
+    
+    /* Rankings table specific content alignment */
+    #rankings-container .table-wrapper table td.text-center {
+        text-align: center;
+    }
+    
+    #rankings-container .table-wrapper table td.text-left {
+        text-align: left;
     }
     
         .table-wrapper table td {
@@ -1112,12 +1133,12 @@ function renderRankings(rankData, selectedTeamId) {
      $w.find("table").DataTable({
             data: rBy[lg],
             columns: [
-                {data: "rank", title: "Rank", width: "8%"},
-                {data: "teamcaption", title: "Team", width: "42%", render: (d, t) => t === "display" ? cleanTeamName(d) : d},
-                {data: "points", title: "Pts", width: "12%"},
-                {data: "games", title: "Games", width: "12%"},
-                {data: "wins", title: "Wins", width: "13%"},
-                {data: "defeats", title: "Losses", width: "13%"}
+                {data: "rank", title: "🏆", width: "8%", className: "text-center"},
+                {data: "teamcaption", title: "🏐", width: "42%", className: "text-left", render: (d, t) => t === "display" ? cleanTeamName(d) : d},
+                {data: "points", title: "🧮", width: "12%", className: "text-center"},
+                {data: "games", title: "#️⃣", width: "12%", className: "text-center"},
+                {data: "wins", title: "🎉", width: "13%", className: "text-center"},
+                {data: "defeats", title: "💔", width: "13%", className: "text-center"}
             ],
             paging: false,
             searching: false,
@@ -1132,6 +1153,10 @@ function renderRankings(rankData, selectedTeamId) {
              "font-weight": "bold"
            });
          }
+         // Ensure vertical center alignment for team names
+         $(row).find("td:nth-child(2)").css({
+           "vertical-align": "middle"
+         });
        }
      });
      
@@ -1462,19 +1487,10 @@ $(function() {
         // Try to auto-select team from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const teamParam = urlParams.get('team');
-        
         if (teamParam) {
-            let teamId = teamParam;
-            if (slugToId[teamParam.toLowerCase()]) {
-                teamId = slugToId[teamParam.toLowerCase()];
-            }
-            
-            $('#team-selector').val(teamId);
-            loadData(teamId);
+            $('#team-selector').val(teamParam);
+            loadData(teamParam);
         }
     });
 });
 </script>
-
-</body>
-</html>
