@@ -1138,23 +1138,64 @@ function renderResults(resData) {
                     className: "teams-column",
                     render: (_, __, r) => {
                         const h = r.teams_home_caption, a = r.teams_away_caption;
+                        let resultSummary = r.result_summary;
+                        
+                        // Try to parse result_summary if it's a JSON string
+                        if (typeof resultSummary === 'string') {
+                            try {
+                                resultSummary = JSON.parse(resultSummary);
+                            } catch (e) {
+                                // If parsing fails, keep as string
+                            }
+                        }
+                        
+                        // Determine winner from result_summary
+                        let homeStar = "", awayStar = "";
+                        if (resultSummary && typeof resultSummary === 'object' && resultSummary !== null && resultSummary.winner) {
+                            if (resultSummary.winner === "team_home") {
+                                homeStar = " ⭐";
+                            } else if (resultSummary.winner === "team_away") {
+                                awayStar = " ⭐";
+                            }
+                        }
                         
                         // Make KSC Wiedikon team names bold (including Home:/Away: label)
-                        const formatTeamDisplay = (label, teamName) => {
+                        const formatTeamDisplay = (label, teamName, star) => {
                             if (teamName.includes("KSC Wiedikon")) {
-                                return `<strong><em>${label}</em> ${teamName}</strong>`;
+                                return `<strong><em>${label}</em> ${teamName}${star}</strong>`;
                             }
-                            return `<em>${label}</em> ${teamName}`;
+                            return `<em>${label}</em> ${teamName}${star}`;
                         };
                         
-                        return `<div style="text-align: left;">${formatTeamDisplay("Home:", h)}</div><div style="text-align: left;">${formatTeamDisplay("Away:", a)}</div>`;
+                        return `<div style="text-align: left;">${formatTeamDisplay("Home:", h, homeStar)}</div><div style="text-align: left;">${formatTeamDisplay("Away:", a, awayStar)}</div>`;
                     }
                 },
                 {
                     data: "result_summary",
                     className: "result-column",
                     render: d => {
-                        const result = (!d || d === "[]" || d.length === 0) ? "0-0" : Array.isArray(d) ? d.join(", ") : d;
+                        if (!d || d === "[]" || d.length === 0) {
+                            return `<div style="text-align: left;">-</div>`;
+                        }
+                        
+                        // Try to parse if it's a JSON string
+                        let resultData = d;
+                        if (typeof d === 'string') {
+                            try {
+                                resultData = JSON.parse(d);
+                            } catch (e) {
+                                // If parsing fails, treat as string
+                                resultData = d;
+                            }
+                        }
+                        
+                        // Handle result_summary object
+                        if (typeof resultData === 'object' && resultData !== null && resultData.wonSetsHomeTeam !== undefined && resultData.wonSetsAwayTeam !== undefined) {
+                            return `<div style="text-align: left;"><strong>${resultData.wonSetsHomeTeam}-${resultData.wonSetsAwayTeam}</strong></div>`;
+                        }
+                        
+                        // Fallback for other formats (arrays, etc.)
+                        const result = Array.isArray(resultData) ? resultData.join(", ") : resultData;
                         return `<div style="text-align: left;">${result}</div>`;
                     }
                 }
@@ -1261,12 +1302,70 @@ function showDetailModal(data) {
         }
     }
     
+    // Build result summary
+    let resultSummaryHtml = 'N/A';
+    let resultSummary = data.result_summary;
+    
+    // Try to parse if it's a JSON string
+    if (typeof resultSummary === 'string') {
+        try {
+            resultSummary = JSON.parse(resultSummary);
+        } catch (e) {
+            // If parsing fails, keep as string
+        }
+    }
+    
+    if (resultSummary && typeof resultSummary === 'object' && resultSummary !== null) {
+        if (resultSummary.wonSetsHomeTeam !== undefined && resultSummary.wonSetsAwayTeam !== undefined) {
+            const homeTeam = data.teams_home_caption || 'Home Team';
+            const awayTeam = data.teams_away_caption || 'Away Team';
+            const winner = resultSummary.winner === 'team_home' ? homeTeam : resultSummary.winner === 'team_away' ? awayTeam : 'Tie';
+            resultSummaryHtml = `<strong>${resultSummary.wonSetsHomeTeam}-${resultSummary.wonSetsAwayTeam}</strong>`;
+        }
+    }
+    
+    // Build set results
+    let setResultsHtml = 'N/A';
+    let setResults = data.set_results;
+    
+    // Try to parse if it's a JSON string
+    if (typeof setResults === 'string') {
+        try {
+            setResults = JSON.parse(setResults);
+        } catch (e) {
+            // If parsing fails, keep as string
+        }
+    }
+    
+    if (setResults && Array.isArray(setResults) && setResults.length > 0) {
+        const homeTeam = data.teams_home_caption || 'Home Team';
+        const awayTeam = data.teams_away_caption || 'Away Team';
+        
+        // Determine icons based on team names
+        const homeIcon = homeTeam.includes('KSC Wiedikon') ? 
+            '<img src="https://kscw.ch/clubdesk/fileservlet?type=file&id=1000716&s=djEt3z7ABYLi8hd4sWeb8Qisb2m20xnaKr4H9W6HvJnKgDU=" alt="KSC Wiedikon" style="width: 20px; height: 20px; vertical-align: middle;">' : 
+            '⚔️';
+        const awayIcon = awayTeam.includes('KSC Wiedikon') ? 
+            '<img src="https://kscw.ch/clubdesk/fileservlet?type=file&id=1000716&s=djEt3z7ABYLi8hd4sWeb8Qisb2m20xnaKr4H9W6HvJnKgDU=" alt="KSC Wiedikon" style="width: 20px; height: 20px; vertical-align: middle;">' : 
+            '⚔️';
+        
+        setResultsHtml = '<div style="margin-top: 10px;">';
+        setResults.forEach((set, index) => {
+            const setNumber = index + 1;
+            setResultsHtml += `<div style="margin: 5px 0; padding: 5px; background: #f8f9fa; border-radius: 5px;">
+                <strong>Set ${setNumber}:</strong> ${homeIcon} ${set.home} - ${set.away} ${awayIcon}
+            </div>`;
+        });
+        setResultsHtml += '</div>';
+    }
+    
   const modalContent = `
     <table class="modal-table">
             <tr><th>📅 Date</th><td>${formatDateWithDay(data.play_date)} ${formatTime(data.play_date)}</td></tr>
             <tr><th>🏠 Home Team</th><td>${data.teams_home_caption || 'N/A'}</td></tr>
             <tr><th>✈️ Away Team</th><td>${data.teams_away_caption || 'N/A'}</td></tr>
-
+            <tr><th>🏆 Result</th><td>${resultSummaryHtml}</td></tr>
+            <tr><th>🎯 Set Results</th><td>${setResultsHtml}</td></tr>
             <tr><th>🏆 League</th><td>${data.league_caption || 'N/A'}</td></tr>
             <tr><th>👥 Group</th><td>${data.group_caption || 'N/A'}</td></tr>
             <tr><th>🏟️ Hall</th><td>${data.hall_caption || 'N/A'}</td></tr>
@@ -1320,6 +1419,133 @@ function switchTab(tabName) {
     $(`.chip[data-tab="${tabName}"]`).addClass('active');
 }
 
+/* ---------- LOAD NEXT GAMES DATA ---------- */
+async function loadDataNextGames(teamId) {
+    console.log('Loading next games for team:', teamId);
+    
+    $("#next-games-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading next games...</div></div>');
+    
+    try {
+        let nextGamesData;
+        
+        if (teamId === 'all') {
+            const { data: nextGamesAll, error: nextGamesError } = await supabaseClient
+                .from('games_complete')
+                .select('*')
+                .gte('play_date', new Date().toISOString().split('T')[0])
+                .order('play_date', { ascending: true });
+            
+            if (nextGamesError) throw nextGamesError;
+            nextGamesData = nextGamesAll;
+        } else {
+            const { data: nextGamesTeam, error: nextGamesError } = await supabaseClient
+                .from('games_complete')
+                .select('*')
+                .eq('wiedikon_team_id', teamId)
+                .gte('play_date', new Date().toISOString().split('T')[0])
+                .order('play_date', { ascending: true });
+            
+            if (nextGamesError) throw nextGamesError;
+            nextGamesData = nextGamesTeam;
+        }
+        
+        // Render next games (future only)
+        $("#next-games-container").html(renderNextGames(nextGamesData));
+        
+        // Add click handlers for next game rows
+        $("#next-games-container .clickable-row").on('click', function() {
+            const row = $(this);
+            const teamId = row.data('game-id');
+            const gameDate = row.data('game-date');
+            
+            const gameData = nextGamesData.find(g => 
+                g.wiedikon_team_id == teamId && 
+                g.play_date === gameDate
+            );
+            
+            if (gameData) {
+                showDetailModal(gameData);
+            }
+        });
+        
+    } catch (error) {
+        console.error('Error in loadDataNextGames:', error);
+        $("#next-games-container").html('<div class="error-message">Error loading next games: ' + error.message + '</div>');
+    }
+}
+
+/* ---------- LOAD RESULTS DATA ---------- */
+async function loadDataResults(teamId) {
+    console.log('Loading results for team:', teamId);
+    
+    $("#results-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading results...</div></div>');
+    
+    try {
+        let allGamesData;
+        
+        if (teamId === 'all') {
+            const { data: allGamesAll, error: allGamesError } = await supabaseClient
+                .from('games_complete')
+                .select('*')
+                .order('play_date', { ascending: true }); // Oldest first for results
+            
+            if (allGamesError) throw allGamesError;
+            allGamesData = allGamesAll;
+        } else {
+            const { data: allGamesTeam, error: allGamesError } = await supabaseClient
+                .from('games_complete')
+                .select('*')
+                .eq('wiedikon_team_id', teamId)
+                .order('play_date', { ascending: true }); // Oldest first for results
+            
+            if (allGamesError) throw allGamesError;
+            allGamesData = allGamesTeam;
+        }
+        
+        // Render results (all games)
+        renderResults(allGamesData);
+        
+    } catch (error) {
+        console.error('Error in loadDataResults:', error);
+        $("#results-container").html('<div class="error-message">Error loading results: ' + error.message + '</div>');
+    }
+}
+
+/* ---------- LOAD RANKINGS DATA ---------- */
+async function loadDataRankings(teamId) {
+    console.log('Loading rankings for team:', teamId);
+    
+    $("#rankings-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading rankings...</div></div>');
+    
+    try {
+        let rankingsData;
+        
+        if (teamId === 'all') {
+            const { data: rankingsAll, error: rankingsError } = await supabaseClient
+                .from('rankings_complete')
+                .select('*');
+            
+            if (rankingsError) throw rankingsError;
+            rankingsData = rankingsAll;
+        } else {
+            const { data: rankingsTeam, error: rankingsError } = await supabaseClient
+                .from('rankings_complete')
+                .select('*')
+                .eq('wiedikon_team_id', teamId);
+            
+            if (rankingsError) throw rankingsError;
+            rankingsData = rankingsTeam;
+        }
+        
+        // Render rankings
+        renderRankings(rankingsData, teamId);
+        
+    } catch (error) {
+        console.error('Error in loadDataRankings:', error);
+        $("#rankings-container").html('<div class="error-message">Error loading rankings: ' + error.message + '</div>');
+    }
+}
+
 /* ---------- MAIN DATA LOADER ---------- */
 async function loadData(teamId) {
     console.log('Loading data for team:', teamId);
@@ -1330,84 +1556,28 @@ async function loadData(teamId) {
     $("#rankings-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading rankings...</div></div>');
     
     try {
-        let gamesData, rankingsData, lastUpdated;
+        // Load all data in parallel
+        await Promise.all([
+            loadDataNextGames(teamId),
+            loadDataResults(teamId),
+            loadDataRankings(teamId)
+        ]);
         
-        if (teamId === 'all') {
-            // Load all teams data
-            const { data: gamesAll, error: gamesError } = await supabaseClient
-                .from('games_complete')
-                .select('*')
-                .gte('play_date', new Date().toISOString().split('T')[0])
-                .order('play_date', { ascending: true });
-            
-            if (gamesError) throw gamesError;
-            gamesData = gamesAll;
-            
-            const { data: rankingsAll, error: rankingsError } = await supabaseClient
+        // Update the last updated time (get from any of the data sources)
+        let lastUpdated;
+        try {
+            const { data: sampleData } = await supabaseClient
                 .from('rankings_complete')
-                .select('*');
+                .select('updated_at')
+                .limit(1);
             
-            if (rankingsError) throw rankingsError;
-            rankingsData = rankingsAll;
-            
-            // Get the updated_at value from the first record (all records have the same value)
-            if (rankingsData && rankingsData.length > 0) {
-                lastUpdated = rankingsData[0].updated_at;
-            } else if (gamesData && gamesData.length > 0) {
-                lastUpdated = gamesData[0].updated_at;
+            if (sampleData && sampleData.length > 0) {
+                lastUpdated = sampleData[0].updated_at;
             }
-            } else {
-            // Load specific team data
-            const { data: gamesTeam, error: gamesError } = await supabaseClient
-                .from('games_complete')
-                .select('*')
-                .eq('wiedikon_team_id', teamId)
-                .gte('play_date', new Date().toISOString().split('T')[0])
-                .order('play_date', { ascending: true });
-            
-            if (gamesError) throw gamesError;
-            gamesData = gamesTeam;
-            
-            const { data: rankingsTeam, error: rankingsError } = await supabaseClient
-                .from('rankings_complete')
-                .select('*')
-                .eq('wiedikon_team_id', teamId);
-            
-            if (rankingsError) throw rankingsError;
-            rankingsData = rankingsTeam;
-            
-            // Get the updated_at value from the first record (all records have the same value)
-            if (rankingsData && rankingsData.length > 0) {
-                lastUpdated = rankingsData[0].updated_at;
-            } else if (gamesData && gamesData.length > 0) {
-                lastUpdated = gamesData[0].updated_at;
-            }
+        } catch (e) {
+            console.warn('Could not fetch last updated time:', e);
         }
         
-        // Render next games
-        $("#next-games-container").html(renderNextGames(gamesData));
-        
-        // Add click handlers for next game rows
-        $("#next-games-container .clickable-row").on('click', function() {
-            const row = $(this);
-            const teamId = row.data('game-id');
-            const gameDate = row.data('game-date');
-            
-            const gameData = gamesData.find(g => 
-                g.wiedikon_team_id == teamId && 
-                g.play_date === gameDate
-            );
-            
-            if (gameData) {
-                showDetailModal(gameData);
-            }
-        });
-        
-        // Render results and rankings
-        renderResults(gamesData);
-        renderRankings(rankingsData, teamId);
-        
-        // Update the last updated time
         if (lastUpdated) {
             $("#last-updated-time").text(formatLastUpdated(lastUpdated));
         } else {
