@@ -826,7 +826,8 @@
             
             <div class="chip-container">
                 <div class="chip active" data-tab="next-games">Next Games</div>
-                <div class="chip" data-tab="results">Results</div>
+                <div class="chip" data-tab="last-games">Latest results</div>
+                <div class="chip" data-tab="results"> All Results</div>
                 <div class="chip" data-tab="rankings">Rankings</div>
             </div>
             
@@ -847,6 +848,16 @@
       <div class="loading-container">
                 <div class="spinner"></div>
                 <div class="loading-text">Select a team to view next games</div>
+      </div>
+    </div>
+  </div>
+
+    <!-- ===== LAST GAMES SECTION ===== -->
+    <div id="last-games-section" class="next-games-section content-tabs">
+        <h2>Latest results</h2>
+        <div id="last-games-container">
+      <div class="loading-container">
+                <div class="spinner"></div>
       </div>
     </div>
   </div>
@@ -1083,6 +1094,116 @@ function renderNextGames(games) {
                         <div>${formatTeamDisplay("Away:", away)}</div>
                     </td>
                     <td style="${leagueColor}">${leagueIcon} ${league}${genderIndicator}</td>
+                </tr>
+            `;
+        });
+    });
+    
+    html += '</tbody></table></div>';
+    return html;
+}
+
+/* ---------- RENDER LAST GAMES ---------- */
+function renderLastGames(games) {
+    if (!games || games.length === 0) {
+        return '<div class="error-message">No recent games found.</div>';
+    }
+    
+    // Group games by date
+    const gamesByDate = {};
+    games.forEach(game => {
+        const dateKey = formatDate(game.play_date);
+        if (!gamesByDate[dateKey]) {
+            gamesByDate[dateKey] = [];
+        }
+        gamesByDate[dateKey].push(game);
+    });
+    
+    // Sort dates and take last 5 dates (or more if same-day games exist)
+    const sortedDates = Object.keys(gamesByDate).sort((a, b) => {
+        const dateA = new Date(a.split('.').reverse().join('-'));
+        const dateB = new Date(b.split('.').reverse().join('-'));
+        return dateB - dateA; // Most recent first
+    });
+    
+    const selectedDates = sortedDates.slice(0, 5);
+    
+    let html = '<div class="table-wrapper"><table class="display"><tbody>';
+    
+    selectedDates.forEach(dateKey => {
+        const dateGames = gamesByDate[dateKey];
+        const firstGame = dateGames[0];
+        const dateWithDay = formatDateWithDay(firstGame.play_date);
+        
+        dateGames.forEach(game => {
+            const time = formatTime(game.play_date);
+            const home = game.teams_home_caption || "Unknown Team";
+            const away = game.teams_away_caption || "Unknown Team";
+            const league = game.league_caption || "Unknown League";
+            const isCup = league.toLowerCase().includes("cup");
+            const leagueIcon = isCup ? "🏆" : "🎖️";
+            
+            // Parse result_summary
+            let resultSummary = game.result_summary;
+            if (typeof resultSummary === 'string') {
+                try {
+                    resultSummary = JSON.parse(resultSummary);
+                } catch (e) {
+                    resultSummary = null;
+                }
+            }
+            
+            // Determine winner and result
+            let homeStar = "", awayStar = "", resultDisplay = "-";
+            if (resultSummary && typeof resultSummary === 'object' && resultSummary !== null) {
+                if (resultSummary.wonSetsHomeTeam !== undefined && resultSummary.wonSetsAwayTeam !== undefined) {
+                    resultDisplay = `${resultSummary.wonSetsHomeTeam}-${resultSummary.wonSetsAwayTeam}`;
+                    if (resultSummary.winner === "team_home") {
+                        homeStar = " ⭐";
+                    } else if (resultSummary.winner === "team_away") {
+                        awayStar = " ⭐";
+                    }
+                }
+            }
+            
+            // Determine gender from team names (H = male, D = female)
+            const isMale = home.includes(" H") || away.includes(" H");
+            const isFemale = home.includes(" D") || away.includes(" D");
+            
+            // Set color and gender indicator
+            let leagueColor = "";
+            let genderIndicator = "";
+            
+            if (isMale) {
+                leagueColor = "color: #0066CC; font-weight: bold;"; // Blue for male
+                genderIndicator = " (M)";
+            } else if (isFemale) {
+                leagueColor = "color: #E91E63; font-weight: bold;"; // Pink for female
+                genderIndicator = " (F)";
+            }
+            
+            // Make KSC Wiedikon team names bold (including Home:/Away: label)
+            const formatTeamDisplay = (label, teamName) => {
+                if (teamName.includes("KSC Wiedikon")) {
+                    return `<strong><em>${label}</em> ${teamName}</strong>`;
+                }
+                return `<em>${label}</em> ${teamName}`;
+            };
+            
+            html += `
+                <tr class="clickable-row" data-game-id="${game.wiedikon_team_id}" data-game-date="${game.play_date}">
+                    <td style="text-align: left;">
+                        <div>${dateWithDay}</div>
+                        <div>${time}</div>
+                    </td>
+                    <td style="text-align: left;">
+                        <div>${formatTeamDisplay("Home:", home)}${homeStar}</div>
+                        <div>${formatTeamDisplay("Away:", away)}${awayStar}</div>
+                    </td>
+                    <td style="text-align: left;">
+                        <div><strong>${resultDisplay}</strong></div>
+                        <div style="${leagueColor}">${leagueIcon} ${league}${genderIndicator}</div>
+                    </td>
                 </tr>
             `;
         });
@@ -1511,6 +1632,61 @@ async function loadDataResults(teamId) {
     }
 }
 
+/* ---------- LOAD LAST GAMES DATA ---------- */
+async function loadDataLastGames(teamId) {
+    console.log('Loading last games for team:', teamId);
+    
+    $("#last-games-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading last games...</div></div>');
+    
+    try {
+        let lastGamesData;
+        
+        if (teamId === 'all') {
+            const { data: lastGamesAll, error: lastGamesError } = await supabaseClient
+                .from('games_complete')
+                .select('*')
+                .lt('play_date', new Date().toISOString().split('T')[0])
+                .order('play_date', { ascending: false }); // Most recent first
+            
+            if (lastGamesError) throw lastGamesError;
+            lastGamesData = lastGamesAll;
+        } else {
+            const { data: lastGamesTeam, error: lastGamesError } = await supabaseClient
+                .from('games_complete')
+                .select('*')
+                .eq('wiedikon_team_id', teamId)
+                .lt('play_date', new Date().toISOString().split('T')[0])
+                .order('play_date', { ascending: false }); // Most recent first
+            
+            if (lastGamesError) throw lastGamesError;
+            lastGamesData = lastGamesTeam;
+        }
+        
+        // Render last games (past only)
+        $("#last-games-container").html(renderLastGames(lastGamesData));
+        
+        // Add click handlers for last game rows
+        $("#last-games-container .clickable-row").on('click', function() {
+            const row = $(this);
+            const teamId = row.data('game-id');
+            const gameDate = row.data('game-date');
+            
+            const gameData = lastGamesData.find(g => 
+                g.wiedikon_team_id == teamId && 
+                g.play_date === gameDate
+            );
+            
+            if (gameData) {
+                showDetailModal(gameData);
+            }
+        });
+        
+    } catch (error) {
+        console.error('Error in loadDataLastGames:', error);
+        $("#last-games-container").html('<div class="error-message">Error loading last games: ' + error.message + '</div>');
+    }
+}
+
 /* ---------- LOAD RANKINGS DATA ---------- */
 async function loadDataRankings(teamId) {
     console.log('Loading rankings for team:', teamId);
@@ -1552,6 +1728,7 @@ async function loadData(teamId) {
     
     // Show loading states
     $("#next-games-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading next games...</div></div>');
+    $("#last-games-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading last games...</div></div>');
     $("#results-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading results...</div></div>');
     $("#rankings-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading rankings...</div></div>');
     
@@ -1559,6 +1736,7 @@ async function loadData(teamId) {
         // Load all data in parallel
         await Promise.all([
             loadDataNextGames(teamId),
+            loadDataLastGames(teamId),
             loadDataResults(teamId),
             loadDataRankings(teamId)
         ]);
@@ -1588,6 +1766,7 @@ async function loadData(teamId) {
         console.error('Error in loadData:', error);
         const errorMessage = '<div class="error-message">Error loading data: ' + error.message + '</div>';
         $("#next-games-container").html(errorMessage);
+        $("#last-games-container").html(errorMessage);
         $("#results-container").html(errorMessage);
         $("#rankings-container").html(errorMessage);
     }
@@ -1740,6 +1919,7 @@ $(function() {
         } else {
             // Reset all containers
             $("#next-games-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Select a team to view next games</div></div>');
+            $("#last-games-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Select a team to view last games</div></div>');
             $("#results-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Select a team to view results</div></div>');
             $("#rankings-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Select a team to view rankings</div></div>');
         }
