@@ -51,9 +51,9 @@
     .next-games-section h2 {
         background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
         color: white;
-        padding: 20px 30px 15px 30px;
-        font-size: 1.5rem;
-        font-weight: 700;
+        padding: 10px 10px 10px 10px;
+        font-size: 1.2rem;
+        font-weight: 400;
         margin: 0;
         text-align: center;
         text-shadow: 0 2px 4px rgba(0,0,0,0.3);
@@ -62,8 +62,8 @@
     
     .next-games-grid {
         display: grid;
-        gap: 20px;
-        padding: 30px;
+        gap: 10px;
+        padding: 10px;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
     
@@ -95,9 +95,9 @@
     }
     
     .next-game-date {
-        font-size: 16px;
+        font-size: 14px;
         color: #0066CC;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
         text-align: center;
         font-weight: 600;
         text-transform: uppercase;
@@ -105,10 +105,10 @@
     }
     
     .next-game-teams {
-        font-size: 18px;
+        font-size: 15px;
         font-weight: 700;
-        text-align: left;
-        margin-bottom: 15px;
+        text-align: center;
+        margin-bottom: 5px;
         color: #2d3748;
         line-height: 1.4;
     }
@@ -117,7 +117,7 @@
         font-size: 14px;
         color: #666;
         text-align: center;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
         font-weight: 500;
     }
     
@@ -206,8 +206,8 @@
     
     .modal-header h2 {
         margin: 0;
-        font-size: 1.5rem;
-        font-weight: 700;
+        font-size: 1.1rem;
+        font-weight: 500;
     }
     
     .modal-body {
@@ -279,7 +279,7 @@
     <div class="container">
         <!-- ===== NEXT GAMES SECTION ===== -->
         <div id="next-games-section" class="next-games-section">
-            <h3>🏐 Next Games 🏐</h3>
+            <h2>🏐 Next Games 🏐</h2>
             <div id="next-games-container">
                 <div class="loading-container">
                     <div class="spinner"></div>
@@ -368,7 +368,7 @@
         function cleanTeamName(n, r = false) {
             if (!n) return "";
             let c = n.replace(/KSC\s+Wiedikon/g, "KSCW");
-            if (r) c = c.replace(/KSCW\s+/g, "");
+            if (r) c = c.replace(/KSCW\s+/g, "KSCW");
             return c.replace(/^(VBC|VC|Volley|Volleyball)\s+/i, "").replace(/\s+(VBC|VC|Volley|Volleyball)$/i, "").trim();
         }
 
