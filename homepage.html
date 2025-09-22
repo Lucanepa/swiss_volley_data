@@ -71,7 +71,7 @@
         background: white;
         border: 1px solid #e2e8f0;
         border-radius: 16px;
-        padding: 25px;
+        padding: 10px;
         transition: all 0.3s ease;
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         position: relative;
@@ -85,7 +85,7 @@
         left: 0;
         right: 0;
         height: 4px;
-        background: linear-gradient(90deg, #0066CC, #FFD700);
+        background: rgba(255, 255, 255, 0.95);
     }
     
     .next-game-card:hover {
@@ -367,8 +367,8 @@
 
         function cleanTeamName(n, r = false) {
             if (!n) return "";
-            let c = n.replace(/KSC\s+Wiedikon/g, "KSCW");
-            if (r) c = c.replace(/KSCW\s+/g, "KSCW");
+            let c = n.replace(/KSC\s+Wiedikon/g, "KSCW ");
+            if (r) c = c.replace(/KSCW\s+/g, "KSCW ");
             return c.replace(/^(VBC|VC|Volley|Volleyball)\s+/i, "").replace(/\s+(VBC|VC|Volley|Volleyball)$/i, "").trim();
         }
 
