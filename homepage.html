@@ -33,25 +33,6 @@
         align-items: center;
     }
     
-    /* ============ HEADER STYLES ============ */
-    .header {
-        text-align: center;
-        margin-bottom: 30px;
-        color: white;
-    }
-    
-    .header h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    .header p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        font-weight: 300;
-    }
     
     /* ============ NEXT GAMES SECTION ============ */
     .next-games-section {
@@ -314,9 +295,6 @@
             padding: 15px;
         }
         
-        .header h1 {
-            font-size: 2rem;
-        }
         
         .next-games-grid {
             grid-template-columns: 1fr;
@@ -335,8 +313,16 @@
 </head>
 <body>
     <div class="container">
-        <!-- ===== HEADER ===== -->
-        
+        <!-- ===== NEXT GAMES SECTION ===== -->
+        <div id="next-games-section" class="next-games-section">
+            <h2>Next Games</h2>
+            <div id="next-games-container">
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading next games...</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ===== MODAL ===== -->
