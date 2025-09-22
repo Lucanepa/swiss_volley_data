@@ -28,9 +28,6 @@
         margin: 0 auto;
         padding: 20px;
         min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
     }
     
     
@@ -44,8 +41,6 @@
         overflow: hidden;
         border: 1px solid rgba(255, 255, 255, 0.2);
         transition: all 0.3s ease;
-        width: 100%;
-        max-width: 1000px;
     }
     
     .next-games-section:hover {
@@ -63,23 +58,13 @@
         text-align: center;
         text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
-    
-    .next-games-section h2::after {
-        content: "Click any row for details";
-        display: block;
-        font-size: 14px;
-        font-weight: 400;
-        font-style: italic;
-        margin-top: 8px;
-        opacity: 0.9;
-    }
+
     
     .next-games-grid {
         display: grid;
         gap: 20px;
         padding: 30px;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        justify-items: center;
     }
     
     .next-game-card {
@@ -91,8 +76,6 @@
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         position: relative;
         overflow: hidden;
-        width: 100%;
-        max-width: 350px;
     }
     
     .next-game-card::before {
@@ -138,25 +121,6 @@
         font-weight: 500;
     }
     
-    .next-game-details-btn {
-        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        width: 100%;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .next-game-details-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 102, 204, 0.3);
-    }
     
     /* ============ LOADING STYLES ============ */
     .loading-container {
@@ -473,7 +437,6 @@
                             <div class="next-game-league" style="color: ${leagueColor}">
                                 ${genderIndicator} ${leagueIcon} ${league}
                             </div>
-                            <button class="next-game-details-btn">View Details</button>
                         </div>
                     `;
                 });
