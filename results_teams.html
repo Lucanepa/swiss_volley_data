@@ -530,8 +530,20 @@
 const SUPABASE_URL = 'https://wilrrlwqgvzjdhmnwmte.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_smrIIJd_DJofe68QRJmB1w_qiASLbqE';
 
-// Initialize Supabase client
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Initialize Supabase client - wait for library to load
+let supabaseClient;
+if (typeof window.supabase !== 'undefined') {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else {
+    // Wait for supabase to load
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof window.supabase !== 'undefined') {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } else {
+            console.error('Supabase library failed to load');
+        }
+    });
+}
 
 /* ---------- HELPERS ---------- */
 function pad(n){return n.toString().padStart(2,"0")}
@@ -616,6 +628,13 @@ async function loadData(teamId){
         $("#next-game-progress-fill").css("width",pct+"%");$("#next-game-progress-text").text(pct+"%");
      }
   };
+
+  // Check if supabaseClient is available
+  if (!supabaseClient) {
+    console.error('Supabase client not initialized');
+    $("#rankings-container").html('<div class="error-message">Database connection not available. Please refresh the page.</div>');
+    return;
+  }
 
   try {
     // Query rankings_complete view directly from Supabase

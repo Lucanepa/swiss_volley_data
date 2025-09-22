@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>KSCW Volleyball Next Games</title>
+
+<style>
+    /* ============ RESET & BASE STYLES ============ */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        color: #2d3748;
+        line-height: 1.6;
+        min-height: 100vh;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        min-height: 100vh;
+    }
+    
+    /* ============ HEADER STYLES ============ */
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+        color: white;
+    }
+    
+    .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        font-weight: 300;
+    }
+    
+    /* ============ NEXT GAMES SECTION ============ */
+    .next-games-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .next-games-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+    
+    .next-games-section h2 {
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        color: white;
+        padding: 20px 30px 15px 30px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        text-align: center;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .next-games-section h2::after {
+        content: "Click any row for details";
+        display: block;
+        font-size: 14px;
+        font-weight: 400;
+        font-style: italic;
+        margin-top: 8px;
+        opacity: 0.9;
+    }
+    
+    .next-games-grid {
+        display: grid;
+        gap: 20px;
+        padding: 30px;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    
+    .next-game-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 25px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .next-game-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #0066CC, #FFD700);
+    }
+    
+    .next-game-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        border-color: #0066CC;
+    }
+    
+    .next-game-date {
+        font-size: 16px;
+        color: #0066CC;
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .next-game-teams {
+        font-size: 18px;
+        font-weight: 700;
+        text-align: left;
+        margin-bottom: 15px;
+        color: #2d3748;
+        line-height: 1.4;
+    }
+    
+    .next-game-league {
+        font-size: 14px;
+        color: #666;
+        text-align: center;
+        margin-bottom: 15px;
+        font-weight: 500;
+    }
+    
+    .next-game-details-btn {
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .next-game-details-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 102, 204, 0.3);
+    }
+    
+    /* ============ LOADING STYLES ============ */
+    .loading-container {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #0066CC;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+        font-size: 16px;
+        color: #666;
+        font-weight: 500;
+    }
+    
+    /* ============ ERROR MESSAGE ============ */
+    .error-message {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        margin: 20px;
+        font-weight: 500;
+    }
+    
+    /* ============ CLICKABLE ROW ============ */
+    .clickable-row {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .clickable-row:hover {
+        background-color: #f8fafc;
+        transform: translateY(-2px);
+    }
+    
+    /* ============ MODAL STYLES ============ */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 0;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 12px 12px 0 0;
+        text-align: center;
+    }
+    
+    .modal-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+    
+    .modal-body {
+        padding: 30px;
+    }
+    
+    .modal-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    
+    .modal-table th,
+    .modal-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .modal-table th {
+        background-color: #f8fafc;
+        font-weight: 600;
+        color: #374151;
+        width: 30%;
+    }
+    
+    .modal-close {
+        background: linear-gradient(135deg, #0066CC 0%, #FFD700 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        margin-top: 20px;
+        width: 100%;
+    }
+    
+    .modal-close:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+        }
+        
+        .next-games-grid {
+            grid-template-columns: 1fr;
+            padding: 20px;
+        }
+        
+        .next-game-card {
+            padding: 20px;
+        }
+        
+        .next-game-teams {
+            font-size: 16px;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <!-- ===== HEADER ===== -->
+        <div class="header">
+            <h1>KSCW Volleyball Next Games</h1>
+            <p>Upcoming matches for all KSC Wiedikon teams</p>
+        </div>
+
+        <!-- ===== NEXT GAMES SECTION ===== -->
+        <div id="next-games-section" class="next-games-section">
+            <h2>Next Games</h2>
+            <div id="next-games-container">
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading next games...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL ===== -->
+    <div id="gameModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Game Details</h2>
+            </div>
+            <div class="modal-body">
+                <div id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        /* ---------- CONFIG ---------- */
+        const SUPABASE_URL = 'https://wilrrlwqgvzjdhmnwmte.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_smrIIJd_DJofe68QRJmB1w_qiASLbqE';
+
+        // Initialize Supabase client - wait for library to load
+        let supabaseClient;
+        if (typeof window.supabase !== 'undefined') {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } else {
+            // Wait for supabase to load
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof window.supabase !== 'undefined') {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    loadNextGames();
+                } else {
+                    console.error('Supabase library failed to load');
+                }
+            });
+        }
+
+        /* ---------- HELPERS ---------- */
+        function pad(n) {
+            return n.toString().padStart(2, "0");
+        }
+
+        function formatDate(d) {
+            const t = new Date(d);
+            return isNaN(t) ? "" : `${pad(t.getDate())}.${pad(t.getMonth() + 1)}.${String(t.getFullYear()).slice(-2)}`;
+        }
+
+        function formatTime(d) {
+            // Try to extract time directly from the string first
+            if (typeof d === 'string') {
+                // Look for time pattern HH:MM or HH:MM:SS
+                const timeMatch = d.match(/(\d{1,2}):(\d{2})(?::\d{2})?/);
+                if (timeMatch) {
+                    const hours = parseInt(timeMatch[1]);
+                    const minutes = parseInt(timeMatch[2]);
+                    return `${pad(hours)}:${pad(minutes)}`;
+                }
+            }
+            
+            // Fallback to Date object method
+            const t = new Date(d);
+            return isNaN(t) ? "" : `${pad(t.getHours())}:${pad(t.getMinutes())}`;
+        }
+
+        function formatDateWithDay(d) {
+            // Handle timezone conversion - if the date string doesn't have timezone info, 
+            // treat it as UTC and convert to local time
+            let dateString = d;
+            if (typeof d === 'string' && !d.includes('Z') && !d.includes('+')) {
+                // If no timezone info, assume UTC and add Z
+                dateString = d + 'Z';
+            }
+            const t = new Date(dateString);
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            return isNaN(t) ? "" : `${days[t.getDay()]} ${formatDate(d)}`;
+        }
+
+        function cleanTeamName(n, r = false) {
+            if (!n) return "";
+            let c = n.replace(/KSC\s+Wiedikon/g, "KSCW");
+            if (r) c = c.replace(/KSCW\s+/g, "");
+            return c.replace(/^(VBC|VC|Volley|Volleyball)\s+/i, "").replace(/\s+(VBC|VC|Volley|Volleyball)$/i, "").trim();
+        }
+
+        /* ---------- RENDER NEXT GAMES ---------- */
+        function renderNextGames(games) {
+            if (!games || games.length === 0) {
+                return '<div class="error-message">No upcoming games found.</div>';
+            }
+            
+            // Group games by date
+            const gamesByDate = {};
+            games.forEach(game => {
+                const dateKey = formatDate(game.play_date);
+                if (!gamesByDate[dateKey]) {
+                    gamesByDate[dateKey] = [];
+                }
+                gamesByDate[dateKey].push(game);
+            });
+            
+            // Sort dates and take first 5 dates (or more if same-day games exist)
+            const sortedDates = Object.keys(gamesByDate).sort((a, b) => {
+                const dateA = new Date(a.split('.').reverse().join('-'));
+                const dateB = new Date(b.split('.').reverse().join('-'));
+                return dateA - dateB;
+            });
+            
+            const selectedDates = sortedDates.slice(0, 5);
+            
+            let html = '<div class="next-games-grid">';
+            
+            selectedDates.forEach(dateKey => {
+                const dateGames = gamesByDate[dateKey];
+                const firstGame = dateGames[0];
+                const dateWithDay = formatDateWithDay(firstGame.play_date);
+                
+                dateGames.forEach(game => {
+                    const time = formatTime(game.play_date);
+                    const home = game.teams_home_caption || "Unknown Team";
+                    const away = game.teams_away_caption || "Unknown Team";
+                    const league = game.league_caption || "Unknown League";
+                    const isCup = league.toLowerCase().includes("cup");
+                    const leagueIcon = isCup ? "🏆" : "🎖️";
+                    
+                    // Determine gender from team names (H = male, D = female)
+                    const isMale = home.includes(" H") || away.includes(" H");
+                    const isFemale = home.includes(" D") || away.includes(" D");
+                    
+                    // Set color and gender indicator
+                    let leagueColor = "";
+                    let genderIndicator = "";
+                    
+                    if (isMale) {
+                        leagueColor = "#0066CC";
+                        genderIndicator = "♂️";
+                    } else if (isFemale) {
+                        leagueColor = "#FF69B4";
+                        genderIndicator = "♀️";
+                    } else {
+                        leagueColor = "#666";
+                        genderIndicator = "⚽";
+                    }
+                    
+                    html += `
+                        <div class="next-game-card clickable-row" data-game-id="${game.wiedikon_team_id}" data-game-date="${game.play_date}">
+                            <div class="next-game-date">${dateWithDay} ${time}</div>
+                            <div class="next-game-teams">
+                                ${cleanTeamName(home, true)} vs ${cleanTeamName(away, true)}
+                            </div>
+                            <div class="next-game-league" style="color: ${leagueColor}">
+                                ${genderIndicator} ${leagueIcon} ${league}
+                            </div>
+                            <button class="next-game-details-btn">View Details</button>
+                        </div>
+                    `;
+                });
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        /* ---------- LOAD NEXT GAMES DATA ---------- */
+        async function loadNextGames() {
+            console.log('Loading next games for all teams');
+            
+            $("#next-games-container").html('<div class="loading-container"><div class="spinner"></div><div class="loading-text">Loading next games...</div></div>');
+            
+            // Check if supabaseClient is available
+            if (!supabaseClient) {
+                console.error('Supabase client not initialized');
+                $("#next-games-container").html('<div class="error-message">Database connection not available. Please refresh the page.</div>');
+                return;
+            }
+            
+            try {
+                const { data: nextGamesAll, error: nextGamesError } = await supabaseClient
+                    .from('games_complete')
+                    .select('*')
+                    .gte('play_date', new Date().toISOString().split('T')[0])
+                    .order('play_date', { ascending: true });
+                
+                if (nextGamesError) throw nextGamesError;
+                
+                // Render next games (future only)
+                $("#next-games-container").html(renderNextGames(nextGamesAll));
+                
+                // Add click handlers for next game rows
+                $("#next-games-container .clickable-row").on('click', function() {
+                    const row = $(this);
+                    const teamId = row.data('game-id');
+                    const gameDate = row.data('game-date');
+                    
+                    const gameData = nextGamesAll.find(g => 
+                        g.wiedikon_team_id == teamId && 
+                        g.play_date === gameDate
+                    );
+                    
+                    if (gameData) {
+                        showDetailModal(gameData);
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error in loadNextGames:', error);
+                $("#next-games-container").html('<div class="error-message">Error loading next games: ' + error.message + '</div>');
+            }
+        }
+
+        /* ---------- MODAL FUNCTIONS ---------- */
+        function showDetailModal(data) {
+            // Build address for Google Maps
+            const addressParts = [data.hall_street, data.hall_number, data.hall_city, data.hall_zip].filter(Boolean);
+            const address = addressParts.join(' ');
+            const addressDisplay = address || 'N/A';
+            
+            // Build referee information
+            let refereeInfo = 'N/A';
+            if (data.referee_1) {
+                if (data.referee_2) {
+                    refereeInfo = `1SR: ${data.referee_1}, 2SR: ${data.referee_2}`;
+                } else {
+                    refereeInfo = `1SR: ${data.referee_1}`;
+                }
+            }
+            
+            const modalContent = `
+                <table class="modal-table">
+                    <tr><th>📅 Date</th><td>${formatDateWithDay(data.play_date)} ${formatTime(data.play_date)}</td></tr>
+                    <tr><th>🏠 Home Team</th><td>${data.teams_home_caption || 'N/A'}</td></tr>
+                    <tr><th>✈️ Away Team</th><td>${data.teams_away_caption || 'N/A'}</td></tr>
+                    <tr><th>🏆 League</th><td>${data.league_caption || 'N/A'}</td></tr>
+                    <tr><th>👥 Group</th><td>${data.group_caption || 'N/A'}</td></tr>
+                    <tr><th>🏟️ Hall</th><td>${data.hall_caption || 'N/A'}</td></tr>
+                    <tr><th>📍 Address</th><td>${address !== 'N/A' ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="color: #667eea; text-decoration: none;">${addressDisplay} 🗺️</a>` : addressDisplay}</td></tr>
+                    <tr><th>👨‍⚖️ Referees</th><td>${refereeInfo}</td></tr>
+                    <tr><th>🆔 Game ID</th><td>${data.game_id || 'N/A'}</td></tr>
+                </table>
+                <button class="modal-close" onclick="closeModal()">Close</button>
+            `;
+            
+            $("#modalContent").html(modalContent);
+            $("#gameModal").show();
+        }
+
+        function closeModal() {
+            $("#gameModal").hide();
+        }
+
+        // Close modal when clicking outside
+        $(document).on('click', '#gameModal', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initialize when page loads
+        $(document).ready(function() {
+            if (supabaseClient) {
+                loadNextGames();
+            }
+        });
+    </script>
+</body>
+</html>
