@@ -1059,8 +1059,8 @@ function renderNextGames(games) {
             const isCup = league.toLowerCase().includes("cup");
             const leagueIcon = isCup ? "🏆" : "🎖️";
             
-            // Determine gender from team names (H = male, D = female)
-            const isMale = home.includes(" H") || away.includes(" H");
+            // Determine gender from team names (H = male, D = female, Legends = male)
+            const isMale = home.includes(" H") || away.includes(" H") || home.includes("Legends") || away.includes("Legends");
             const isFemale = home.includes(" D") || away.includes(" D");
             
             // Set color and gender indicator
@@ -1166,8 +1166,8 @@ function renderLastGames(games) {
                 }
             }
             
-            // Determine gender from team names (H = male, D = female)
-            const isMale = home.includes(" H") || away.includes(" H");
+            // Determine gender from team names (H = male, D = female, Legends = male)
+            const isMale = home.includes(" H") || away.includes(" H") || home.includes("Legends") || away.includes("Legends");
             const isFemale = home.includes(" D") || away.includes(" D");
             
             // Set color and gender indicator
