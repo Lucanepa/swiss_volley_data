@@ -1330,9 +1330,9 @@ function renderResults(resData) {
         });
         
         // Add click handlers for modal
-        $w.find("table tbody tr").addClass("clickable-row").click(function() {
+        $w.find("table tbody tr").addClass("clickable-row").click(async function() {
             const data = $w.find("table").DataTable().row(this).data();
-            showDetailModal(data);
+            await showDetailModal(data);
         });
     }
 }
@@ -1407,11 +1407,93 @@ function renderRankings(rankData, selectedTeamId) {
 }
 
 /* ---------- MODAL FUNCTIONS ---------- */
-function showDetailModal(data, isNextGame = false) {
+async function showDetailModal(data, isNextGame = false) {
     // Build address for Google Maps
     const addressParts = [data.hall_street, data.hall_number, data.hall_city, data.hall_zip].filter(Boolean);
     const address = addressParts.join(' ');
     const addressDisplay = address || 'N/A';
+    
+    // Fetch scorer information
+    let scorerInfo = '';
+    try {
+        console.log('Fetching scorer data for game_id:', data.game_id);
+        
+        // First try to get basic scorer data
+        const { data: scorerData, error: scorerError } = await supabaseClient
+            .from('scorer_matches')
+            .select('*')
+            .eq('gamen', data.game_id)
+            .single();
+        
+        console.log('Scorer query result:', { scorerData, scorerError });
+        
+        if (!scorerError && scorerData) {
+            // Build scorer information
+            if (scorerData.scorer_id) {
+                scorerInfo += 'Scorer: ';
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('scorer_scorers')
+                        .select('fname, lname')
+                        .eq('id', scorerData.scorer_id)
+                        .single();
+                    
+                    if (!error && data) {
+                        const firstName = data.fname || '';
+                        const lastName = data.lname || '';
+                        scorerInfo += `${firstName} ${lastName}`.trim();
+                    }
+                } catch (e) {
+                    console.log('scorer_scorers query failed:', e);
+                }
+                scorerInfo += '<br>';
+            }
+            
+            if (scorerData.taefeler_id) {
+                scorerInfo += 'Täfeler: ';
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('scorer_scorers')
+                        .select('fname, lname')
+                        .eq('id', scorerData.taefeler_id)
+                        .single();
+                    
+                    if (!error && data) {
+                        const firstName = data.fname || '';
+                        const lastName = data.lname || '';
+                        scorerInfo += `${firstName} ${lastName}`.trim();
+                    }
+                } catch (e) {
+                    console.log('scorer_scorers query failed for täfeler:', e);
+                }
+                scorerInfo += '<br>';
+            }
+            
+            if (scorerData.scorer_taefeler_id) {
+                scorerInfo += 'Scorer-Täfeler: ';
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('scorer_scorers')
+                        .select('fname, lname')
+                        .eq('id', scorerData.scorer_taefeler_id)
+                        .single();
+                    
+                    if (!error && data) {
+                        const firstName = data.fname || '';
+                        const lastName = data.lname || '';
+                        scorerInfo += `${firstName} ${lastName}`.trim();
+                    }
+                } catch (e) {
+                    console.log('scorer_scorers query failed for scorer-täfeler:', e);
+                }
+                scorerInfo += '<br>';
+            }
+        }
+        
+        console.log('Final scorer info:', scorerInfo);
+    } catch (error) {
+        console.warn('Could not fetch scorer information:', error);
+    }
     
     // Build referee information
     let refereeInfo = 'N/A';
@@ -1492,6 +1574,7 @@ function showDetailModal(data, isNextGame = false) {
             <tr><th>🏟️ Hall</th><td>${data.hall_caption || 'N/A'}</td></tr>
             <tr><th>📍 Address</th><td>${address !== 'N/A' ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" style="color: #667eea; text-decoration: none;">${addressDisplay} 🗺️</a>` : addressDisplay}</td></tr>
             <tr><th>👨‍⚖️ Referees</th><td>${refereeInfo}</td></tr>
+            ${scorerInfo ? `<tr><th>📝 Scorers</th><td>${scorerInfo}</td></tr>` : ''}
             <tr><th>🆔 Game ID</th><td>${data.game_id || 'N/A'}</td></tr>
     </table>
   `;
@@ -1574,7 +1657,7 @@ async function loadDataNextGames(teamId) {
         $("#next-games-container").html(renderNextGames(nextGamesData));
         
         // Add click handlers for next game rows
-        $("#next-games-container .clickable-row").on('click', function() {
+        $("#next-games-container .clickable-row").on('click', async function() {
             const row = $(this);
             const teamId = row.data('game-id');
             const gameDate = row.data('game-date');
@@ -1585,7 +1668,7 @@ async function loadDataNextGames(teamId) {
             );
             
             if (gameData) {
-                showDetailModal(gameData, true);
+                await showDetailModal(gameData, true);
             }
         });
         
@@ -1666,7 +1749,7 @@ async function loadDataLastGames(teamId) {
         $("#last-games-container").html(renderLastGames(lastGamesData));
         
         // Add click handlers for last game rows
-        $("#last-games-container .clickable-row").on('click', function() {
+        $("#last-games-container .clickable-row").on('click', async function() {
             const row = $(this);
             const teamId = row.data('game-id');
             const gameDate = row.data('game-date');
@@ -1677,7 +1760,7 @@ async function loadDataLastGames(teamId) {
             );
             
             if (gameData) {
-                showDetailModal(gameData);
+                await showDetailModal(gameData);
             }
         });
         
