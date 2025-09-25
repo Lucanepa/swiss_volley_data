@@ -1407,7 +1407,7 @@ function renderRankings(rankData, selectedTeamId) {
 }
 
 /* ---------- MODAL FUNCTIONS ---------- */
-function showDetailModal(data) {
+function showDetailModal(data, isNextGame = false) {
     // Build address for Google Maps
     const addressParts = [data.hall_street, data.hall_number, data.hall_city, data.hall_zip].filter(Boolean);
     const address = addressParts.join(' ');
@@ -1485,8 +1485,8 @@ function showDetailModal(data) {
             <tr><th>📅 Date</th><td>${formatDateWithDay(data.play_date)} ${formatTime(data.play_date)}</td></tr>
             <tr><th>🏠 Home Team</th><td>${data.teams_home_caption || 'N/A'}</td></tr>
             <tr><th>✈️ Away Team</th><td>${data.teams_away_caption || 'N/A'}</td></tr>
-            <tr><th>🏆 Result</th><td>${resultSummaryHtml}</td></tr>
-            <tr><th>🎯 Set Results</th><td>${setResultsHtml}</td></tr>
+            ${!isNextGame ? `<tr><th>🏆 Result</th><td>${resultSummaryHtml}</td></tr>` : ''}
+            ${!isNextGame ? `<tr><th>🎯 Set Results</th><td>${setResultsHtml}</td></tr>` : ''}
             <tr><th>🏆 League</th><td>${data.league_caption || 'N/A'}</td></tr>
             <tr><th>👥 Group</th><td>${data.group_caption || 'N/A'}</td></tr>
             <tr><th>🏟️ Hall</th><td>${data.hall_caption || 'N/A'}</td></tr>
@@ -1504,12 +1504,12 @@ function showDetailModal(data) {
 function showRankingModal(data) {
   const modalContent = `
     <table class="modal-table">
-            <tr><th>🎖️ Rank</th><td>${data.rank || 'N/A'}</td></tr>
+            <tr><th>🎖️ Rank</th><td>${data.rank !== undefined && data.rank !== null ? data.rank : 'N/A'}</td></tr>
             <tr><th>🏐 Team</th><td>${data.teamcaption || 'N/A'}</td></tr>
-            <tr><th>📊 Points</th><td>${data.points || 'N/A'}</td></tr>
-            <tr><th>🎮 Games Played</th><td>${data.games || 'N/A'}</td></tr>
-            <tr><th>🏆 Wins</th><td>${data.wins || 'N/A'}</td></tr>
-            <tr><th>💔 Losses</th><td>${data.defeats || 'N/A'}</td></tr>
+            <tr><th>📊 Points</th><td>${data.points !== undefined && data.points !== null ? data.points : 'N/A'}</td></tr>
+            <tr><th>🎮 Games Played</th><td>${data.games !== undefined && data.games !== null ? data.games : 'N/A'}</td></tr>
+            <tr><th>🏆 Wins</th><td>${data.wins !== undefined && data.wins !== null ? data.wins : 'N/A'}</td></tr>
+            <tr><th>💔 Losses</th><td>${data.defeats !== undefined && data.defeats !== null ? data.defeats : 'N/A'}</td></tr>
             <tr><th>🏆 League</th><td>${data.league_caption || 'N/A'}</td></tr>
             <tr><th>👥 Group</th><td>${data.group_caption || 'N/A'}</td></tr>
     </table>
@@ -1585,7 +1585,7 @@ async function loadDataNextGames(teamId) {
             );
             
             if (gameData) {
-                showDetailModal(gameData);
+                showDetailModal(gameData, true);
             }
         });
         
