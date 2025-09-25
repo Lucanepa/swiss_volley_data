@@ -1360,9 +1360,9 @@ function renderRankings(rankData, selectedTeamId) {
   });
     
     for (const lg in rBy) {
-        // Get the team name for this league/group
-        const firstTeam = rBy[lg][0];
-        const teamName = firstTeam && firstTeam.teamcaption ? cleanTeamName(firstTeam.teamcaption) : lg;
+        // Get the team name for this league/group - find the Wiedikon team
+        const wiedikonTeam = rBy[lg].find(team => team.teamcaption && team.teamcaption.toLowerCase().includes("wiedikon")) || rBy[lg][0];
+        const teamName = wiedikonTeam && wiedikonTeam.teamcaption ? wiedikonTeam.teamcaption : lg;
         const displayTitle = `${lg} - ${teamName}`;
         
         $("#rankings-container").append(`<div class="sub-section"><h3>${displayTitle}</h3></div>`);
